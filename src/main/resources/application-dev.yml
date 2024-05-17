@@ -1,0 +1,31 @@
+logging:
+  pattern:
+    dateformat: yyyy-MM-dd HH:mm:ss.SSS
+  level:
+    root: info
+    sql: info
+  file:
+    name: /Users/zzh/Company/projects/tools/spring-boot-3/logs/server.log
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      file-name-pattern: ${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz
+#    console: yyyy-MM-dd HH:mm:ss.SSS
+spring:
+  mvc:
+    contentnegotiation:
+      favor-parameter: true # 内容协商，根据请求头不通，返回不同格式的消息
+      media-types:
+        yaml: text/yaml
+    problemdetails:
+      enabled: true
+  kafka:
+    bootstrap-servers: localhost:9092
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+  quartz:
+    auto-startup: true
+    scheduler-name: scheduler
+

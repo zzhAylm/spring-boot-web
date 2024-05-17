@@ -1,0 +1,24 @@
+buildscript {
+    ext {
+        gradleHome = "https://raw.githubusercontent.com/zzhAylm/gradle-scripts/main/"
+        zzhVersion = "2024.1.0-SNAPSHOT"
+    }
+    apply from: resources.text.fromInsecureUri(gradleHome + 'buildscript.gradle')
+    repositories {
+        maven {
+            allowInsecureProtocol = true
+            url REPOSITORY_URL
+        }
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+
+}
+subprojects {
+    group 'com.zzh'
+    version '1.0-SNAPSHOT'
+    apply from: resources.text.fromInsecureUri(gradleHome + 'subprojects.gradle')
+}
+description = "SpringBoot3Application"

@@ -1,0 +1,3 @@
+rootProject.name = 'spring-boot-web'
+include 'spring-boot-3'
+

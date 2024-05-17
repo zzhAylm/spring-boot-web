@@ -1,0 +1,22 @@
+dependencies {
+    api("org.springframework.boot:spring-boot-starter-web")
+    api("org.springframework.cloud:spring-cloud-starter-bootstrap:3.1.5")
+    api("org.springframework.boot:spring-boot-starter-actuator")
+//    implementation 'io.springfox:springfox-boot-starter:3.0.0'
+    api("io.micrometer:micrometer-registry-prometheus")
+    api 'cn.hutool:hutool-all:5.8.25'
+    api("com.google.guava:guava:32.1.1-jre")
+    api("org.springframework.boot:spring-boot-starter-webflux")
+    api('org.springframework.kafka:spring-kafka')
+    api("org.springframework.boot:spring-boot-starter-security")
+    api("io.micrometer:micrometer-registry-prometheus")
+    api('io.github.mweirauch:micrometer-jvm-extras:0.2.2')
+    api("org.aspectj:aspectjweaver:1.9.19")
+    api("org.springframework.boot:spring-boot-starter-thymeleaf")
+    api 'org.redisson:redisson-spring-boot-starter:3.27.2'
+    api("org.apache.poi:poi-ooxml:5.2.3")
+    api("org.springframework.boot:spring-boot-starter-quartz")
+}
+bootJar {
+    enabled = true
+}
