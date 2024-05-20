@@ -1,8 +1,9 @@
 dependencies {
+    api("mysql:mysql-connector-java:8.0.32")
     api("org.springframework.boot:spring-boot-starter-web")
     api("org.springframework.cloud:spring-cloud-starter-bootstrap:3.1.5")
     api("org.springframework.boot:spring-boot-starter-actuator")
-//    implementation 'io.springfox:springfox-boot-starter:3.0.0'
+    api 'io.springfox:springfox-boot-starter:3.0.0'
     api("io.micrometer:micrometer-registry-prometheus")
     api 'cn.hutool:hutool-all:5.8.25'
     api("com.google.guava:guava:32.1.1-jre")

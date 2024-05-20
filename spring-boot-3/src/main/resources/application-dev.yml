@@ -5,7 +5,7 @@ logging:
     root: info
     sql: info
   file:
-    name: /Users/zzh/Company/projects/tools/spring-boot-3/logs/server.log
+    name: ./logs/server.log
   logback:
     rollingpolicy:
       max-file-size: 10MB
@@ -19,6 +19,12 @@ spring:
         yaml: text/yaml
     problemdetails:
       enabled: true
+  datasource:
+    hikari:
+      jdbc-url: jdbc:mysql://127.0.0.1:3306/test?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&zeroDateTimeBehavior=convertToNull
+      username: root
+      password: 123456
+      driver-class-name: com.mysql.cj.jdbc.Driver
   kafka:
     bootstrap-servers: localhost:9092
   data:
