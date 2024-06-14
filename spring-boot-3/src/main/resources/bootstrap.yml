@@ -1,6 +1,8 @@
 server:
   port: ${port:8080}
   shutdown: graceful #开启优雅停机
+  tomcat:
+    max-http-form-post-size: 50MB
 spring:
   profiles:
     active: ${profile:dev}
@@ -12,7 +14,8 @@ spring:
       password: 123456
   servlet:
     multipart:
-      max-request-size: 50
+      max-request-size: 50MB
+      max-file-size: 50MB
 management:
   server:
     port: 36666
