@@ -4,6 +4,8 @@ import lombok.Data;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 
 /**
@@ -234,35 +236,45 @@ public class Algorithm07 {
     }
 
 
-//    /**
-//     * 315.计算右侧小于当前数的元素个数
-//     */
-//    public List<Integer> countSmaller(int[] nums) {
-//        List<Integer> res = new ArrayList<>();
-//        if (nums == null || nums.length == 0) {
-//            return null;
-//        }
-//        if (nums.length == 1) {
-//            res.add(0);
-//            return res;
-//        }
-//        int index = nums.length - 1;
-//        nums[0] = 0;
-//
-//
-//        for (int i = index - 1; i >= 0; i--) {
-//
-//            nums[index] = nums[i - 1] + 1;
-//        }
-//    }
+    /**
+     * 315.计算右侧小于当前数的元素个数
+     */
+    public List<Integer> countSmaller(int[] nums) {
+        List<Integer> res = new ArrayList<>();
+        if (nums == null || nums.length == 0) {
+            return null;
+        }
+        if (nums.length == 1) {
+            res.add(0);
+            return res;
+        }
+        int index = nums.length - 1;
+        int[] arr = new int[nums.length];
+        arr[index] = 0;
+        for (int i = index - 1; i >= 0; i--) {
+            arr[i] = max(nums, arr, i, i + 1);
+        }
+        return Arrays.stream(arr).boxed().toList();
+    }
 
-//    public int binary(int arr, int left, int right, int target) {
-//
-//    }
+    public int max(int[] nums, int[] arr, int i, int j) {
+        int max = 0;
+        for (; j < nums.length; j++) {
+            if (nums[j] < nums[i]) {
+                max = Math.max(max, arr[j] + 1);
+            } else if (nums[i] == nums[j]) {
+                max = Math.max(max, arr[j]);
+            }
+        }
+        return max;
+    }
 
 
     @Test
     public void testSortArray() {
+
+        int test[] = {2, 0, 1};
+        countSmaller(test);
 
     }
 
@@ -298,6 +310,46 @@ public class Algorithm07 {
         return multi[grid.length - 1][grid[0].length - 1];
 
     }
+
+
+    /**
+     * 199.二叉树的右视图
+     */
+    public List<Integer> rightSideView(TreeNode root) {
+        List<Integer> res = new ArrayList<>();
+        if (root == null) {
+            return res;
+        }
+        Queue<TreeNode> nodeQueue = new LinkedBlockingQueue<>();
+        nodeQueue.add(root);
+
+        while (!nodeQueue.isEmpty()) {
+            int size = nodeQueue.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode poll = nodeQueue.poll();
+                if (poll.left != null) {
+                    nodeQueue.add(poll.left);
+                }
+                if (poll.right != null) {
+                    nodeQueue.add(poll.right);
+                }
+                if (i == size - 1) {
+                    res.add(poll.val);
+                }
+            }
+        }
+        return res;
+    }
+
+
+
+
+
+
+
+
+
+
 
 
 }
