@@ -9,6 +9,7 @@ import org.redisson.api.NodesGroup;
 import org.redisson.api.RedissonClient;
 import org.redisson.connection.ConnectionListener;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -21,6 +22,7 @@ import java.net.InetSocketAddress;
  */
 @Slf4j
 @Configuration
+@EnableConfigurationProperties(ConfigProperties.class)
 public class SpringBoot3Config {
 
     @Resource
