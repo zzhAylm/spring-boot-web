@@ -1,9 +1,12 @@
 package com.zzh.springboot3.algorithm;
 
+import lombok.val;
+import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * @Description:
@@ -1196,6 +1199,500 @@ public class Algorithm11 {
         head.next.next = new ListNode(3);
         head.next.next.next = new ListNode(4);
         swapPairs(head);
+    }
+
+
+    /**
+     * 25. K 个一组翻转链表
+     */
+    public ListNode reverseKGroup(ListNode head, int k) {
+        if (head == null || head.next == null || k == 1) {
+            return head;
+        }
+        return reverse(head, k);
+    }
+
+    public ListNode reverse(ListNode head, int k) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode h = head;
+        int count = 0;
+        while (h != null) {
+            count++;
+            h = h.next;
+        }
+        if (count < k) {
+            return head;
+        }
+        ListNode pre = new ListNode(-1);
+        pre.next = head;
+        ListNode p = pre.next;
+        int num = 1;
+        while (p.next != null) {
+            ListNode next = p.next;
+            p.next = next.next;
+            next.next = pre.next;
+            pre.next = next;
+            num++;
+            if (num == k) {
+                p.next = reverse(p.next, k);
+                break;
+            }
+        }
+        return pre.next;
+    }
+
+
+    public static class Node {
+        int val;
+        Node next;
+        Node random;
+
+        public Node(int val) {
+            this.val = val;
+            this.next = null;
+            this.random = null;
+        }
+    }
+
+    /**
+     * 138. 随机链表的复制
+     */
+    public static Node copyRandomList(Node head) {
+        if (head == null) {
+            return null;
+        }
+        Map<Node, Node> randomMap = new HashMap<>();
+
+        Map<Node, Integer> indexMap = new HashMap<>();
+
+        // 节点index-> 前一个节点
+        Map<Integer, Node> indexNodeMap = new HashMap<>();
+
+        Node pre = new Node(-1);
+        Node cur = pre;
+        Node p = head;
+        int index = 0;
+        while (p != null) {
+            cur.next = new Node(p.val);
+            cur = cur.next;
+            randomMap.put(p, p.random);
+            indexMap.put(p, index++);
+            p = p.next;
+        }
+
+        randomMap.forEach((key, value) -> {
+            if (value != null) {
+                Integer integer = indexMap.get(value);
+                indexNodeMap.put(integer, key);
+            }
+        });
+
+        Node p1 = pre.next;
+        index = 0;
+        while (p1 != null) {
+            Node node = indexNodeMap.get(index++);
+            if (node != null) {
+                node.random = p1;
+            }
+            p1 = p1.next;
+        }
+        return pre.next;
+    }
+
+
+    /**
+     * 138. 随机链表的复制
+     */
+    Map<Node, Node> nodeCacheMap = new HashMap<>();
+
+    public Node copyRandomList1(Node head) {
+        if (head == null) {
+            return null;
+        }
+        if (!nodeCacheMap.containsKey(head)) {
+            Node newNode = new Node(head.val);
+            nodeCacheMap.put(head, newNode);
+            newNode.next = copyRandomList(head.next);
+            newNode.random = copyRandomList(head.random);
+        }
+        return nodeCacheMap.get(head);
+    }
+
+    @Test
+    public void testRandom() {
+        Node head = new Node(7);
+        Node node13 = new Node(13);
+        Node node11 = new Node(11);
+        Node node10 = new Node(10);
+        Node node1 = new Node(1);
+        head.next = node13;
+        node13.next = node11;
+        node11.next = node10;
+        node10.next = node1;
+        node13.random = head;
+        node11.random = node1;
+        node10.random = node11;
+        node1.random = head;
+        copyRandomList(head);
+    }
+
+
+    /**
+     * 148. 排序链表
+     */
+    public ListNode sortList(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode pre = new ListNode(-1);
+        pre.next = head;
+        ListNode p = head;
+        while (p.next != null) {
+            ListNode next = p.next;
+            if (p.val < next.val) {
+                p = p.next;
+            } else {
+                p.next = next.next;
+                ListNode first = pre;
+                while (first.next.val < next.val) {
+                    first = first.next;
+                }
+                next.next = first.next;
+                first.next = next;
+            }
+        }
+        return pre.next;
+    }
+
+
+    /**
+     * 23. 合并 K 个升序链表
+     */
+    public ListNode mergeKLists(ListNode[] lists) {
+        if (lists.length == 0) {
+            return null;
+        }
+        if (lists.length == 1) {
+            return lists[0];
+        }
+        ListNode pre = new ListNode(-1);
+        ListNode point = pre;
+
+        while (true) {
+            ListNode p = null;
+            int index = 0;
+            for (int i = 0; i < lists.length; i++) {
+                if (lists[i] == null) {
+                    continue;
+                }
+                if (p == null || p.val > lists[i].val) {
+                    p = lists[i];
+                    index = i;
+                }
+            }
+            if (p == null) {
+                return pre.next;
+            }
+            lists[index] = p.next;
+            point.next = p;
+            p.next = null;
+            point = point.next;
+        }
+    }
+
+
+    /**
+     * 146. LRU 缓存
+     */
+    class LRUCache {
+
+        private final Entry tail;
+        private final Entry head;
+        private final Integer capacity;
+        private final Map<Integer, Entry> cache;
+
+        public LRUCache(int capacity) {
+            this.cache = new HashMap<>();
+            this.capacity = capacity;
+            this.head = new Entry();
+            this.tail = new Entry();
+            this.head.next = this.tail;
+            this.tail.pre = this.head;
+        }
+
+        public int get(int key) {
+            Entry entry = cache.get(key);
+            if (entry == null) {
+                return -1;
+            }
+            moveHead(entry);
+            return entry.value;
+        }
+
+        public void put(int key, int value) {
+            Entry entry = cache.get(key);
+            if (entry == null) {
+                entry = new Entry(key, value);
+                cache.put(key, entry);
+                addHead(entry);
+                if (cache.size() > capacity) {
+                    Entry removeEntry = removeEntry();
+                    cache.remove(removeEntry.key);
+                }
+            } else {
+                entry.value = value;
+                moveHead(entry);
+            }
+
+        }
+
+        public void moveHead(Entry entry) {
+            Entry next = entry.next;
+            Entry pre = entry.pre;
+            pre.next = next;
+            next.pre = pre;
+
+            Entry second = head.next;
+            head.next = entry;
+            entry.next = second;
+            entry.pre = head;
+            second.pre = entry;
+        }
+
+        public void addHead(Entry entry) {
+            Entry second = head.next;
+            head.next = entry;
+            entry.next = second;
+            entry.pre = head;
+            second.pre = entry;
+        }
+
+        public Entry removeEntry() {
+            Entry last = tail.pre;
+            if (last == null) {
+                return null;
+            }
+            Entry pre = last.pre;
+            pre.next = tail;
+            tail.pre = pre;
+            return last;
+        }
+
+
+        public static class Entry {
+            private Integer key;
+            private Integer value;
+            private Entry pre;
+            private Entry next;
+
+            public Entry(Integer key, Integer value) {
+                this.key = key;
+                this.value = value;
+            }
+
+            public Entry() {
+            }
+        }
+
+    }
+
+
+    /**
+     * 94.二叉树的中序遍历
+     */
+    public List<Integer> inorderTraversal(TreeNode root) {
+        if (root == null) {
+            return new ArrayList<>();
+        }
+        List<Integer> res = new ArrayList<>();
+        traverse(root, res);
+        return res;
+    }
+
+    public void traverse(TreeNode node, List<Integer> res) {
+        if (node == null) {
+            return;
+        }
+        traverse(node.left, res);
+        res.add(node.val);
+        traverse(node.right, res);
+    }
+
+
+    /***
+     * 104.二叉树的最大深度
+     * */
+    public int maxDepth(TreeNode root) {
+
+        traverse(root, 1);
+        return max;
+    }
+
+    private Integer max = 0;
+
+    public void traverse(TreeNode node, int dept) {
+        if (node == null) {
+            return;
+        }
+        if (node.left == null && node.right == null) {
+            max = Math.max(dept, max);
+        }
+        traverse(node.left, dept + 1);
+
+        traverse(node.right, dept + 1);
+
+    }
+
+    /**
+     * 226.翻转二叉树
+     */
+    public TreeNode invertTree(TreeNode root) {
+        if (root == null || (root.left == null && root.right == null)) {
+            return root;
+        }
+        return traverseInvert(root);
+    }
+
+    public TreeNode traverseInvert(TreeNode node) {
+        if (node == null || (node.left == null && node.right == null)) {
+            return node;
+        }
+        TreeNode left = node.left;
+        TreeNode right = node.right;
+        node.right = traverseInvert(left);
+        node.left = traverseInvert(right);
+        return node;
+    }
+
+
+    /**
+     * 101. 对称二叉树
+     **/
+    public boolean isSymmetric(TreeNode root) {
+        if (root == null || (root.left == null && root.right == null)) {
+            return true;
+        }
+        return traverseMetric(root.left, root.right);
+    }
+
+
+    public boolean traverseMetric(TreeNode left, TreeNode right) {
+        if (left == null && right == null) {
+            return true;
+        }
+        if (right == null || left == null) {
+            return false;
+        }
+        return left.val == right.val && traverseMetric(left.left, right.right) && traverseMetric(left.right, right.left);
+    }
+
+
+    /***
+     * 543.二叉树的直径
+     * */
+    public int diameterOfBinaryTree(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        traverseDiameter(root);
+        return maxDiameter;
+    }
+
+    private int maxDiameter = 0;
+
+    public int traverseDiameter(TreeNode node) {
+        if (node == null) {
+            return 0;
+        }
+        if (node.left == null && node.right == null) {
+            return 1;
+        }
+        int left = traverseDiameter(node.left);
+        int right = traverseDiameter(node.right);
+        maxDiameter = Math.max(left + right, maxDiameter);
+        return Math.max(left, right) + 1;
+    }
+
+
+    /**
+     * 102. 二叉树的层序遍历
+     */
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        if (root == null) {
+            return new ArrayList<>();
+        }
+        List<List<Integer>> res = new ArrayList<>();
+        Queue<TreeNode> queue = new ArrayDeque<>();
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            List<Integer> level = new ArrayList<>();
+            for (int i = 0; i < size; i++) {
+                TreeNode poll = queue.poll();
+                if (poll != null) {
+                    level.add(poll.val);
+                    if (poll.left != null) {
+                        queue.add(poll.left);
+                    }
+                    if (poll.right != null) {
+                        queue.add(poll.right);
+                    }
+                }
+            }
+            res.add(level);
+        }
+        return res;
+    }
+
+
+    /***
+     * 108. 将有序数组转换为二叉搜索树
+     * */
+    public TreeNode sortedArrayToBST(int[] nums) {
+        if (nums.length == 0) {
+            return null;
+        }
+        return sortArrayToBST(nums, 0, nums.length - 1);
+    }
+
+    public TreeNode sortArrayToBST(int[] nums, int left, int right) {
+        if (left > right) {
+            return null;
+        }
+        int mid = (right + left) / 2;
+        TreeNode treeNode = new TreeNode(nums[mid]);
+        treeNode.left = sortArrayToBST(nums, left, mid - 1);
+        treeNode.right = sortArrayToBST(nums, mid + 1, right);
+        return treeNode;
+    }
+
+
+    /**
+     * 98.验证二叉搜索树
+     */
+    public boolean isValidBST(TreeNode root) {
+        if (root == null || (root.left == null && root.right == null)) {
+            return true;
+        }
+        return traverseValidBST(root, Long.MIN_VALUE, Long.MAX_VALUE);
+    }
+
+    public boolean traverseValidBST(TreeNode node, long min, long max) {
+        if (node == null) {
+            return true;
+        }
+        if (node.left != null && node.val <= node.left.val) {
+            return false;
+        }
+        if (node.right != null && node.val >= node.right.val) {
+            return false;
+        }
+        if (node.val <= min || node.val >= max) {
+            return false;
+        }
+        return traverseValidBST(node.left, min, node.val) && traverseValidBST(node.right, node.val, max);
     }
 
 }
