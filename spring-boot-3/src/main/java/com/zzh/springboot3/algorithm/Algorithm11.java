@@ -1,7 +1,6 @@
 package com.zzh.springboot3.algorithm;
 
-import lombok.val;
-import org.apache.xmlbeans.impl.xb.xsdschema.Public;
+import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -1683,16 +1682,908 @@ public class Algorithm11 {
         if (node == null) {
             return true;
         }
-        if (node.left != null && node.val <= node.left.val) {
-            return false;
-        }
-        if (node.right != null && node.val >= node.right.val) {
-            return false;
-        }
         if (node.val <= min || node.val >= max) {
             return false;
         }
         return traverseValidBST(node.left, min, node.val) && traverseValidBST(node.right, node.val, max);
     }
+
+
+    /**
+     * 98.检验是否是二叉搜索树
+     **/
+    public boolean isValidBST1(TreeNode root) {
+        if (root == null || (root.left == null && root.right == null)) {
+            return true;
+        }
+
+        traverseMid(root);
+
+        for (int i = 1; i < midTraverseList.size(); i++) {
+            if (midTraverseList.get(i) <= midTraverseList.get(i - 1)) {
+                return false;
+            }
+
+        }
+        return true;
+    }
+
+    public List<Long> midTraverseList = new ArrayList<>();
+
+    public void traverseMid(TreeNode node) {
+        if (node == null) {
+            return;
+        }
+        traverseMid(node.left);
+        midTraverseList.add((long) node.val);
+        traverseMid(node.right);
+    }
+
+    /**
+     * 98.检验是否是二叉搜索树
+     **/
+    public boolean isValidBST2(TreeNode root) {
+        if (root == null || (root.left == null && root.right == null)) {
+            return true;
+        }
+        long preNum = Long.MIN_VALUE;
+        Stack<TreeNode> stack = new Stack<>();
+        while (!stack.isEmpty() || root != null) {
+            while (root != null) {
+                stack.push(root);
+                root = root.left;
+            }
+            root = stack.pop();
+            if (root.val <= preNum) {
+                return false;
+            }
+            preNum = root.val;
+            root = root.right;
+        }
+        return true;
+    }
+
+    public boolean isValidBST3(TreeNode root) {
+        if (root == null || (root.left == null && root.right == null)) {
+            return true;
+        }
+        return isBST2(root, Long.MIN_VALUE, Long.MAX_VALUE);
+    }
+
+    public boolean isBST2(TreeNode node, long min, long max) {
+        if (node == null) {
+            return true;
+        }
+        if (node.val >= max || node.val <= min) {
+            return false;
+        }
+        return isBST2(node.left, min, node.val) && isBST2(node.right, node.val, max);
+    }
+
+
+    /**
+     * 230.二叉树嗖嗖树中第K小的元素
+     */
+    public int kthSmallest(TreeNode root, int k) {
+        count = 0;
+        traverseMid(root, k);
+        return resNum;
+    }
+
+    int resNum;
+    int count;
+
+    public void traverseMid(TreeNode node, int k) {
+        if (node == null || count >= k) {
+            return;
+        }
+        traverseMid(node.left, k);
+        count++;
+        if (count == k) {
+            resNum = node.val;
+            return;
+        }
+        traverseMid(node.right, k);
+    }
+
+
+    /***
+     * 199. 二叉树的右视图
+     * */
+    public List<Integer> rightSideView(TreeNode root) {
+        if (root == null) {
+            return new ArrayList<>();
+        }
+        List<Integer> rightSideViewList = new ArrayList<>();
+        Queue<TreeNode> queue = new LinkedBlockingQueue<>();
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            TreeNode poll = null;
+            for (int i = 0; i < size; i++) {
+                poll = queue.poll();
+                if (poll == null) {
+                    continue;
+                }
+                if (poll.left != null) {
+                    queue.add(poll.left);
+                }
+                if (poll.right != null) {
+                    queue.add(poll.right);
+                }
+            }
+            rightSideViewList.add(poll.val);
+        }
+
+        return rightSideViewList;
+    }
+
+
+    /***
+     * 114. 二叉树展开为链表
+     * */
+    public void flatten(TreeNode root) {
+        if (root == null || (root.left == null && root.right == null)) {
+            return;
+        }
+        flattenNode(root);
+    }
+
+    public TreeNode flattenNode(TreeNode node) {
+        if (node == null || (node.left == null && node.right == null)) {
+            return node;
+        }
+        TreeNode left = node.left;
+        TreeNode right = node.right;
+        node.left = null;
+        node.right = null;
+        node.right = flattenNode(left);
+        node.left = null;
+        TreeNode p = node;
+        while (p.right != null) {
+            p = p.right;
+        }
+        p.right = flattenNode(right);
+        return node;
+    }
+
+
+    /***
+     * 105. 从前序与中序遍历序列构造二叉树
+     * */
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        if (preorder.length == 0) {
+            return null;
+        }
+        if (preorder.length == 1) {
+            return new TreeNode(preorder[0]);
+        }
+        return buildTree(preorder, inorder, 0, preorder.length - 1, 0, inorder.length - 1);
+    }
+
+    public TreeNode buildTree(int[] preorder, int[] inorder, int preLeft, int preRight, int inLeft, int inRight) {
+        if (preLeft > preRight || inLeft > inRight) {
+            return null;
+        }
+        if (preLeft == preRight) {
+            return new TreeNode(preorder[preLeft]);
+        }
+        int val = preorder[preLeft];
+        TreeNode node = new TreeNode(val);
+        int index = inLeft;
+        for (int i = inLeft; i <= inRight; i++) {
+            if (inorder[i] == val) {
+                index = i;
+                break;
+            }
+        }
+        node.left = buildTree(preorder, inorder, preLeft + 1, preLeft + index - inLeft, inLeft, index - 1);
+
+        node.right = buildTree(preorder, inorder, preLeft + index - inLeft + 1, preRight, index + 1, inRight);
+        return node;
+    }
+
+
+    /**
+     * 437. 路径总和 III
+     **/
+    public int pathSum(TreeNode root, int targetSum) {
+
+        pathSumNode(root, targetSum);
+        return pathSum;
+    }
+
+    int pathSum = 0;
+
+    Map<TreeNode, List<Long>> pathSumMap = new HashMap<>();
+
+    public void pathSumNode(TreeNode node, int target) {
+        if (node == null) {
+            return;
+        }
+        pathSumNode(node.left, target);
+        pathSumNode(node.right, target);
+        List<Long> leftList = pathSumMap.get(node.left);
+        List<Long> rightList = pathSumMap.get(node.right);
+        List<Long> list = new ArrayList<>();
+        if (leftList != null) {
+            for (Long num : leftList) {
+                long sum = num + node.val;
+                if (sum == target) {
+                    pathSum++;
+                }
+                list.add(sum);
+            }
+        }
+        if (rightList != null) {
+            for (Long num : rightList) {
+                long sum = num + node.val;
+                if (sum == target) {
+                    pathSum++;
+                }
+                list.add(sum);
+            }
+        }
+        list.add((long) node.val);
+        if (node.val == target) {
+            pathSum++;
+        }
+        pathSumMap.put(node, list);
+    }
+
+
+    /**
+     * 236. 二叉树的最近公共
+     */
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if (isAncestor(root, p) && isAncestor(root, q)) {
+            TreeNode left = root.left;
+            TreeNode right = root.right;
+            if (isAncestor(left, p) && isAncestor(left, q)) {
+                return lowestCommonAncestor(root.left, p, q);
+            }
+            if (isAncestor(right, p) && isAncestor(right, q)) {
+                return lowestCommonAncestor(root.right, p, q);
+            }
+        }
+        return root;
+    }
+
+    public boolean isAncestor(TreeNode root, TreeNode node) {
+        if (root == null) {
+            return false;
+        }
+        if (root == node) {
+            return true;
+        }
+        return isAncestor(root.left, node) || isAncestor(root.right, node);
+    }
+
+    /**
+     * 二叉树的最近公共祖先
+     */
+    public TreeNode lowestCommonAncestor1(TreeNode root, TreeNode p, TreeNode q) {
+
+
+        traverseDfs(root, p, q);
+        return lowestCommonAncestor;
+    }
+
+    TreeNode lowestCommonAncestor;
+
+    public boolean traverseDfs(TreeNode node, TreeNode p, TreeNode q) {
+        if (node == null) {
+            return false;
+        }
+        boolean left = traverseDfs(node.left, p, q);
+        boolean right = traverseDfs(node.right, p, q);
+        if ((left && right) || ((node == p || node == q) && (left || right))) {
+            lowestCommonAncestor = node;
+        }
+        return (left || right) || (node == p || node == q);
+    }
+
+
+    /**
+     * 124. 二叉树中的最大路径和
+     */
+    public int maxPathSum(TreeNode root) {
+
+        traverseMaxPathSum(root);
+        return maxPathSum;
+    }
+
+    int maxPathSum = Integer.MIN_VALUE;
+
+    public int traverseMaxPathSum(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        int left = traverseMaxPathSum(root.left);
+        int right = traverseMaxPathSum(root.right);
+        int max = root.val;
+        max = Math.max(max, root.val + left);
+        max = Math.max(max, root.val + right);
+        if (max > maxPathSum) {
+            maxPathSum = max;
+        }
+        if (root.val + left + right > maxPathSum) {
+            maxPathSum = root.val + left + right;
+        }
+        return max;
+    }
+
+
+    /**
+     * 200. 岛屿数量
+     */
+    public int numIslands(char[][] grid) {
+        if (grid.length == 0) {
+            return 0;
+        }
+        boolean[][] visited = new boolean[grid.length][grid[0].length];
+        int sum = 0;
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                if (grid[i][j] == '1' && !visited[i][j]) {
+                    sum++;
+                    diffusion(i, j, visited, grid);
+                }
+            }
+        }
+        return sum;
+    }
+
+    public void diffusion(int i, int j, boolean[][] visited, char[][] grid) {
+        if (i < 0 || j < 0 || i >= visited.length || j >= visited[0].length) {
+            return;
+        }
+        visited[i][j] = true;
+        if (i - 1 >= 0 && grid[i - 1][j] == '1' && !visited[i - 1][j]) {
+            diffusion(i - 1, j, visited, grid);
+        }
+        if (i + 1 < visited.length && grid[i + 1][j] == '1' && !visited[i + 1][j]) {
+            diffusion(i + 1, j, visited, grid);
+        }
+        if (j - 1 >= 0 && grid[i][j - 1] == '1' && !visited[i][j - 1]) {
+            diffusion(i, j - 1, visited, grid);
+        }
+        if (j + 1 < visited[0].length && grid[i][j + 1] == '1' && !visited[i][j + 1]) {
+            diffusion(i, j + 1, visited, grid);
+        }
+    }
+
+
+    /**
+     * 994. 腐烂的橘子
+     **/
+    public static int orangesRotting(int[][] grid) {
+        if (grid.length == 0) {
+            return 0;
+        }
+        int count = 0;
+        boolean[][] visited = new boolean[grid.length][grid[0].length];
+        while (true) {
+            int sum = 0;
+            boolean[][] temp = new boolean[grid.length][grid[0].length];
+            for (int i = 0; i < grid.length; i++) {
+                for (int j = 0; j < grid[i].length; j++) {
+                    if (grid[i][j] == 2 && !visited[i][j]) {
+                        temp[i][j] = true;
+                    }
+                }
+            }
+            for (int i = 0; i < temp.length; i++) {
+                for (int j = 0; j < temp[i].length; j++) {
+                    if (temp[i][j]) {
+                        sum += diffusion(grid, i, j, visited);
+                    }
+                }
+            }
+            if (sum == 0) {
+                break;
+            }
+            count++;
+        }
+        for (int[] ints : grid) {
+            for (int anInt : ints) {
+                if (anInt == 1) {
+                    return -1;
+                }
+            }
+        }
+        return count;
+    }
+
+    public static int diffusion(int[][] grid, int i, int j, boolean[][] visited) {
+        visited[i][j] = true;
+        int count = 0;
+        if (i - 1 >= 0 && grid[i - 1][j] == 1) {
+            grid[i - 1][j] = 2;
+            count++;
+        }
+        if (i + 1 < grid.length && grid[i + 1][j] == 1) {
+            grid[i + 1][j] = 2;
+            count++;
+        }
+        if (j - 1 >= 0 && grid[i][j - 1] == 1) {
+            grid[i][j - 1] = 2;
+            count++;
+        }
+        if (j + 1 < grid[0].length && grid[i][j + 1] == 1) {
+            grid[i][j + 1] = 2;
+            count++;
+        }
+        return count;
+    }
+
+    @Test
+    public void testDiffusion() {
+        int[][] arr = {{2, 1, 0, 2}};
+        orangesRotting(arr);
+    }
+
+
+    /***
+     * 207. 课程表
+     * */
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        if (prerequisites.length <= 1) {
+            return true;
+        }
+        List<Integer>[] graph = buildGraph(numCourses, prerequisites);
+        boolean[] visited = new boolean[numCourses];
+        boolean[] visitedPath = new boolean[numCourses];
+        for (int i = 0; i < numCourses; i++) {
+            traverseCanFinish(graph, i, visited, visitedPath);
+        }
+        return !cycle;
+    }
+
+    boolean cycle = false;
+
+    public void traverseCanFinish(List<Integer>[] graph, int index, boolean[] visited, boolean[] visitedPath) {
+        if (visitedPath[index] || cycle) {
+            cycle = true;
+            return;
+        }
+        if (visited[index]) {
+            return;
+        }
+        visited[index] = true;
+        visitedPath[index] = true;
+        List<Integer> list = graph[index];
+        for (Integer integer : list) {
+            traverseCanFinish(graph, integer, visited, visitedPath);
+        }
+        visitedPath[index] = false;
+    }
+
+    public List<Integer>[] buildGraph(int numCourses, int[][] prerequisites) {
+        List<Integer>[] graph = new LinkedList[numCourses];
+        for (int i = 0; i < graph.length; i++) {
+            graph[i] = new LinkedList<>();
+        }
+        for (int[] pre : prerequisites) {
+            graph[pre[0]].add(pre[1]);
+        }
+        return graph;
+    }
+
+
+    @Test
+    public void testCanFinish() {
+        int[][] arr = {{1, 0}, {1, 2}, {0, 1}};
+        canFinish(3, arr);
+    }
+
+
+    /**
+     * 208. 实现 Trie (前缀树)
+     **/
+
+    public static class Trie1 {
+
+        Set<String> words;
+        Set<String> prefix;
+
+        public Trie1() {
+            words = new HashSet<>();
+            prefix = new HashSet<>();
+
+        }
+
+        public void insert(String word) {
+            words.add(word);
+            for (int i = 1; i < word.length(); i++) {
+                prefix.add(word.substring(0, i));
+            }
+        }
+
+        public boolean search(String word) {
+            return words.contains(word);
+        }
+
+        public boolean startsWith(String prefix) {
+            return words.contains(prefix) || this.prefix.contains(prefix);
+        }
+    }
+
+    public static class Trie {
+
+        private final Trie[] children;
+        boolean flag = false;
+
+        public Trie() {
+            children = new Trie[26];
+        }
+
+        public void insert(String word) {
+            Trie node = this;
+            for (int i = 0; i < word.length(); i++) {
+                char c = word.charAt(i);
+                int index = c - 'a';
+                if (node.children[index] == null) {
+                    node.children[index] = new Trie();
+                }
+                node = node.children[index];
+            }
+            node.flag = true;
+        }
+
+        public boolean search(String word) {
+            return searchWord(word, false);
+        }
+
+        public boolean startsWith(String prefix) {
+            return searchWord(prefix, true);
+        }
+
+        public boolean searchWord(String word, boolean prefix) {
+            Trie node = this;
+            for (int i = 0; i < word.length(); i++) {
+                char c = word.charAt(i);
+                int index = c - 'a';
+                Trie child = node.children[index];
+                if (child == null) {
+                    return false;
+                }
+                node = child;
+            }
+            return prefix || node.flag;
+        }
+
+    }
+
+
+    /**
+     * 46. 全排列
+     **/
+    public List<List<Integer>> permute(int[] nums) {
+        boolean[] visited = new boolean[nums.length];
+        backtrack(new LinkedList<>(), nums, visited);
+
+        return permuteList;
+    }
+
+    List<List<Integer>> permuteList = new ArrayList<>();
+
+    public void backtrack(LinkedList<Integer> list, int[] nums, boolean[] visited) {
+        if (list.size() == nums.length) {
+            permuteList.add(new ArrayList<>(list));
+            return;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (!visited[i]) {
+                list.add(nums[i]);
+                visited[i] = true;
+                backtrack(list, nums, visited);
+                visited[i] = false;
+                list.removeLast();
+            }
+        }
+    }
+
+    /**
+     * 78. 子集
+     */
+    public List<List<Integer>> subsets(int[] nums) {
+        backtrackSubsets(new LinkedList<>(), nums, 0);
+        return subsetsList;
+    }
+
+    List<List<Integer>> subsetsList = new ArrayList<>();
+
+    public void backtrackSubsets(LinkedList<Integer> list, int[] nums, int index) {
+        subsetsList.add(new ArrayList<>(list));
+        for (int i = index; i < nums.length; i++) {
+            list.add(nums[i]);
+            backtrackSubsets(list, nums, i + 1);
+            list.removeLast();
+        }
+    }
+
+
+    /***
+     * 17. 电话号码的字母组合
+     * */
+    public List<String> letterCombinations(String digits) {
+        if (digits.length() == 0) {
+            return new LinkedList<>();
+        }
+        List<String> strList = new ArrayList<>();
+        for (int i = 0; i < digits.length(); i++) {
+            strList.add(getNumStr(digits.charAt(i)));
+        }
+        backtrackLetterCombinations(new LinkedList<>(), strList, 0);
+        return letterCombinations;
+    }
+
+    List<String> letterCombinations = new ArrayList<>();
+
+    public void backtrackLetterCombinations(LinkedList<Character> list, List<String> strings, int index) {
+        if (list.size() == strings.size()) {
+            StringBuilder str = new StringBuilder();
+            for (Character s : list) {
+                str.append(s);
+            }
+            letterCombinations.add(str.toString());
+            return;
+        }
+        String s = strings.get(index);
+
+        for (int i = 0; i < s.length(); i++) {
+            list.add(s.charAt(i));
+            backtrackLetterCombinations(list, strings, index + 1);
+            list.removeLast();
+        }
+    }
+
+    public String getNumStr(char c) {
+        switch (c) {
+            case '2' -> {
+                return "abc";
+            }
+            case '3' -> {
+                return "def";
+            }
+            case '4' -> {
+                return "ghi";
+            }
+            case '5' -> {
+                return "jkl";
+            }
+            case '6' -> {
+                return "mno";
+            }
+            case '7' -> {
+                return "pqrs";
+            }
+            case '8' -> {
+                return "tuv";
+            }
+            case '9' -> {
+                return "wxyz";
+            }
+        }
+        return null;
+    }
+
+
+    /**
+     * 39. 组合总和
+     */
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        Arrays.sort(candidates);
+        backtrackCombination(new LinkedList<>(), candidates, target, 0, 0);
+        return combinationSumList;
+    }
+
+    List<List<Integer>> combinationSumList = new ArrayList<>();
+
+    public void backtrackCombination(LinkedList<Integer> list, int[] candidates, int target, int index, int sum) {
+        if (sum > target) {
+            return;
+        }
+        if (sum == target) {
+            combinationSumList.add(new ArrayList<>(list));
+            return;
+        }
+        for (int i = index; i < candidates.length; i++) {
+            list.add(candidates[i]);
+            backtrackCombination(list, candidates, target, i, sum + candidates[i]);
+            list.removeLast();
+        }
+    }
+
+
+    /**
+     * 22. 括号生成
+     */
+    public List<String> generateParenthesis(int n) {
+        if (n == 0) {
+            return new LinkedList<>();
+        }
+        backtrackGenerateParenthesis(new StringBuilder(), n, 0, 0);
+        return res;
+    }
+
+    List<String> res = new ArrayList<>();
+
+    public void backtrackGenerateParenthesis(StringBuilder builder, int n, int left, int right) {
+        if (right > n || left > n) {
+            return;
+        }
+        if (left == n && right == n) {
+            res.add(new String(builder));
+            return;
+        }
+        if (left < n) {
+            builder.append("(");
+            backtrackGenerateParenthesis(builder, n, left + 1, right);
+            builder.deleteCharAt(builder.length() - 1);
+        }
+        if (right < left) {
+            builder.append(")");
+            backtrackGenerateParenthesis(builder, n, left, right + 1);
+            builder.deleteCharAt(builder.length() - 1);
+        }
+    }
+
+
+    /**
+     * 79.单词搜索
+     */
+    public boolean exist(char[][] board, String word) {
+        boolean[][] visited = new boolean[board.length][board[0].length];
+        char[] charArray = word.toCharArray();
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if (!existWord && board[i][j] == charArray[0]) {
+                    backtrackExist(board, i, j, visited, charArray, 0);
+                }
+            }
+        }
+        return existWord;
+    }
+
+    boolean existWord = false;
+
+    public void backtrackExist(char[][] board, int i, int j, boolean[][] visited, char[] words, int index) {
+        if (index == words.length || existWord) {
+            existWord = true;
+            return;
+        }
+        if (i < 0 || j < 0 || i >= visited.length || j >= board[0].length) {
+            return;
+        }
+        if (!visited[i][j] && board[i][j] == words[index]) {
+            visited[i][j] = true;
+            backtrackExist(board, i + 1, j, visited, words, index + 1);
+            backtrackExist(board, i - 1, j, visited, words, index + 1);
+            backtrackExist(board, i, j - 1, visited, words, index + 1);
+            backtrackExist(board, i, j + 1, visited, words, index + 1);
+            visited[i][j] = false;
+        }
+    }
+
+
+    /**
+     * 131. 分割回文串
+     */
+    public List<List<String>> partition(String s) {
+        if (s.length() == 0) {
+            return new LinkedList<>();
+        }
+        backtrackPartition(new LinkedList<>(), s, 0);
+        return partitionList;
+    }
+
+    List<List<String>> partitionList = new ArrayList<>();
+
+    public void backtrackPartition(LinkedList<String> subList, String str, int index) {
+        if (index == str.length()) {
+            partitionList.add(new ArrayList<>(subList));
+            return;
+        }
+        if (index >= str.length()) {
+            return;
+        }
+        for (int i = index; i < str.length(); i++) {
+            String substring = str.substring(index, i + 1);
+            if (isPartition(substring)) {
+                subList.add(substring);
+                backtrackPartition(subList, str, i + 1);
+                subList.removeLast();
+            }
+        }
+    }
+
+    public boolean isPartition(String str) {
+        if (str == null) {
+            return false;
+        }
+        if (str.length() <= 1) {
+            return true;
+        }
+        int left = 0;
+        int right = str.length() - 1;
+        while (left < right) {
+            if (str.charAt(left) != str.charAt(right)) {
+                return false;
+            }
+            left++;
+            right--;
+        }
+        return true;
+    }
+
+
+    /**
+     * 51. N 皇后
+     **/
+//    public List<List<String>> solveNQueens(int n) {
+//        boolean[][] visited = new boolean[n][n];
+//
+//        backSolveNQueens(new LinkedList<>(), visited, n, 0);
+//        return solveNQueens;
+//    }
+//
+//    List<List<String>> solveNQueens = new ArrayList<>();
+//
+//    public void backSolveNQueens(LinkedList<String> solve, boolean[][] visited, int n, int index) {
+//        if (solve.size() == n) {
+//            solveNQueens.add(new ArrayList<>(solve));
+//            return;
+//        }
+//        if (solve.size() >= n) {
+//            return;
+//        }
+//        for (int i = 0; i < n; i++) {
+//            visited[index][i] = true;
+//            if (isSolve(visited)) {
+//                solve.add(getSolve(i, n));
+//                backSolveNQueens(solve, visited, n, index + 1);
+//                solve.removeLast();
+//            }
+//            visited[index][i] = false;
+//        }
+//    }
+//
+//    public String getSolve(int index, int n) {
+//        StringBuilder res = new StringBuilder();
+//        for (int i = 0; i < n; i++) {
+//            if (i == index) {
+//                res.append("Q");
+//            } else {
+//                res.append(".");
+//            }
+//        }
+//        return res.toString();
+//    }
+//
+//
+//    public boolean isSolve(boolean[][] visited) {
+//        int[] nums = new int[visited.length];
+//        for (int i = 0; i < visited.length; i++) {
+//            for (int j = 0; j < visited[i].length; j++) {
+//                if (visited[i][j]) {
+//                    nums[i] = j;
+//                }
+//
+//            }
+//        }
+//        for (int i = 0; i < nums.length; i++) {
+//            for (int j = 0; j < nums.length; j++) {
+//                if (i != j) {
+//                    if (nums[i] == nums[j] || i - j == nums[i] - nums[j]) {
+//                        return false;
+//                    }
+//                }
+//            }
+//        }
+//        return true;
+//    }
+//
 
 }
