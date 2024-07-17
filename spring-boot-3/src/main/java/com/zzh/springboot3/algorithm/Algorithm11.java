@@ -2872,4 +2872,55 @@ public class Algorithm11 {
             return min;
         }
     }
+
+
+    /**
+     * 394. 字符串解码
+     **/
+    public String decodeString(String s) {
+
+        if (s == null || s.length() == 0) {
+            return null;
+
+        }
+        Stack<Character> stack = new Stack<>();
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == ']') {
+                StringBuilder stringBuilder = new StringBuilder();
+                while (!stack.isEmpty() && Character.isLetter(stack.peek())) {
+                    stringBuilder.append(stack.pop());
+                }
+                stack.pop();
+                StringBuilder countBuilder = new StringBuilder();
+                while (!stack.isEmpty() && Character.isDigit(stack.peek())) {
+                    countBuilder.append(stack.pop());
+                }
+                int integer = Integer.parseInt(countBuilder.reverse().toString());
+                String s1 = stringBuilder.reverse().toString();
+                String s2 = "";
+                for (int j = 0; j < integer; j++) {
+                    s2 += s1;
+                }
+                for (int i1 = 0; i1 < s2.toCharArray().length; i1++) {
+                    stack.push(s2.charAt(i1));
+                }
+            } else {
+                stack.push(c);
+            }
+        }
+        StringBuilder builder = new StringBuilder();
+        while (!stack.isEmpty()) {
+            builder.append(stack.pop());
+        }
+        return builder.reverse().toString();
+    }
+
+    @Test
+    public void testDecodeString() {
+        String str = "3[a]2[bc]";
+        decodeString(str);
+    }
+
+
 }
