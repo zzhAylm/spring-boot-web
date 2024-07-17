@@ -2522,68 +2522,354 @@ public class Algorithm11 {
     /**
      * 51. N 皇后
      **/
-//    public List<List<String>> solveNQueens(int n) {
-//        boolean[][] visited = new boolean[n][n];
-//
-//        backSolveNQueens(new LinkedList<>(), visited, n, 0);
-//        return solveNQueens;
-//    }
-//
-//    List<List<String>> solveNQueens = new ArrayList<>();
-//
-//    public void backSolveNQueens(LinkedList<String> solve, boolean[][] visited, int n, int index) {
-//        if (solve.size() == n) {
-//            solveNQueens.add(new ArrayList<>(solve));
-//            return;
-//        }
-//        if (solve.size() >= n) {
-//            return;
-//        }
-//        for (int i = 0; i < n; i++) {
-//            visited[index][i] = true;
-//            if (isSolve(visited)) {
-//                solve.add(getSolve(i, n));
-//                backSolveNQueens(solve, visited, n, index + 1);
-//                solve.removeLast();
-//            }
-//            visited[index][i] = false;
-//        }
-//    }
-//
-//    public String getSolve(int index, int n) {
-//        StringBuilder res = new StringBuilder();
-//        for (int i = 0; i < n; i++) {
-//            if (i == index) {
-//                res.append("Q");
-//            } else {
-//                res.append(".");
-//            }
-//        }
-//        return res.toString();
-//    }
-//
-//
-//    public boolean isSolve(boolean[][] visited) {
-//        int[] nums = new int[visited.length];
-//        for (int i = 0; i < visited.length; i++) {
-//            for (int j = 0; j < visited[i].length; j++) {
-//                if (visited[i][j]) {
-//                    nums[i] = j;
-//                }
-//
-//            }
-//        }
-//        for (int i = 0; i < nums.length; i++) {
-//            for (int j = 0; j < nums.length; j++) {
-//                if (i != j) {
-//                    if (nums[i] == nums[j] || i - j == nums[i] - nums[j]) {
-//                        return false;
-//                    }
-//                }
-//            }
-//        }
-//        return true;
-//    }
-//
+    public List<List<String>> solveNQueens(int n) {
+        boolean[][] visited = new boolean[n][n];
+        backSolveNQueens(new LinkedList<>(), visited, n, 0);
+        return solveNQueens;
+    }
 
+    List<List<String>> solveNQueens = new ArrayList<>();
+
+    public void backSolveNQueens(LinkedList<String> solve, boolean[][] visited, int n, int index) {
+        if (solve.size() == n) {
+            solveNQueens.add(new ArrayList<>(solve));
+            return;
+        }
+        if (solve.size() >= n) {
+            return;
+        }
+        for (int i = 0; i < n; i++) {
+            visited[index][i] = true;
+            if (isSolve(visited)) {
+                solve.add(getSolve(i, n));
+                backSolveNQueens(solve, visited, n, index + 1);
+                solve.removeLast();
+            }
+            visited[index][i] = false;
+        }
+    }
+
+    public String getSolve(int index, int n) {
+        StringBuilder res = new StringBuilder();
+        for (int i = 0; i < n; i++) {
+            if (i == index) {
+                res.append("Q");
+            } else {
+                res.append(".");
+            }
+        }
+        return res.toString();
+    }
+
+
+    public boolean isSolve(boolean[][] visited) {
+        int[] nums = new int[visited.length];
+        int count = 0;
+        for (int i = 0; i < visited.length; i++) {
+            for (int j = 0; j < visited[i].length; j++) {
+                if (visited[i][j]) {
+                    nums[i] = j;
+                    count++;
+                }
+
+            }
+        }
+        for (int i = 0; i < count; i++) {
+            for (int j = 0; j < count; j++) {
+                if (i != j) {
+                    if (nums[i] == nums[j] || Math.abs(i - j) == Math.abs(nums[i] - nums[j])) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+
+    /**
+     * 35. 搜索插入位置
+     **/
+    public int searchInsert(int[] nums, int target) {
+        return binarySearch(nums, target, 0, nums.length - 1);
+    }
+
+    public int binarySearch(int[] nums, int target, int left, int right) {
+        if (left > right) {
+            return left;
+        }
+        if (right < 0) {
+            return left;
+        }
+        if (left >= nums.length) {
+            return right;
+        }
+        int mid = (right - left) / 2 + left;
+        if (nums[mid] > target) {
+            return binarySearch(nums, target, left, mid - 1);
+        } else if (nums[mid] < target) {
+            return binarySearch(nums, target, mid + 1, right);
+        } else {
+            return mid;
+        }
+    }
+
+
+    /**
+     * 74.搜索二维矩阵
+     **/
+    public boolean searchMatrix1(int[][] matrix, int target) {
+        if (matrix == null || matrix.length == 0) {
+            return false;
+        }
+        if (matrix[0][0] > target || target > matrix[matrix.length - 1][matrix[0].length - 1]) {
+            return false;
+        }
+        for (int[] ints : matrix) {
+            if (ints[0] <= target && target <= ints[ints.length - 1] && binarySearchMatrix(ints, target, 0, ints.length - 1)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean binarySearchMatrix(int[] matrix, int target, int left, int right) {
+        if (left > right || right < 0 || left >= matrix.length) {
+            return false;
+        }
+        int mid = (right - left) / 2 + left;
+        if (matrix[mid] > target) {
+            return binarySearchMatrix(matrix, target, left, mid - 1);
+        } else if (matrix[mid] < target) {
+            return binarySearchMatrix(matrix, target, mid + 1, right);
+        } else {
+            return true;
+        }
+    }
+
+
+    @Test
+    public void searchMatrixTest() {
+        int[][] arr = {{1, 3, 5, 7}, {10, 11, 16, 20}, {23, 30, 34, 60}};
+        searchMatrix1(arr, 3);
+    }
+
+
+    /**
+     * 34. 在排序数组中查找元素的第一个和最后一个位置
+     **/
+    public int[] searchRange(int[] nums, int target) {
+        if (nums == null || nums.length == 0 || target < nums[0] || target > nums[nums.length - 1]) {
+            return new int[]{-1, -1};
+        }
+        int start = binarySearchRange(nums, target, 0, nums.length - 1);
+        if (nums[start] != target) {
+            return new int[]{-1, -1};
+        }
+        int end = start;
+        while (end < nums.length && nums[end] == target) {
+            end++;
+        }
+        return new int[]{start, end - 1};
+    }
+
+    public int binarySearchRange(int[] nums, int target, int left, int right) {
+        if (left > right) {
+            return left;
+        }
+        int mid = (right - left) / 2 + left;
+        if (nums[mid] >= target) {
+            return binarySearchRange(nums, target, left, mid - 1);
+        } else {
+            return binarySearchRange(nums, target, mid + 1, right);
+        }
+    }
+
+    /**
+     * 33. 搜索旋转排序数组
+     **/
+    public int search(int[] nums, int target) {
+        if (nums == null || nums.length == 0) {
+            return -1;
+        }
+        return binarySearch1(nums, target, 0, nums.length - 1);
+    }
+
+    public int binarySearch1(int[] nums, int target, int left, int right) {
+        if (left > right) {
+            return -1;
+        }
+        int mid = (right - left) / 2 + left;
+        if (nums[mid] > target) {
+            if (nums[mid] > nums[right]) {
+                if (target > nums[right]) {
+                    return binarySearch1(nums, target, left, mid - 1);
+                } else {
+                    return binarySearch1(nums, target, left + 1, right);
+                }
+            } else {
+                if (target > nums[left]) {
+                    return binarySearch1(nums, target, left + 1, mid);
+                } else {
+                    return binarySearch1(nums, target, left, mid - 1);
+                }
+            }
+        } else if (nums[mid] < target) {
+            if (nums[mid] < nums[right]) {
+                if (nums[right] >= target) {
+                    return binarySearch1(nums, target, mid + 1, right);
+                } else {
+                    return binarySearch1(nums, target, left, mid - 1);
+                }
+            } else {
+                if (target < nums[right]) {
+                    return binarySearch1(nums, target, mid, right - 1);
+                } else {
+                    return binarySearch1(nums, target, mid + 1, right);
+                }
+            }
+        } else {
+            return mid;
+        }
+    }
+
+
+    /***
+     * 153. 寻找旋转排序数组中的最小值
+     * */
+    public int findMin(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return -1;
+        }
+        if (nums.length == 1) {
+            return nums[0];
+        }
+        return binaryFindMin(nums, 0, nums.length - 1);
+    }
+
+    public int binaryFindMin(int[] nums, int left, int right) {
+        if (left >= right) {
+            return nums[left];
+        }
+        int mid = (right - left) / 2 + left;
+        if (nums[mid] > nums[right]) {
+            return binaryFindMin(nums, mid + 1, right);
+        } else {
+            return binaryFindMin(nums, left, mid);
+        }
+    }
+
+
+    /**
+     * 4. 寻找两个正序数组的中位数
+     **/
+    public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+
+        int[] merge = merge(nums1, nums2);
+        int length = merge.length;
+        if (length % 2 == 0) {
+            int index = (length - 1) / 2;
+            return (merge[index] + merge[index + 1]) / 2.0;
+        } else {
+            return merge[(length - 1) / 2];
+        }
+    }
+
+    public int[] merge(int[] nums1, int[] nums2) {
+        int left1 = 0;
+        int left2 = 0;
+        int[] nums = new int[nums1.length + nums2.length];
+        int index = 0;
+        while (left1 < nums1.length && left2 < nums2.length) {
+            if (nums1[left1] < nums2[left2]) {
+                nums[index] = nums1[left1++];
+            } else {
+                nums[index] = nums2[left2++];
+            }
+            index++;
+        }
+        while (left1 < nums1.length) {
+            nums[index] = nums1[left1++];
+            index++;
+        }
+        while (left2 < nums2.length) {
+            nums[index] = nums2[left2++];
+            index++;
+        }
+        return nums;
+    }
+
+
+    /**
+     * 20. 有效的括号
+     */
+    public boolean isValid(String s) {
+        if (s == null || s.length() == 0) {
+            return true;
+        }
+        if (s.length() % 2 != 0) {
+            return false;
+        }
+        Stack<Character> stack = new Stack<>();
+
+        char[] chars = s.toCharArray();
+
+        for (int i = 0; i < s.length(); i++) {
+            if (stack.isEmpty()) {
+                stack.push(chars[i]);
+            } else {
+                if (valid(stack.peek(), chars[i])) {
+                    stack.pop();
+                } else {
+                    stack.push(chars[i]);
+                }
+            }
+        }
+        return stack.isEmpty();
+    }
+
+    public boolean valid(char c1, char c2) {
+        if (c1 == '(' && c2 == ')') {
+            return true;
+        }
+        if (c1 == '{' && c2 == '}') {
+            return true;
+        }
+        return c1 == '[' && c2 == ']';
+    }
+
+
+    /**
+     * 155. 最小栈
+     **/
+    public static class MinStack {
+
+        Stack<Integer> stack;
+        int min = Integer.MAX_VALUE;
+
+        public MinStack() {
+            stack = new Stack<>();
+        }
+
+        public void push(int val) {
+            stack.push(val);
+            min = Math.min(min, val);
+        }
+
+        public void pop() {
+            Integer pop = stack.pop();
+            if (pop == min) {
+                min = Integer.MAX_VALUE;
+                stack.forEach(num -> min = Math.min(min, num));
+            }
+        }
+
+        public int top() {
+            return stack.peek();
+        }
+
+        public int getMin() {
+            return min;
+        }
+    }
 }
