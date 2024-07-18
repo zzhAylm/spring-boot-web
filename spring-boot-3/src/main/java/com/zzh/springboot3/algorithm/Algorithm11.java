@@ -2923,4 +2923,103 @@ public class Algorithm11 {
     }
 
 
+    /**
+     * 739. 每日温度
+     **/
+    public int[] dailyTemperatures(int[] temperatures) {
+        if (temperatures == null || temperatures.length == 0) {
+            return new int[0];
+        }
+        int[] res = new int[temperatures.length];
+        Stack<Integer> stack = new Stack<>();
+        LinkedList<Integer> index = new LinkedList<>();
+        for (int i = 0; i < temperatures.length; i++) {
+            while (!stack.isEmpty() && stack.peek() < temperatures[i]) {
+                stack.pop();
+                Integer pre = index.removeLast();
+                res[pre] = i - pre;
+            }
+            stack.push(temperatures[i]);
+            index.add(i);
+        }
+        while (!stack.isEmpty()) {
+            stack.pop();
+            res[index.removeLast()] = 0;
+        }
+        return res;
+    }
+
+
+    /**
+     * 84. 柱状图中最大的矩形
+     */
+    public int largestRectangleArea(int[] heights) {
+        if (heights == null || heights.length == 0) {
+            return 0;
+        }
+        int max = 0;
+        for (int i = 0; i < heights.length; i++) {
+            int min = heights[i];
+            for (int j = i; j >= 0; j--) {
+                min = Math.min(heights[j], min);
+                max = Math.max((i - j + 1) * min, max);
+            }
+        }
+        return max;
+    }
+
+
+    /**
+     * 84.柱状图中的最大的矩形，单调栈
+     */
+    public int largestRectangleArea1(int[] heights) {
+        int len = heights.length;
+        if (len == 0) {
+            return 0;
+        }
+        if (len == 1) {
+            return heights[0];
+        }
+        Deque<Integer> stack = new ArrayDeque<>(len);
+        int max = 0;
+        for (int i = 0; i < heights.length; i++) {
+            while (!stack.isEmpty() && heights[stack.peekLast()] > heights[i]) {
+                int height = heights[stack.pollLast()];
+                while (!stack.isEmpty() && height == heights[stack.peekLast()]) {
+                    stack.pollLast();
+                }
+                int weight;
+                if (stack.isEmpty()) {
+                    weight = i;
+                } else {
+                    weight = i - stack.peekLast() - 1;
+                }
+                max = Math.max(max, height * weight);
+            }
+            stack.addLast(i);
+        }
+        while (!stack.isEmpty()) {
+            int height = heights[stack.pollLast()];
+            while (!stack.isEmpty() && height == heights[stack.peekLast()]) {
+                stack.pollLast();
+            }
+            int weight;
+            if (stack.isEmpty()) {
+                weight = len;
+            } else {
+                weight = len - stack.peekLast() - 1;
+            }
+            max = Math.max(max, height * weight);
+        }
+        return max;
+    }
+
+
+    @Test
+    public void testLargestRectangleArea() {
+        int[] arr = {2, 1, 5, 6, 2, 3};
+        largestRectangleArea1(arr);
+    }
+
+
 }
