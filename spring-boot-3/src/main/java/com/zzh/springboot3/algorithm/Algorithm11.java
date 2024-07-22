@@ -3065,19 +3065,56 @@ public class Algorithm11 {
 
     /**
      * 295. 数据流的中位数
-     * */
-    class MedianFinder {
+     */
+    public static class MedianFinder {
+
+        PriorityQueue<Integer> priorityQueue1;
+
+        PriorityQueue<Integer> priorityQueue2;
 
         public MedianFinder() {
-
+            priorityQueue1 = new PriorityQueue<>((c1, c2) -> c2 - c1);
+            priorityQueue2 = new PriorityQueue<>();
         }
 
         public void addNum(int num) {
-
+            if (priorityQueue1.isEmpty()) {
+                priorityQueue1.add(num);
+            } else {
+                if (priorityQueue1.size() > priorityQueue2.size()) {
+                    if (num >= priorityQueue1.peek()) {
+                        priorityQueue2.add(num);
+                    } else {
+                        priorityQueue1.add(num);
+                        priorityQueue2.add(priorityQueue1.poll());
+                    }
+                } else {
+                    if (num <= priorityQueue2.peek()) {
+                        priorityQueue1.add(num);
+                    } else {
+                        priorityQueue2.add(num);
+                        priorityQueue1.add(priorityQueue2.poll());
+                    }
+                }
+            }
         }
 
         public double findMedian() {
-
+            if (priorityQueue1.isEmpty()) {
+                return 0.0;
+            }
+            if (priorityQueue1.size() == priorityQueue2.size()) {
+                return (priorityQueue1.peek() + priorityQueue2.peek()) / 2.0;
+            }
+            return priorityQueue1.peek();
         }
+    }
+
+    @Test
+    public void testMedian(){
+        MedianFinder medianFinder=new MedianFinder();
+        medianFinder.addNum(2);
+        medianFinder.addNum(3);
+        System.out.println(medianFinder.findMedian());
     }
 }
