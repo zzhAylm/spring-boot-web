@@ -3022,4 +3022,62 @@ public class Algorithm11 {
     }
 
 
+    /**
+     * 215. 数组中的第K个最大元素
+     */
+    public int findKthLargest(int[] nums, int k) {
+        if (nums == null || nums.length == 0 || k == 0 || nums.length < k) {
+            return -1;
+        }
+        PriorityQueue<Integer> priorityQueue = new PriorityQueue<>(k, (v1, v2) -> v2 - v1);
+
+        for (int num : nums) {
+            priorityQueue.add(num);
+        }
+        int res = -1;
+        while (k > 0) {
+            res = priorityQueue.poll();
+            k--;
+        }
+        return res;
+    }
+
+    /***
+     * 347. 前 K 个高频元素
+     * */
+    public int[] topKFrequent(int[] nums, int k) {
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int num : nums) {
+            map.merge(num, 1, Integer::sum);
+        }
+
+        PriorityQueue<Map.Entry<Integer, Integer>> priorityQueue = new PriorityQueue<>(((v1, v2) -> v2.getValue() - v1.getValue()));
+
+        for (Map.Entry<Integer, Integer> integerIntegerEntry : map.entrySet()) {
+            priorityQueue.add(integerIntegerEntry);
+        }
+        int[] res = new int[k];
+        for (int i = 0; i < k; i++) {
+            res[i] = priorityQueue.poll().getKey();
+        }
+        return res;
+    }
+
+    /**
+     * 295. 数据流的中位数
+     * */
+    class MedianFinder {
+
+        public MedianFinder() {
+
+        }
+
+        public void addNum(int num) {
+
+        }
+
+        public double findMedian() {
+
+        }
+    }
 }
