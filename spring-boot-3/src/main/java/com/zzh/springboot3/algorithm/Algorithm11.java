@@ -1,5 +1,6 @@
 package com.zzh.springboot3.algorithm;
 
+import io.swagger.models.auth.In;
 import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Test;
 
@@ -3111,10 +3112,267 @@ public class Algorithm11 {
     }
 
     @Test
-    public void testMedian(){
-        MedianFinder medianFinder=new MedianFinder();
+    public void testMedian() {
+        MedianFinder medianFinder = new MedianFinder();
         medianFinder.addNum(2);
         medianFinder.addNum(3);
         System.out.println(medianFinder.findMedian());
     }
+
+
+    /**
+     * 121.买卖股票的最佳时机
+     */
+    public int maxProfit(int[] prices) {
+        if (prices == null || prices.length <= 1) {
+            return 0;
+        }
+        int[][] dp = new int[prices.length][2];
+        dp[0][0] = 0;
+        dp[0][1] = -prices[0];
+        for (int i = 1; i < prices.length; i++) {
+            dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1] + prices[i]);
+            dp[i][1] = Math.max(dp[i - 1][1], -prices[i]);
+        }
+        return dp[prices.length - 1][0];
+    }
+
+
+    /**
+     * 买卖股票的最佳时机 II
+     **/
+    public int maxProfit2(int[] prices) {
+        if (prices == null || prices.length <= 1) {
+            return 0;
+        }
+        int[][] dp = new int[prices.length][2];
+        dp[0][0] = 0;
+        dp[0][1] = -prices[0];
+        for (int i = 1; i < prices.length; i++) {
+            dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1] + prices[i]);
+            dp[i][1] = Math.max(dp[i - 1][1], dp[i - 1][0] - prices[i]);
+        }
+        return dp[prices.length - 1][0];
+    }
+
+
+    /**
+     * 55. 跳跃游戏
+     */
+    public boolean canJump(int[] nums) {
+        if (nums == null || nums.length <= 1) {
+            return true;
+        }
+        boolean[] dp = new boolean[nums.length];
+        dp[0] = true;
+        for (int i = 0; i < nums.length; i++) {
+            if (dp[i]) {
+                for (int j = i + 1; j < nums.length && j <= i + nums[i]; j++) {
+                    dp[j] = true;
+                }
+            }
+        }
+        return dp[nums.length - 1];
+    }
+
+
+    public boolean canJump2(int[] nums) {
+        if (nums == null || nums.length <= 1) {
+            return true;
+        }
+        int right = nums[0];
+        for (int i = 0; i < nums.length; i++) {
+            if (i > right) {
+                continue;
+            }
+            right = Math.max(right, i + nums[i]);
+            if (right >= nums.length - 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    /**
+     * 45. 跳跃游戏 II
+     **/
+    public int jump(int[] nums) {
+        if (nums == null || nums.length <= 1) {
+            return 0;
+        }
+        int[] dp = new int[nums.length];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0;
+        for (int i = 0; i < nums.length; i++) {
+            for (int j = i + 1; j <= i + nums[i] && j < nums.length; j++) {
+                dp[j] = Math.min(dp[j], dp[i] + 1);
+            }
+        }
+        return dp[nums.length - 1];
+    }
+
+
+    /***
+     *763. 划分字母区间
+     * */
+    public List<Integer> partitionLabels(String s) {
+
+        if (s == null || s.length() == 0) {
+            return new LinkedList<>();
+        }
+        if (s.length() == 1) {
+            return List.of(1);
+        }
+        List<Integer> res = new ArrayList<>();
+        int[] last = new int[26];
+        for (int i = 0; i < s.length(); i++) {
+            last[s.charAt(i) - 'a'] = i;
+        }
+        int end = Integer.MIN_VALUE;
+        int start = 0;
+        for (int i = 0; i < s.length(); i++) {
+            end = Math.max(end, last[s.charAt(i) - 'a']);
+            if (end == i) {
+                res.add(end - start + 1);
+                start = end + 1;
+            }
+        }
+        return res;
+    }
+
+
+    /**
+     * 70. 爬楼梯
+     **/
+    public int climbStairs(int n) {
+        if (n <= 1) {
+            return 1;
+        }
+        int[] dp = new int[n + 1];
+        dp[0] = 0;
+        dp[1] = 1;
+        dp[2] = 2;
+        for (int i = 3; i < n + 1; i++) {
+            dp[i] = dp[i - 1] + dp[i - 2];
+        }
+        return dp[n];
+    }
+
+
+    /**
+     * 118. 杨辉三角
+     **/
+    public List<List<Integer>> generate(int numRows) {
+
+        List<List<Integer>> res = new ArrayList<>();
+        for (int i = 0; i < numRows; i++) {
+            List<Integer> nums = new LinkedList<>();
+            for (int j = 0; j <= i; j++) {
+                if (j == 0 || j == i) {
+                    nums.add(1);
+                } else {
+                    List<Integer> pre = res.get(i - 1);
+                    nums.add(pre.get(j) + pre.get(j - 1));
+                }
+            }
+            res.add(nums);
+        }
+        return res;
+    }
+
+
+    /**
+     * 198. 打家劫舍
+     */
+    public int rob(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        if (nums.length == 1) {
+            return nums[0];
+        }
+        int[][] dp = new int[nums.length][2];
+
+        dp[0][0] = 0;
+        dp[0][1] = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1]);
+            dp[i][1] = dp[i - 1][0] + nums[i];
+        }
+        return Math.max(dp[nums.length - 1][1], dp[nums.length - 1][0]);
+    }
+
+
+    /**
+     * 279. 完全平方数
+     **/
+    public int numSquares(int n) {
+        if (n <= 1) {
+            return 1;
+        }
+        int[] dp = new int[n + 1];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0;
+        List<Integer> sqrtList = new LinkedList<>();
+        for (int i = 1; i < n + 1; i++) {
+            int num = (int) Math.sqrt(i);
+            if (num * num == i) {
+                dp[i] = 1;
+                sqrtList.add(i);
+            } else {
+                for (int j = sqrtList.size() - 1; j >= 0; j--) {
+                    dp[i] = Math.min(dp[i - sqrtList.get(j)] + 1, dp[i]);
+                }
+            }
+        }
+        return dp[n];
+    }
+
+
+    /**
+     * 零钱兑换
+     */
+    public int coinChange(int[] coins, int amount) {
+        Arrays.sort(coins);
+        int[] dp = new int[amount + 1];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0;
+        Set<Integer> set = new HashSet<>();
+        Arrays.stream(coins).forEach(set::add);
+        for (int i = 1; i < dp.length; i++) {
+            if (set.contains(i)) {
+                dp[i] = 1;
+            } else {
+                for (int j = coins.length - 1; j >= 0; j--) {
+                    if (i - coins[j] >= 0 && dp[i - coins[j]] != Integer.MAX_VALUE) {
+                        dp[i] = Math.min(dp[i], dp[i - coins[j]] + 1);
+                    }
+                }
+            }
+        }
+        return dp[amount] == Integer.MAX_VALUE ? -1 : dp[amount];
+    }
+
+
+    /**
+     * 139. 单词拆分
+     **/
+    public boolean wordBreak(String s, List<String> wordDict) {
+
+        Set<String> set = new HashSet<>(wordDict);
+        boolean[] dp = new boolean[s.length() + 1];
+        dp[0] = true;
+
+        for (int i = 1; i < dp.length; i++) {
+            for (int j = 0; j < i; j++) {
+                if (dp[j] && set.contains(s.substring(j, i))) {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+        return dp[s.length()];
+    }
+
 }
