@@ -3375,4 +3375,119 @@ public class Algorithm11 {
         return dp[s.length()];
     }
 
+
+    @Test
+    public void strTest() {
+        String str = "abc";
+        System.out.println(str.substring(0, 0));
+    }
+
+    /**
+     * 300. 最长递增子序列
+     **/
+    public int lengthOfLIS(int[] nums) {
+        if (nums.length <= 1) {
+            return nums.length;
+        }
+
+        int[] dp = new int[nums.length];
+        dp[0] = 1;
+        for (int i = 1; i < nums.length; i++) {
+            for (int j = i - 1; j >= 0; j--) {
+                if (nums[i] > nums[j]) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                } else if (nums[i] == nums[j]) {
+                    dp[i] = Math.max(dp[i], dp[j]);
+                }
+            }
+            if (dp[i] == 0) {
+                dp[i] = 1;
+            }
+        }
+        return Arrays.stream(dp).max().getAsInt();
+    }
+
+
+    /**
+     * 152. 乘积最大子数组
+     **/
+    public int maxProduct(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        int[] dp = new int[nums.length];
+        System.arraycopy(nums, 0, dp, 0, nums.length);
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] >= 0) {
+                dp[i] = Math.max(dp[i], dp[i - 1] * nums[i]);
+            } else {
+                int temp = nums[i];
+                for (int j = i - 1; j >= 0; j--) {
+                    temp = temp * nums[j];
+                    dp[i] = Math.max(dp[i], temp);
+                }
+
+            }
+        }
+        return Arrays.stream(dp).max().getAsInt();
+    }
+
+
+    /**
+     * 416. 分割等和子集
+     */
+    public boolean canPartition(int[] nums) {
+        if (nums.length <= 1) {
+            return false;
+        }
+        int sum = Arrays.stream(nums).sum();
+        if (sum % 2 != 0) {
+            return false;
+        }
+        int half = sum / 2;
+
+        boolean[][] dp = new boolean[nums.length][half + 1];
+
+        for (int i = 0; i < nums.length; i++) {
+            dp[i][0] = true;
+        }
+        if (nums[0] <= half) {
+            dp[0][nums[0]] = true;
+        }
+        for (int i = 1; i < nums.length; i++) {
+            for (int j = 1; j < half + 1; j++) {
+                if (j >= nums[i]) {
+                    dp[i][j] = dp[i - 1][j] || dp[i - 1][j - nums[i]];
+                } else {
+                    dp[i][j] = dp[i - 1][j];
+                }
+            }
+        }
+        return dp[nums.length - 1][half];
+    }
+
+    /**
+     * 32. 最长有效括号 ()
+     **/
+    public int longestValidParentheses(String s) {
+        if (s == null || s.length() <= 1) {
+            return 0;
+        }
+        int[] dp = new int[s.length()];
+        dp[0] = 0;
+        int max = 0;
+        for (int i = 1; i < s.length(); i++) {
+            if (s.charAt(i) == ')') {
+                if (s.charAt(i - 1) == '(') {
+                    dp[i] = (i - 2 < 0 ? 0 : dp[i - 2]) + 2;
+                } else if (i > dp[i - 1] && s.charAt(i - dp[i - 1] - 1) == '(') {
+                    dp[i] = (i - dp[i - 1] - 2 >= 0 ? dp[i - dp[i - 1] - 2] + dp[i - 1] : dp[i - 1]) + 2;
+                } else {
+                    dp[i] = 0;
+                }
+                max = Math.max(max, dp[i]);
+            }
+        }
+        return max;
+    }
 }
