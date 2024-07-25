@@ -3490,4 +3490,88 @@ public class Algorithm11 {
         }
         return max;
     }
+
+
+    /**
+     * 62. 不同路径
+     **/
+    public int uniquePaths(int m, int n) {
+
+        int[][] dp = new int[m][n];
+
+        for (int i = 0; i < m; i++) {
+            dp[i][0] = 1;
+        }
+        for (int i = 0; i < n; i++) {
+            dp[0][i] = 1;
+        }
+
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+            }
+        }
+        return dp[m - 1][n - 1];
+    }
+
+
+    /**
+     * 64. 最小路径和
+     */
+    public int minPathSum(int[][] grid) {
+        if (grid == null || grid.length == 0 || grid[0].length == 0) {
+            return 0;
+        }
+        int[][] dp = new int[grid.length][grid[0].length];
+        dp[0][0] = grid[0][0];
+        for (int i = 1; i < grid.length; i++) {
+            dp[i][0] = dp[i - 1][0] + grid[i][0];
+        }
+        for (int i = 1; i < grid[0].length; i++) {
+            dp[0][i] = dp[0][i - 1] + grid[0][i];
+        }
+        for (int i = 1; i < grid.length; i++) {
+            for (int j = 1; j < grid[i].length; j++) {
+                dp[i][j] = Math.min(dp[i - 1][j], dp[i][j - 1]) + grid[i][j];
+            }
+        }
+        return dp[dp.length - 1][dp[0].length - 1];
+    }
+
+
+    /**
+     * 5. 最长回文子串
+     **/
+    public String longestPalindrome(String s) {
+        if (s == null || s.length() <= 1) {
+            return s;
+        }
+        String res = "";
+        for (int i = 0; i < s.length(); i++) {
+            String s1 = sub(s, i, i + 1);
+            String s2 = sub(s, i, i);
+            if (s1.length() > res.length()) {
+                res = s1;
+            }
+            if (s2.length() > res.length()) {
+                res = s2;
+            }
+        }
+        return res;
+    }
+
+    public String sub(String str, int left, int right) {
+        while (left >= 0 && right < str.length() && str.charAt(left) == str.charAt(right)) {
+            left--;
+            right++;
+        }
+        return str.substring(left + 1, right);
+    }
+
+
+    @Test
+    public void testAba() {
+        String str = "aacabdkacaa";
+        System.out.println(longestPalindrome(str));
+    }
 }
