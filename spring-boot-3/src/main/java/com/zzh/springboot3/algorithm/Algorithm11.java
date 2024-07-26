@@ -3574,4 +3574,246 @@ public class Algorithm11 {
         String str = "aacabdkacaa";
         System.out.println(longestPalindrome(str));
     }
+
+
+    /**
+     * 1143. 最长公共子序列
+     **/
+    public int longestCommonSubsequence(String text1, String text2) {
+        if (text1 == null || text2 == null || text1.length() == 0 || text2.length() == 0) {
+            return 0;
+        }
+        int[][] dp = new int[text1.length()][text2.length()];
+        if (text1.charAt(0) == text2.charAt(0)) {
+            dp[0][0] = 1;
+        }
+        for (int i = 1; i < dp.length; i++) {
+            if (text1.charAt(i) == text2.charAt(0)) {
+                dp[i][0] = 1;
+            } else {
+                dp[i][0] = dp[i - 1][0];
+            }
+        }
+        for (int i = 1; i < dp[0].length; i++) {
+            if (text1.charAt(0) == text2.charAt(i)) {
+                dp[0][i] = 1;
+            } else {
+                dp[0][i] = dp[0][i - 1];
+            }
+        }
+        for (int i = 1; i < dp.length; i++) {
+            for (int j = 1; j < dp[i].length; j++) {
+                if (text1.charAt(i) == text2.charAt(j)) {
+                    dp[i][j] = Math.max(Math.max(dp[i - 1][j - 1] + 1, dp[i - 1][j]), dp[i][j - 1]);
+                } else {
+                    dp[i][j] = Math.max(dp[i][j - 1], dp[i - 1][j]);
+                }
+            }
+        }
+        return dp[dp.length - 1][dp[0].length - 1];
+    }
+
+    @Test
+    public void testLongestCommonSubsequence() {
+        String text1 = "abcde";
+        String text2 = "ace";
+        longestCommonSubsequence(text1, text2);
+    }
+
+
+    /**
+     * 72. 编辑距离
+     **/
+    public int minDistance(String word1, String word2) {
+        if (word1 == null || word1.length() == 0) {
+            return word2.length();
+        }
+        if (word2 == null || word2.length() == 0) {
+            return word1.length();
+        }
+
+        int[][] dp = new int[word1.length() + 1][word2.length() + 1];
+        dp[0][0] = 0;
+        for (int i = 1; i < dp.length; i++) {
+            dp[i][0] = i;
+        }
+        for (int i = 1; i < dp[0].length; i++) {
+            dp[0][i] = i;
+        }
+        for (int i = 1; i < dp.length; i++) {
+            for (int j = 1; j < dp[i].length; j++) {
+                if (word1.charAt(i - 1) == word2.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1];
+                } else {
+                    dp[i][j] = Math.min(Math.min(dp[i - 1][j], dp[i][j - 1]), dp[i - 1][j - 1]) + 1;
+                }
+            }
+        }
+        return dp[dp.length - 1][dp[0].length - 1];
+    }
+
+
+    /**
+     * 136. 只出现一次的数字
+     */
+    public int singleNumber(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        if (nums.length == 1) {
+            return nums[0];
+        }
+        Set<Integer> set = new HashSet<>();
+        for (int num : nums) {
+            if (set.contains(num)) {
+                set.remove(num);
+            } else {
+                set.add(num);
+            }
+        }
+        return set.iterator().next();
+    }
+
+    /**
+     * 169. 多数元素
+     */
+    public int majorityElement(int[] nums) {
+        if (nums.length == 1) {
+            return nums[0];
+        }
+        Map<Integer, Integer> map = new HashMap<>();
+        int max = 0;
+        int maxValue = 0;
+        for (int num : nums) {
+            Integer orDefault = map.getOrDefault(num, 0);
+            map.put(num, orDefault + 1);
+            if (orDefault + 1 > maxValue) {
+                maxValue = orDefault + 1;
+                max = num;
+            }
+        }
+        return max;
+    }
+
+
+    /**
+     * 75. 颜色分类
+     **/
+    public void sortColors(int[] nums) {
+        if (nums.length <= 1) {
+            return;
+        }
+        int left = 0;
+        while (left < nums.length) {
+            for (int i = left + 1; i < nums.length; i++) {
+                if (nums[i] < nums[left]) {
+                    int temp = nums[left];
+                    nums[left] = nums[i];
+                    nums[i] = temp;
+                }
+            }
+            left++;
+        }
+    }
+
+
+    public void sortColors1(int[] nums) {
+        if (nums.length <= 1) {
+            return;
+        }
+        int p0 = 0;
+        int p1 = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] == 0) {
+                int temp = nums[p0];
+                nums[p0] = nums[i];
+                nums[i] = temp;
+                p0++;
+                if (p0 > p1) {
+                    p1++;
+                }
+            }
+            if (nums[i] == 1) {
+                int temp = nums[p1];
+                nums[p1] = nums[i];
+                nums[i] = temp;
+                p1++;
+            }
+        }
+    }
+
+
+    /**
+     * 31. 下一个排列
+     */
+    public void nextPermutation(int[] nums) {
+        if (nums.length <= 1) {
+            return;
+        }
+        int right = nums.length - 1;
+        while (right > 1) {
+            if (nums[right] > nums[right - 1]) {
+                int index = right;
+                int swapIndex = right - 1;
+                for (int i = right + 1; i < nums.length; i++) {
+                    if (nums[i] > nums[swapIndex] && nums[i] <= nums[index]) {
+                        index = i;
+                    }
+                }
+                int temp = nums[index];
+                nums[index] = nums[swapIndex];
+                nums[swapIndex] = temp;
+                Arrays.sort(nums, right, nums.length);
+                return;
+            }
+            right--;
+        }
+        int num = Integer.MAX_VALUE;
+        int index = -1;
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] > nums[0] && nums[i] < num) {
+                num = nums[i];
+                index = i;
+            }
+        }
+        if (index == -1) {
+            int r = nums.length - 1;
+            int l = 0;
+            while (l < r) {
+                int temp = nums[l];
+                nums[l] = nums[r];
+                nums[r] = temp;
+                l++;
+                r--;
+            }
+        } else {
+            int temp = nums[index];
+            nums[index] = nums[0];
+            nums[0] = temp;
+            Arrays.sort(nums, 1, nums.length);
+        }
+    }
+
+    /**
+     * 287. 寻找重复数
+     **/
+    public int findDuplicate(int[] nums) {
+        if (nums.length == 1) {
+            return nums[0];
+        }
+
+        Arrays.sort(nums);
+        int left = 0;
+        int right = 1;
+
+        while (right < nums.length) {
+            if (nums[left] == nums[right]) {
+                break;
+            }
+            left++;
+            right++;
+        }
+        return nums[left];
+    }
+
 }
