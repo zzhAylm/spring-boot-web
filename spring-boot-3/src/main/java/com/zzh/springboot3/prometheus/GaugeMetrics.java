@@ -37,6 +37,7 @@ public class GaugeMetrics implements Serializable {
             log.info("注册指标:{}", JSONUtil.toJsonStr(newMetric));
             return newMetric;
         });
+//        GaugeMetric gauge = Metrics.gauge("", newMetric, GaugeMetric::getCount);
         curMetric.setCount(newMetric.getCount());
     }
 

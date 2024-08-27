@@ -3,7 +3,8 @@ package com.zzh.springboot3.algorithm;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @Description: 面试经典150题
@@ -730,13 +731,559 @@ public class Algorithm12 {
     }
 
 
-//    /**
-//     *
-//     * */
-//    public boolean canConstruct(String ransomNote, String magazine) {
-//
-//    }
+    /**
+     * 383. 赎金信
+     */
+    public boolean canConstruct(String ransomNote, String magazine) {
+        if (ransomNote == null || magazine == null || ransomNote.length() > magazine.length()) {
+            return false;
+        }
+        int[] arr = new int[26];
+        char[] chars = ransomNote.toCharArray();
+        for (char c : chars) {
+            arr[c - 'a']++;
+        }
+        char[] magazines = magazine.toCharArray();
+        for (char c : magazines) {
+            arr[c - 'a']--;
+        }
+        return Arrays.stream(arr).allMatch(i -> i <= 0);
+    }
 
+
+    /**
+     * 205. 同构字符串
+     */
+    public boolean isIsomorphic(String s, String t) {
+        if (s == null || t == null || s.length() != t.length()) {
+            return false;
+        }
+        char[] ss = s.toCharArray();
+
+        char[] ts = t.toCharArray();
+        Map<Character, Character> characterMap = new HashMap<>();
+
+        for (int i = 0; i < ss.length; i++) {
+            char from = ss[i];
+            char to = ts[i];
+            if (characterMap.containsKey(from)) {
+                if (characterMap.get(from) != to) {
+                    return false;
+                } else {
+                    continue;
+                }
+            }
+            if (characterMap.values().stream().anyMatch(character -> character == to)) {
+                return false;
+            }
+            characterMap.put(from, to);
+        }
+        return true;
+    }
+
+
+    /**
+     * 290. 单词规律
+     **/
+    public boolean wordPattern(String pattern, String s) {
+        if (pattern == null || s == null) {
+            return false;
+        }
+
+        char[] chars = pattern.toCharArray();
+        String[] split = s.split("\\s+");
+        if (chars.length != split.length) {
+            return false;
+        }
+        Map<Character, String> map = new HashMap<>();
+        for (int i = 0; i < chars.length; i++) {
+            char c = chars[i];
+            String s1 = split[i];
+            if (map.containsKey(c)) {
+                if (!map.get(c).equals(s1)) {
+                    return false;
+                }
+                continue;
+            }
+            if (map.values().stream().anyMatch(str -> str.equals(s1))) {
+                return false;
+            }
+            map.put(c, s1);
+        }
+        return true;
+    }
+
+
+    /**
+     * 242. 有效的字母异位词
+     **/
+    public boolean isAnagram(String s, String t) {
+        if (s == null || t == null || t.length() != s.length()) {
+            return false;
+        }
+        char[] ss = s.toCharArray();
+        char[] ts = t.toCharArray();
+        int[] nums = new int[26];
+        for (char s1 : ss) {
+            nums[s1 - 'a']++;
+        }
+        for (char t1 : ts) {
+            nums[t1 - 'a']--;
+        }
+        return Arrays.stream(nums).allMatch(num -> num >= 0);
+    }
+
+
+    /**
+     * 49. 字母异位词分组
+     */
+    public List<List<String>> groupAnagrams(String[] strs) {
+        if (strs == null || strs.length == 0) {
+            return new ArrayList<>();
+        }
+        Map<String, List<String>> map = new HashMap<>();
+        for (String str : strs) {
+            char[] chars = str.toCharArray();
+            Arrays.sort(chars);
+            StringBuilder builder = new StringBuilder();
+            for (Character c : chars) {
+                builder.append(c);
+            }
+            String s = builder.toString();
+            List<String> orDefault = map.getOrDefault(s, new LinkedList<>());
+            orDefault.add(str);
+            map.put(s, orDefault);
+        }
+        return new ArrayList<>(map.values());
+    }
+
+
+    /**
+     * 1. 两数之和
+     */
+    public int[] twoSum2(int[] nums, int target) {
+        if (nums == null || nums.length <= 1) {
+            return new int[]{-1, -1};
+        }
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            if (map.containsKey(nums[i])) {
+                return new int[]{i, map.get(nums[i])};
+            }
+            map.put(target - nums[i], i);
+        }
+        return new int[]{-1, -1};
+    }
+
+
+    /**
+     * 202. 快乐数
+     **/
+    public boolean isHappy(int n) {
+        if (n <= 0) {
+            return false;
+        }
+        Set<Long> set = new HashSet<>();
+        set.add((long) n);
+        while (n != 1) {
+            long bit = 1;
+            List<Long> nums = new LinkedList<>();
+            while (bit <= n) {
+                nums.add((n % (bit * 10)) / bit);
+                bit *= 10;
+            }
+            long temp = 0;
+            for (long t : nums) {
+                temp = temp + (t * t);
+            }
+            if (set.contains(temp)) {
+                return false;
+            }
+            set.add(temp);
+            n = (int) temp;
+        }
+        return true;
+    }
+
+    @Test
+    public void happyTest() {
+        System.out.println(isHappy(1999999999));
+    }
+
+
+    /**
+     * 219. 存在重复元素 II
+     **/
+    public boolean containsNearbyDuplicate(int[] nums, int k) {
+        if (nums == null || nums.length <= 1) {
+            return false;
+        }
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            if (map.containsKey(nums[i]) && i - map.get(nums[i]) <= k) {
+                return true;
+            }
+            map.put(nums[i], i);
+        }
+        return false;
+
+    }
+
+
+    /**
+     * 128. 最长连续序列
+     */
+    public int longestConsecutive(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        if (nums.length == 1) {
+            return nums.length;
+        }
+        Set<Integer> set = new HashSet<>();
+        Set<Integer> black = new HashSet<>();
+        for (int num : nums) {
+            set.add(num);
+        }
+
+        int res = 0;
+        for (int j : nums) {
+            if (black.contains(j)) {
+                continue;
+            }
+            black.add(j);
+            int count = 1;
+            int num = j - 1;
+            while (set.contains(num)) {
+                count++;
+                num--;
+                black.add(num);
+            }
+            num = j + 1;
+            while (set.contains(num)) {
+                count++;
+                num++;
+                black.add(num);
+            }
+            res = Math.max(res, count);
+        }
+        return res;
+    }
+
+
+    /**
+     * 228. 汇总区间
+     **/
+    public List<String> summaryRanges(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return new ArrayList<>();
+        }
+        List<String> res = new ArrayList<>();
+        int first = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] != nums[i - 1] + 1) {
+                if (first == nums[i - 1]) {
+                    res.add(String.valueOf(nums[i - 1]));
+                } else {
+                    res.add(first + "->" + nums[i - 1]);
+                }
+                first = nums[i];
+            }
+        }
+        if (first == nums[nums.length - 1]) {
+            res.add(String.valueOf(nums[nums.length - 1]));
+        } else {
+            res.add(first + "->" + nums[nums.length - 1]);
+        }
+        return res;
+    }
+
+
+    /**
+     * 56. 合并区间
+     */
+    public int[][] merge(int[][] intervals) {
+        if (intervals == null || intervals.length == 0) {
+            return new int[0][0];
+        }
+        Arrays.sort(intervals, Comparator.comparing(ints1 -> ints1[0]));
+        int[] pre = intervals[0];
+        List<String> res = new ArrayList<>();
+        for (int i = 1; i < intervals.length; i++) {
+            if (intervals[i][0] >= pre[0] && intervals[i][0] <= pre[1]) {
+                pre[0] = Math.min(pre[0], intervals[i][0]);
+                pre[1] = Math.max(pre[1], intervals[i][1]);
+            } else {
+                res.add(pre[0] + "," + pre[1]);
+                pre = intervals[i];
+            }
+        }
+        res.add(pre[0] + "," + pre[1]);
+        int[][] ints = new int[res.size()][2];
+        for (int i = 0; i < res.size(); i++) {
+            String[] split = res.get(i).split(",");
+            ints[i][0] = Integer.parseInt(split[0]);
+            ints[i][1] = Integer.parseInt(split[1]);
+        }
+        return ints;
+    }
+
+
+    /***
+     * 57.插入区间
+     * **/
+    public int[][] insert(int[][] intervals, int[] newInterval) {
+        if (newInterval == null || newInterval.length == 0) {
+            return intervals;
+        }
+        if (intervals == null || intervals.length == 0) {
+            int[][] ints = new int[1][2];
+            ints[0][0] = newInterval[0];
+            ints[0][1] = newInterval[1];
+            return ints;
+        }
+        int[][] dp = new int[intervals.length + 1][2];
+        int index = 0;
+        boolean flag = true;
+        for (int[] interval : intervals) {
+            if (interval[1] < newInterval[0] || interval[0] > newInterval[1]) {
+                if (interval[0] > newInterval[1] && flag) {
+                    dp[index][0] = newInterval[0];
+                    dp[index][1] = newInterval[1];
+                    index++;
+                    flag = false;
+                }
+                dp[index][0] = interval[0];
+                dp[index][1] = interval[1];
+                index++;
+            } else {
+                newInterval[0] = Math.min(interval[0], newInterval[0]);
+                newInterval[1] = Math.max(interval[1], newInterval[1]);
+            }
+        }
+        if (flag) {
+            dp[index][0] = newInterval[0];
+            dp[index][1] = newInterval[1];
+            index++;
+        }
+        int[][] res = new int[index][2];
+        System.arraycopy(dp, 0, res, 0, index);
+        return res;
+    }
+
+
+    /***
+     * 452. 用最少数量的箭引爆气球
+     * **/
+    public int findMinArrowShots(int[][] points) {
+        if (points == null || points.length == 0) {
+            return 0;
+        }
+        if (points.length == 1) {
+            return points.length;
+        }
+        Arrays.sort(points, Comparator.comparing(nums -> nums[0]));
+        int[][] dp = new int[points.length][2];
+        int index = 0;
+        dp[index] = points[0];
+        for (int i = 1; i < points.length; i++) {
+            if (points[i][0] > dp[index][1]) {
+                index++;
+                dp[index] = points[i];
+            } else {
+                dp[index][0] = Math.max(dp[index][0], points[i][0]);
+                dp[index][1] = Math.min(dp[index][1], points[i][1]);
+            }
+        }
+        return index + 1;
+    }
+
+
+    /**
+     * 20. 有效的括号
+     **/
+    public boolean isValid(String s) {
+        if (s == null || s.length() == 0 || s.length() % 2 != 0) {
+            return false;
+        }
+        char[] chars = s.toCharArray();
+        Stack<Character> stack = new Stack<>();
+        for (char aChar : chars) {
+            if (stack.isEmpty() || aChar == '{' || aChar == '[' || aChar == '(' || !pair(stack.peek(), aChar)) {
+                stack.push(aChar);
+                continue;
+            }
+            stack.pop();
+        }
+        return stack.isEmpty();
+
+    }
+
+    public boolean pair(Character left, Character right) {
+        return (left == '{' && right == '}') || (left == '[' && right == ']') || (left == '(' && right == ')');
+    }
+
+
+    /***
+     * 71. 简化路径
+     * **/
+    public String simplifyPath(String path) {
+        if (path == null || path.length() <= 1) {
+            return path;
+        }
+        path = path.replaceAll("//", "/");
+        Deque<String> stack = new LinkedBlockingDeque<>();
+        String[] paths = path.split("/");
+        for (String p : paths) {
+            if (p.length() == 0 || p.equals(".")) {
+                continue;
+            }
+            if (p.equals("..")) {
+                if (!stack.isEmpty()) stack.pop();
+                continue;
+            }
+            stack.push(p);
+        }
+        StringBuilder builder = new StringBuilder("/");
+        while (!stack.isEmpty()) {
+            builder.append(stack.pollLast());
+            builder.append("/");
+        }
+        return builder.length() == 1 ? builder.toString() : builder.substring(0, builder.length() - 1);
+    }
+
+
+    /**
+     * 155. 最小栈
+     **/
+    class MinStack {
+
+        Stack<Integer> stack;
+        Integer min = Integer.MAX_VALUE;
+
+        public MinStack() {
+            stack = new Stack<>();
+        }
+
+        public void push(int val) {
+            stack.push(val);
+            min = Math.min(min, val);
+        }
+
+        public void pop() {
+            Integer pop = stack.pop();
+            if (pop.equals(min)) {
+                min = Integer.MAX_VALUE;
+                stack.forEach(num -> min = Math.min(min, num));
+            }
+        }
+
+        public int top() {
+            return stack.peek();
+        }
+
+        public int getMin() {
+            return min;
+        }
+    }
+
+
+    /**
+     * 150. 逆波兰表达式求值
+     **/
+    public int evalRPN(String[] tokens) {
+        if (tokens == null) {
+            return 0;
+        }
+        Stack<String> stack = new Stack<>();
+        for (String str : tokens) {
+            if (str.equals("+") || str.equals("-") || str.equals("*") || str.equals("/")) {
+                Integer right = Integer.valueOf(stack.pop());
+                Integer left = Integer.valueOf(stack.pop());
+                Integer now = switch (str) {
+                    case "+" -> left + right;
+                    case "-" -> left - right;
+                    case "*" -> left * right;
+                    default -> left / right;
+                };
+                stack.push(String.valueOf(now));
+                continue;
+            }
+            stack.push(str);
+        }
+        return Integer.parseInt(stack.peek());
+    }
+
+    /**
+     * 224.基本计算器
+     **/
+    public int calculate(String s) {
+        if (s == null || s.length() == 0) {
+            return 0;
+        }
+        s = s.replaceAll("\\s+", "");
+        int sum = 0;
+        Stack<String> stack = new Stack<>();
+        char[] chars = s.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            if ('0' <= chars[i] && chars[i] <= '9') {
+                StringBuilder nums = new StringBuilder(String.valueOf(chars[i]));
+                if (i >= 1 && ('0' <= chars[i - 1] && chars[i - 1] <= '9')) {
+                    nums.insert(0, stack.pop());
+                }
+                stack.push(nums.toString());
+            } else if ('+' == chars[i] || chars[i] == '-') {
+                String operator = String.valueOf(chars[i]);
+                while (i >= 1 && ('-' == chars[i - 1] || chars[i - 1] == '+')) {
+                    if (stack.pop().equals(operator)) {
+                        operator = "+";
+                    } else {
+                        operator = "-";
+                    }
+                }
+                stack.push(operator);
+            } else if (chars[i] == ')') {
+                int tempSum = 0;
+                while (!stack.peek().equals("(")) {
+                    String pop = stack.pop();
+                    if (!(pop.equals("+") || pop.equals("-")) && !stack.peek().equals("(")) {
+                        String operater = stack.pop();
+                        tempSum += Long.parseLong(operater + pop);
+                    } else {
+                        tempSum += Long.parseLong(pop);
+                    }
+                }
+                stack.pop();
+                String s1 = String.valueOf(tempSum);
+                if (!stack.isEmpty() && (s1.charAt(0) == '+' || s1.charAt(0) == '-') && (Objects.equals(stack.peek(), "+") || Objects.equals(stack.peek(), "-"))) {
+                    String operator = stack.pop();
+                    stack.push((s1.substring(0, 1).equals(operator) ? "+" : "-"));
+                    s1 = s1.substring(1);
+                }
+                stack.push(s1);
+            } else {
+                stack.push(String.valueOf(chars[i]));
+            }
+        }
+        while (!stack.isEmpty()) {
+            String pop = stack.pop();
+            if (!(pop.equals("+") || pop.equals("-"))) {
+                if (!stack.isEmpty()) {
+                    String operater = stack.pop();
+                    sum += Long.parseLong(operater + pop);
+                } else {
+                    sum += Long.parseLong(pop);
+                }
+            }
+        }
+        return sum;
+    }
+
+    @Test
+    public void OperaterTest() {
+        String str = "2147483647";
+        System.out.println(calculate(str));
+    }
 }
 
 
