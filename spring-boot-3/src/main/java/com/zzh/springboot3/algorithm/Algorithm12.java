@@ -1284,6 +1284,228 @@ public class Algorithm12 {
         String str = "2147483647";
         System.out.println(calculate(str));
     }
+
+
+    /**
+     * 141.环形链表
+     **/
+    public boolean hasCycle(ListNode head) {
+        if (head == null || head.next == null) {
+            return false;
+        }
+        ListNode fast = head;
+        ListNode slow = head;
+        while (fast != null && fast.next != null && slow != null) {
+            fast = fast.next.next;
+            slow = slow.next;
+            if (fast == slow) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    /**
+     * 2. 两数相加
+     **/
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        if (l1 == null) {
+            return l2;
+        }
+        if (l2 == null) {
+            return l1;
+        }
+        ListNode head = new ListNode(-1);
+        ListNode point = head;
+        ListNode head1 = l1;
+        ListNode head2 = l2;
+        int pre = 0;
+        while (head1 != null && head2 != null) {
+            int value = head1.val + head2.val + pre;
+            pre = value / 10;
+            point.next = new ListNode(value % 10);
+            point = point.next;
+            head1 = head1.next;
+            head2 = head2.next;
+        }
+        while (head1 != null) {
+            int value = head1.val + pre;
+            pre = value / 10;
+            point.next = new ListNode(value % 10);
+            point = point.next;
+            head1 = head1.next;
+        }
+        while (head2 != null) {
+            int value = head2.val + pre;
+            pre = value / 10;
+            point.next = new ListNode(value % 10);
+            point = point.next;
+            head2 = head2.next;
+        }
+        if (pre != 0) {
+            point.next = new ListNode(pre % 10);
+        }
+        return head.next;
+    }
+
+
+    /**
+     * 21. 合并两个有序链表
+     **/
+    public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
+        if (list1 == null) {
+            return list2;
+        }
+        if (list2 == null) {
+            return list1;
+        }
+        ListNode pre = new ListNode(-1);
+        ListNode head = pre;
+        ListNode p1 = list1;
+        ListNode p2 = list2;
+
+        while (p1 != null && p2 != null) {
+            if (p1.val < p2.val) {
+                ListNode next = p1.next;
+                p1.next = null;
+                head.next = p1;
+                p1 = next;
+            } else {
+                ListNode next = p2.next;
+                p2.next = null;
+                head.next = p2;
+                p2 = next;
+            }
+            head = head.next;
+        }
+        while (p1 != null) {
+            ListNode next = p1.next;
+            p1.next = null;
+            head.next = p1;
+            p1 = next;
+            head = head.next;
+        }
+        while (p2 != null) {
+            ListNode next = p2.next;
+            p2.next = null;
+            head.next = p2;
+            p2 = next;
+            head = head.next;
+        }
+        return pre.next;
+    }
+
+    class Node {
+        int val;
+        Node next;
+        Node random;
+
+        public Node(int val) {
+            this.val = val;
+            this.next = null;
+            this.random = null;
+        }
+    }
+
+    /**
+     * 138. 随机链表的复制
+     **/
+    Map<Node, Node> chacheMap = new HashMap<>();
+
+    public Node copyRandomList(Node head) {
+        if (head == null) {
+            return null;
+        }
+        if (!chacheMap.containsKey(head)) {
+            Node newNode = new Node(head.val);
+            chacheMap.put(head, newNode);
+            newNode.next = copyRandomList(head.next);
+            newNode.random = copyRandomList(head.random);
+        }
+        return chacheMap.get(head);
+    }
+
+
+    /***
+     *92. 反转链表 II
+     * **/
+    public ListNode reverseBetween(ListNode head, int left, int right) {
+        if (head == null || head.next == null || left == right) {
+            return head;
+        }
+        int count = right - left + 1;
+        ListNode pre = new ListNode(-1);
+        pre.next = head;
+        ListNode point = pre;
+        while (left > 1) {
+            point = point.next;
+            left--;
+        }
+        ListNode cur = point.next;
+        while (count > 1 && cur.next != null) {
+            ListNode next = cur.next;
+            ListNode last = next.next;
+            ListNode first = point.next;
+            cur.next = last;
+            point.next = next;
+            next.next = first;
+            count--;
+        }
+        return pre.next;
+    }
+
+    @Test
+    public void testNode() {
+        ListNode listNode = new ListNode(1);
+        listNode.next = new ListNode(2);
+        listNode.next.next = new ListNode(3);
+        listNode.next.next.next = new ListNode(4);
+        listNode.next.next.next.next = new ListNode(5);
+        reverseBetween(listNode, 2, 4);
+    }
+
+
+    /**
+     * 25. K 个一组翻转链表
+     */
+    public ListNode reverseKGroup(ListNode head, int k) {
+        if (head == null || head.next == null || k == 1) {
+            return head;
+        }
+        return reverse(head, k);
+    }
+
+    public ListNode reverse(ListNode head, int k) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        int count = 0;
+        ListNode p = head;
+        while (p != null) {
+            p = p.next;
+            count++;
+        }
+        if (count < k) {
+            return head;
+        }
+        ListNode pre = new ListNode(-1);
+        pre.next = head;
+
+        int num = 1;
+        while (head.next != null) {
+            ListNode next = head.next;
+            head.next = next.next;
+            next.next = pre.next;
+            pre.next = next;
+            num++;
+            if (num == k) {
+                head.next = reverse(head.next, k);
+                break;
+            }
+        }
+        return pre.next;
+    }
 }
 
 
