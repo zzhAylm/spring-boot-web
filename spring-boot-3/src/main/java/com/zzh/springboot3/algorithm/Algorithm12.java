@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.*;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -1505,6 +1506,367 @@ public class Algorithm12 {
             }
         }
         return pre.next;
+    }
+
+
+    /***
+     * 19. 删除链表的倒数第 N 个结点
+     * */
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        if (head == null) {
+            return null;
+        }
+        ListNode pre = new ListNode(-1);
+        pre.next = head;
+        ListNode right = pre;
+        ListNode left = pre;
+        while (n > 0) {
+            right = right.next;
+            n--;
+        }
+        while (right.next != null) {
+            right = right.next;
+            left = left.next;
+        }
+        left.next = left.next.next;
+        return pre.next;
+    }
+
+
+    /**
+     * 82. 删除排序链表中的重复元素 II
+     **/
+    public ListNode deleteDuplicates(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode pre = new ListNode(-1);
+        pre.next = head;
+        ListNode left = pre;
+        ListNode right = head;
+        while (right != null) {
+            if (right.next == null || right.next.val != right.val) {
+                left = left.next;
+                right = right.next;
+                continue;
+            }
+            ListNode p = right.next;
+            while (p != null && p.val == right.val) {
+                p = p.next;
+            }
+            right = p;
+            left.next = right;
+        }
+        return pre.next;
+    }
+
+
+    /**
+     * 61. 旋转链表
+     */
+    public ListNode rotateRight(ListNode head, int k) {
+        if (head == null || head.next == null || k == 0) {
+            return head;
+        }
+        ListNode p = head;
+        int count = 0;
+        while (p != null) {
+            p = p.next;
+            count++;
+        }
+        int step = count - (k % count);
+        if (step == count) {
+            return head;
+        }
+        ListNode pre = new ListNode(-1);
+        pre.next = head;
+        ListNode point = pre;
+        while (step > 0) {
+            point = point.next;
+            step--;
+        }
+
+        ListNode newHead = point.next;
+
+        ListNode next = point;
+        while (next.next != null) {
+            next = next.next;
+        }
+        next.next = pre.next;
+        point.next = null;
+        return newHead;
+    }
+
+    @Test
+    public void rotateRightTest() {
+        ListNode head = new ListNode(1);
+        head.next = new ListNode(2);
+        rotateRight(head, 1);
+    }
+
+    /**
+     * 86. 分隔链表
+     **/
+    public ListNode partition(ListNode head, int x) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode pre = new ListNode(-1);
+        pre.next = head;
+        ListNode right = pre;
+        ListNode left = pre;
+
+        while (right.next != null) {
+            if (right.next.val < x) {
+                ListNode cur = right.next;
+                right.next = right.next.next;
+
+                ListNode next = left.next;
+                left.next = cur;
+                cur.next = next;
+                left = left.next;
+                right = left;
+            } else {
+                right = right.next;
+            }
+        }
+        return pre.next;
+    }
+
+
+    @Test
+    public void partitionTest() {
+
+        ListNode head = new ListNode(1);
+        head.next = new ListNode(4);
+        head.next.next = new ListNode(3);
+        head.next.next.next = new ListNode(2);
+        head.next.next.next.next = new ListNode(5);
+        head.next.next.next.next.next = new ListNode(2);
+
+        partition(head, 3);
+    }
+
+
+    class LRUCache {
+
+        private Map<Integer, Entry> cacheMap;
+        private Entry head;
+        private Entry tail;
+        private Integer capacity;
+
+        public LRUCache(int capacity) {
+            this.cacheMap = new HashMap<>();
+            this.capacity = capacity;
+            this.head = new Entry();
+            this.tail = new Entry();
+            this.head.next = tail;
+            this.tail.pre = head;
+        }
+
+        public int get(int key) {
+            if (!cacheMap.containsKey(key)) {
+                return -1;
+            }
+            Entry entry = cacheMap.get(key);
+            moveHead(entry);
+            return entry.value;
+        }
+
+        public void put(int key, int value) {
+            if (cacheMap.containsKey(key)) {
+                Entry entry = cacheMap.get(key);
+                entry.setValue(value);
+                cacheMap.put(key, entry);
+                moveHead(entry);
+                return;
+            }
+            if (cacheMap.size() == capacity) {
+                Entry entry = removeLast();
+                cacheMap.remove(entry.key);
+            }
+            Entry entry = new Entry(key, value);
+            cacheMap.put(key, entry);
+            addHead(entry);
+        }
+
+        public void moveHead(Entry entry) {
+            remove(entry);
+            addHead(entry);
+        }
+
+        public void remove(Entry entry) {
+            Entry pre = entry.pre;
+            Entry next = entry.next;
+            pre.next = next;
+            next.pre = pre;
+            entry.pre = null;
+            entry.next = null;
+        }
+
+        public Entry removeLast() {
+            Entry last = tail.pre;
+            if (last == null) {
+                return null;
+            }
+            Entry pre = last.pre;
+            Entry next = last.next;
+            pre.next = next;
+            next.pre = pre;
+            return last;
+        }
+
+        public void addHead(Entry entry) {
+            Entry first = head.next;
+            head.next = entry;
+            entry.next = first;
+            entry.pre = head;
+            first.pre = entry;
+        }
+
+        public static class Entry {
+            private Entry pre;
+            private Entry next;
+            private Integer value;
+            private Integer key;
+
+            public Entry(Integer key, Integer value) {
+                this.value = value;
+                this.key = key;
+            }
+
+            public Entry() {
+            }
+
+            public void setValue(Integer value) {
+                this.value = value;
+            }
+        }
+    }
+
+
+    /**
+     * 104. 二叉树的最大深度
+     **/
+    public int maxDepth(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        return Math.max(maxDepth(root.left), maxDepth(root.right)) + 1;
+    }
+
+
+    /**
+     * 100. 相同的树
+     */
+    public boolean isSameTree(TreeNode p, TreeNode q) {
+        if (p == null && q == null) {
+            return true;
+        }
+        return (p != null && q != null && p.val == q.val) && isSameTree(p.left, q.left) && isSameTree(p.right, q.right);
+    }
+
+    /**
+     * 翻转二叉树
+     **/
+    public TreeNode invertTree(TreeNode root) {
+        if (root == null || (root.left == null && root.right == null)) {
+            return root;
+        }
+        TreeNode right = root.right;
+        TreeNode left = root.left;
+        root.left = invertTree(right);
+        root.right = invertTree(left);
+        return root;
+    }
+
+
+    /**
+     * 101. 对称二叉树
+     */
+    public boolean isSymmetric(TreeNode root) {
+        if (root == null || (root.left == null && root.right == null)) {
+            return true;
+        }
+        TreeNode left = root.left;
+        TreeNode right = root.right;
+        return isSame(left, right);
+    }
+
+    public boolean isSame(TreeNode left, TreeNode right) {
+        if (left == null && right == null) {
+            return true;
+        }
+        return right != null && left != null && right.val == left.val && isSame(left.left, right.right) && isSame(left.right, right.left);
+    }
+
+
+    /**
+     * 105. 从前序与中序遍历序列构造二叉树
+     **/
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        return buildTree(preorder, 0, preorder.length - 1, inorder, 0, inorder.length - 1);
+    }
+
+    public TreeNode buildTree(int[] preorder, int left, int right, int[] inorder, int orderLeft, int orderRight) {
+        if (left > right || orderLeft > orderRight) {
+            return null;
+        }
+        if (left == right) {
+            return new TreeNode(preorder[left]);
+        }
+        int value = preorder[left];
+        TreeNode treeNode = new TreeNode(value);
+
+        int index = orderLeft;
+        for (int i = orderLeft; i <= orderRight; i++) {
+            if (inorder[i] == value) {
+                index = i;
+                break;
+            }
+        }
+        treeNode.left = buildTree(preorder, left + 1, left + index - orderLeft, inorder, orderLeft, index - 1);
+        treeNode.right = buildTree(preorder, left + 1 + index - orderLeft, right, inorder, index + 1, orderRight);
+        return treeNode;
+    }
+
+
+    @Test
+    public void testOrderTree() {
+        int[] inorder = {9,3,15,20,7};
+        int[] postorder = {9,15,7,20,3};
+
+        buildTree1(inorder, postorder);
+    }
+
+
+    /**
+     * 106. 从中序与后序遍历序列构造二叉树
+     */
+    public TreeNode buildTree1(int[] inorder, int[] postorder) {
+
+        return buildTreeByInAndPost(inorder, postorder, 0, inorder.length - 1, 0, postorder.length - 1);
+    }
+
+    public TreeNode buildTreeByInAndPost(int[] inorder, int[] postorder, int inLeft, int inRight, int postLeft, int postRight) {
+        if (inLeft > inRight || postLeft > postRight) {
+            return null;
+        }
+        if (inLeft == inRight) {
+            return new TreeNode(postorder[postRight]);
+        }
+        int val = postorder[postRight];
+        TreeNode treeNode = new TreeNode(val);
+
+        int index = inLeft;
+        for (; index <= inRight; index++) {
+            if (inorder[index] == val) {
+                break;
+            }
+        }
+        treeNode.left = buildTreeByInAndPost(inorder, postorder, inLeft, index - 1, postLeft, postLeft + (index - inLeft)-1);
+        treeNode.right = buildTreeByInAndPost(inorder, postorder, index + 1, inRight, postLeft + (index - inLeft) , postRight - 1);
+        return treeNode;
     }
 }
 
