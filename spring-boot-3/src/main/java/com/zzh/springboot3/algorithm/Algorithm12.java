@@ -1,5 +1,6 @@
 package com.zzh.springboot3.algorithm;
 
+import cn.hutool.core.lang.func.VoidFunc;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -2003,27 +2004,266 @@ public class Algorithm12 {
         int rightSum = Math.max(maxPathSums(node.right), 0);
 
 
-        max = Math.max(node.val +leftSum + rightSum, max);
-        return Math.max(leftSum, rightSum)+node.val;
+        max = Math.max(node.val + leftSum + rightSum, max);
+        return Math.max(leftSum, rightSum) + node.val;
     }
 
 
+    class BSTIterator {
+
+        private List<Integer> nodeList = new LinkedList<>();
+        private Integer index = 0;
+
+        public BSTIterator(TreeNode root) {
+            mid(root, nodeList);
+        }
+
+        public int next() {
+            return nodeList.get(index++);
+        }
+
+        public boolean hasNext() {
+            return index <= nodeList.size() - 1;
+        }
+
+        public void mid(TreeNode root, List<Integer> nodeList) {
+            if (root == null) {
+                return;
+            }
+            if (root.left != null) {
+                mid(root.left, nodeList);
+            }
+            nodeList.add(root.val);
+            if (root.right != null) {
+                mid(root.right, nodeList);
+            }
+        }
+    }
 
 
-//    class BSTIterator {
-//
-//        public BSTIterator(TreeNode root) {
-//
-//        }
-//
-//        public int next() {
-//
-//        }
-//
-//        public boolean hasNext() {
-//
-//        }
-//    }
+    /**
+     * 222. 完全二叉树的节点个数
+     **/
+    public int countNodes(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        if (root.left == null && root.right == null) {
+            return 1;
+        }
+        return countNodes(root.left) + countNodes(root.right) + 1;
+    }
+
+
+    /**
+     * 236.二叉树的最近公共祖先
+     **/
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null || (root.left == null && root.right == null)) {
+            return root;
+        }
+        fatherTreeNode(root, p, q);
+        return lowestCommonAncestor;
+
+    }
+
+    TreeNode lowestCommonAncestor;
+
+    public boolean fatherTreeNode(TreeNode node, TreeNode p, TreeNode q) {
+        if (node == null) {
+            return false;
+        }
+        boolean left = fatherTreeNode(node.left, p, q);
+        boolean right = fatherTreeNode(node.right, p, q);
+        if (((node == p || node == q) && (left || right)) || (left && right)) {
+            lowestCommonAncestor = node;
+        }
+        return (left || right) || (node == p || node == q);
+    }
+
+
+    /**
+     * 199. 二叉树的右视图
+     **/
+    public List<Integer> rightSideView(TreeNode root) {
+        if (root == null) {
+            return new ArrayList<>();
+        }
+        Queue<TreeNode> queue = new LinkedBlockingQueue<>();
+        queue.add(root);
+        List<Integer> res = new ArrayList<>();
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode poll = queue.poll();
+                if (poll == null) {
+                    continue;
+                }
+                if (i == size - 1) {
+                    res.add(poll.val);
+                }
+                if (poll.left != null) {
+                    queue.add(poll.left);
+                }
+                if (poll.right != null) {
+                    queue.add(poll.right);
+                }
+            }
+        }
+        return res;
+    }
+
+
+    /**
+     * 637. 二叉树的层平均值
+     **/
+    public List<Double> averageOfLevels(TreeNode root) {
+        if (root == null) {
+            return new ArrayList<>();
+        }
+        Queue<TreeNode> queue = new LinkedBlockingQueue<>();
+        queue.add(root);
+        List<Double> res = new ArrayList<>();
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            double sum = 0.0;
+            for (int i = 0; i < size; i++) {
+                TreeNode poll = queue.poll();
+                if (poll == null) {
+                    continue;
+                }
+                sum += poll.val;
+                if (poll.left != null) {
+                    queue.add(poll.left);
+                }
+                if (poll.right != null) {
+                    queue.add(poll.right);
+                }
+            }
+            res.add(sum / size);
+        }
+        return res;
+    }
+
+
+    /***
+     *103. 二叉树的锯齿形层序遍历
+     * */
+    public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
+        if (root == null) {
+            return new ArrayList<>();
+        }
+        List<List<Integer>> res = new ArrayList<>();
+        Queue<TreeNode> queue = new LinkedBlockingQueue<>();
+        queue.add(root);
+        int level = 1;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            List<Integer> temp = new ArrayList<>();
+            Stack<TreeNode> stack = new Stack<>();
+            for (int i = 0; i < size; i++) {
+                TreeNode poll = queue.poll();
+                if (poll == null) {
+                    continue;
+                }
+                if (level % 2 == 0) {
+                    stack.push(poll);
+                } else {
+                    temp.add(poll.val);
+                }
+                if (poll.left != null) {
+                    queue.add(poll.left);
+                }
+                if (poll.right != null) {
+                    queue.add(poll.right);
+                }
+            }
+
+            while (!stack.isEmpty()) {
+                temp.add(stack.pop().val);
+            }
+            res.add(temp);
+            level++;
+        }
+        return res;
+    }
+
+
+    /**
+     * 530. 二叉搜索树的最小绝对差
+     **/
+
+    public int getMinimumDifference(TreeNode root) {
+        if (root == null || (root.left == null && root.right == null)) {
+            return -1;
+        }
+        midTreeNode(root);
+        int res = Integer.MAX_VALUE;
+        for (int i = 1; i < minimumDifference.size(); i++) {
+            res = Math.min(res, Math.abs(minimumDifference.get(i) - minimumDifference.get(i - 1)));
+        }
+        return res;
+    }
+
+    List<Integer> minimumDifference = new ArrayList<>();
+
+    public void midTreeNode(TreeNode node) {
+        if (node == null) {
+            return;
+        }
+        midTreeNode(node.left);
+        minimumDifference.add(node.val);
+        midTreeNode(node.right);
+    }
+
+
+    /**
+     * 230. 二叉搜索树中第 K 小的元素
+     */
+    public int kthSmallest(TreeNode root, int k) {
+        if (root == null) {
+            return -1;
+        }
+        preSmallest(root, k);
+        return kthSmallest;
+    }
+
+    int kthSmallest;
+    int count = 0;
+
+    public void preSmallest(TreeNode node, int k) {
+        if (node == null) {
+            return;
+        }
+        preSmallest(node.left, k);
+        count++;
+        if (count == k) {
+            kthSmallest = node.val;
+        }
+        preSmallest(node.right, k);
+    }
+
+
+    /**
+     * 98. 验证二叉搜索树
+     **/
+    public boolean isValidBST(TreeNode root) {
+        if (root == null || (root.left == null && root.right == null)) {
+            return true;
+        }
+        return isValidBSTTreeNode(root, Long.MIN_VALUE, Long.MAX_VALUE);
+    }
+
+    public boolean isValidBSTTreeNode(TreeNode node, Long min, Long max) {
+        if (node == null) {
+            return true;
+        }
+        if (node.val <= min || node.val >= max) {
+            return false;
+        }
+        return isValidBSTTreeNode(node.left, min, (long) node.val) && isValidBSTTreeNode(node.right, (long) node.val, max);
+
+    }
 
 }
 
