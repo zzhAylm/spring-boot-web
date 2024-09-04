@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @Description: 面试经典150题
@@ -1397,12 +1396,12 @@ public class Algorithm12 {
         return pre.next;
     }
 
-    class Node {
+    class NodeRandom {
         int val;
-        Node next;
-        Node random;
+        NodeRandom next;
+        NodeRandom random;
 
-        public Node(int val) {
+        public NodeRandom(int val) {
             this.val = val;
             this.next = null;
             this.random = null;
@@ -1412,14 +1411,14 @@ public class Algorithm12 {
     /**
      * 138. 随机链表的复制
      **/
-    Map<Node, Node> chacheMap = new HashMap<>();
+    Map<NodeRandom, NodeRandom> chacheMap = new HashMap<>();
 
-    public Node copyRandomList(Node head) {
+    public NodeRandom copyRandomList(NodeRandom head) {
         if (head == null) {
             return null;
         }
         if (!chacheMap.containsKey(head)) {
-            Node newNode = new Node(head.val);
+            NodeRandom newNode = new NodeRandom(head.val);
             chacheMap.put(head, newNode);
             newNode.next = copyRandomList(head.next);
             newNode.random = copyRandomList(head.random);
@@ -1833,8 +1832,8 @@ public class Algorithm12 {
 
     @Test
     public void testOrderTree() {
-        int[] inorder = {9,3,15,20,7};
-        int[] postorder = {9,15,7,20,3};
+        int[] inorder = {9, 3, 15, 20, 7};
+        int[] postorder = {9, 15, 7, 20, 3};
 
         buildTree1(inorder, postorder);
     }
@@ -1864,10 +1863,168 @@ public class Algorithm12 {
                 break;
             }
         }
-        treeNode.left = buildTreeByInAndPost(inorder, postorder, inLeft, index - 1, postLeft, postLeft + (index - inLeft)-1);
-        treeNode.right = buildTreeByInAndPost(inorder, postorder, index + 1, inRight, postLeft + (index - inLeft) , postRight - 1);
+        treeNode.left = buildTreeByInAndPost(inorder, postorder, inLeft, index - 1, postLeft, postLeft + (index - inLeft) - 1);
+        treeNode.right = buildTreeByInAndPost(inorder, postorder, index + 1, inRight, postLeft + (index - inLeft), postRight - 1);
         return treeNode;
     }
+
+
+    /**
+     * 117. 填充每个节点的下一个右侧节点指针 II
+     **/
+    public Node connect(Node root) {
+        if (root == null || (root.left == null && root.right == null)) {
+            return root;
+        }
+        Queue<Node> queue = new LinkedBlockingQueue<>();
+        queue.add(root);
+
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            Node pre = null;
+            for (int i = 0; i < size; i++) {
+                Node poll = queue.poll();
+                if (poll == null) {
+                    continue;
+                }
+                if (pre != null) {
+                    pre.next = poll;
+                }
+                if (poll.left != null) {
+                    queue.add(poll.left);
+                }
+                if (poll.right != null) {
+                    queue.add(poll.right);
+                }
+                pre = poll;
+            }
+        }
+        return root;
+    }
+
+    /**
+     * 114. 二叉树展开为链表
+     **/
+    public void flatten(TreeNode root) {
+        if (root == null || (root.left == null && root.right == null)) {
+            return;
+        }
+        expand(root);
+    }
+
+    public TreeNode expand(TreeNode node) {
+        if (node == null || (node.left == null && node.right == null)) {
+            return node;
+        }
+        TreeNode left = node.left;
+        TreeNode right = node.right;
+        node.left = null;
+        node.right = null;
+
+        node.right = expand(left);
+        TreeNode point = node;
+        while (point.right != null) {
+            point = point.right;
+        }
+        point.right = expand(right);
+        return node;
+    }
+
+
+    /**
+     * 112. 路径总和
+     */
+    public boolean hasPathSum(TreeNode root, int targetSum) {
+        if (root == null) {
+            return false;
+        }
+        if (root.left == null && root.right == null) {
+            return root.val == targetSum;
+        }
+        return hasPathSum(root.left, targetSum - root.val) || hasPathSum(root.right, targetSum - root.val);
+    }
+
+
+    /**
+     * 129. 求根节点到叶节点数字之和
+     **/
+    public int sumNumbers(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        if (root.left == null && root.right == null) {
+            return root.val;
+        }
+        sumNumbers(root, 0);
+        return sum;
+    }
+
+
+    int sum = 0;
+
+    public void sumNumbers(TreeNode node, int num) {
+        if (node == null) {
+            return;
+        }
+        if (node.left == null && node.right == null) {
+            sum += (num * 10 + node.val);
+            return;
+        }
+        sumNumbers(node.left, num * 10 + node.val);
+        sumNumbers(node.right, num * 10 + node.val);
+    }
+
+
+    /**
+     * 124. 二叉树中的最大路径和
+     */
+    public int maxPathSum(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        if (root.left == null && root.right == null) {
+            return root.val;
+        }
+        maxPathSums(root);
+        return max;
+    }
+
+    int max = Integer.MIN_VALUE;
+
+    public int maxPathSums(TreeNode node) {
+        if (node == null) {
+            return 0;
+        }
+        if (node.left == null && node.right == null) {
+            max = Math.max(max, node.val);
+            return node.val;
+        }
+        int leftSum = Math.max(maxPathSums(node.left), 0);
+        int rightSum = Math.max(maxPathSums(node.right), 0);
+
+
+        max = Math.max(node.val +leftSum + rightSum, max);
+        return Math.max(leftSum, rightSum)+node.val;
+    }
+
+
+
+
+//    class BSTIterator {
+//
+//        public BSTIterator(TreeNode root) {
+//
+//        }
+//
+//        public int next() {
+//
+//        }
+//
+//        public boolean hasNext() {
+//
+//        }
+//    }
+
 }
 
 
