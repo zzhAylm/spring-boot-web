@@ -1873,18 +1873,18 @@ public class Algorithm12 {
     /**
      * 117. 填充每个节点的下一个右侧节点指针 II
      **/
-    public Node connect(Node root) {
+    public com.zzh.springboot3.algorithm.Node connect(com.zzh.springboot3.algorithm.Node root) {
         if (root == null || (root.left == null && root.right == null)) {
             return root;
         }
-        Queue<Node> queue = new LinkedBlockingQueue<>();
+        Queue<com.zzh.springboot3.algorithm.Node> queue = new LinkedBlockingQueue<>();
         queue.add(root);
 
         while (!queue.isEmpty()) {
             int size = queue.size();
-            Node pre = null;
+            com.zzh.springboot3.algorithm.Node pre = null;
             for (int i = 0; i < size; i++) {
-                Node poll = queue.poll();
+                com.zzh.springboot3.algorithm.Node poll = queue.poll();
                 if (poll == null) {
                     continue;
                 }
@@ -2265,12 +2265,174 @@ public class Algorithm12 {
     }
 
 
+    /**
+     * 200. 岛屿数量
+     **/
+    public int numIslands(char[][] grid) {
+        if (grid == null || grid.length == 0) {
+            return 0;
+        }
+        int count = 0;
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                if (grid[i][j] == '1') {
+                    count++;
+                    infect(grid, i, j);
+                }
+            }
+        }
+        return count;
+    }
 
+    public void infect(char[][] grid, int i, int j) {
+        if (i < 0 || j < 0 || i >= grid.length || j >= grid[0].length || grid[i][j] == '0') {
+            return;
+        }
+        grid[i][j] = '0';
+        infect(grid, i + 1, j);
+        infect(grid, i - 1, j);
+        infect(grid, i, j + 1);
+        infect(grid, i, j - 1);
+    }
+
+
+    /**
+     * 130. 被围绕的区域
+     **/
+    public void solve(char[][] board) {
+        if (board == null || board.length <= 2 || board[0].length <= 2) {
+            return;
+        }
+        boolean[][] visited = new boolean[board.length][board[0].length];
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if ((i == 0 || i == board.length - 1 || j == 0 || j == board[i].length - 1) && board[i][j] == 'O') {
+                    solve(board, i, j, visited);
+                }
+            }
+        }
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if (board[i][j] == 'O' && !visited[i][j]) {
+                    board[i][j] = 'X';
+                }
+            }
+        }
+    }
+
+    public void solve(char[][] board, int i, int j, boolean[][] visited) {
+        if (i < 0 || j < 0 || i >= board.length || j >= board[0].length) {
+            return;
+        }
+        if (board[i][j] != 'O' || visited[i][j]) {
+            return;
+        }
+        visited[i][j] = true;
+        solve(board, i - 1, j, visited);
+        solve(board, i + 1, j, visited);
+        solve(board, i, j - 1, visited);
+        solve(board, i, j + 1, visited);
+    }
+
+
+    public void solve1(char[][] board) {
+        if (board == null || board.length <= 2 || board[0].length <= 2) {
+            return;
+        }
+        boolean[][] visited = new boolean[board.length][board[0].length];
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if (board[i][j] == 'O' && !solve1(board, i, j, visited)) {
+                    infectBoard(board, i, j);
+                }
+            }
+        }
+    }
+
+    public void infectBoard(char[][] board, int i, int j) {
+        if (i < 0 || j < 0 || i >= board.length || j >= board[0].length || board[i][j] == 'O') {
+            return;
+        }
+        board[i][j] = 'O';
+        infectBoard(board, i + 1, j);
+        infectBoard(board, i - 1, j);
+        infectBoard(board, i, j + 1);
+        infectBoard(board, i, j - 1);
+    }
+
+    public boolean solve1(char[][] board, int i, int j, boolean[][] visited) {
+        if (i < 0 || j < 0 || i >= board.length || j >= board[0].length) {
+            return false;
+        }
+        if (board[i][j] != 'O' || visited[i][j]) {
+            return false;
+        }
+        visited[i][j] = true;
+        if (i == 0 || j == 0 || i == board.length - 1 || j == board[0].length - 1) {
+            return true;
+        }
+        return solve1(board, i - 1, j, visited) || solve1(board, i + 1, j, visited) || solve1(board, i, j - 1, visited) || solve1(board, i, j + 1, visited);
+    }
+
+    class Node {
+        public int val;
+        public List<Node> neighbors;
+
+        public Node() {
+            val = 0;
+            neighbors = new ArrayList<Node>();
+        }
+
+        public Node(int _val) {
+            val = _val;
+            neighbors = new ArrayList<Node>();
+        }
+
+        public Node(int _val, ArrayList<Node> _neighbors) {
+            val = _val;
+            neighbors = _neighbors;
+        }
+    }
+
+    /**
+     * 133. 克隆图
+     **/
+    public Node cloneGraph(Node node) {
+        if (node == null || node.neighbors == null) {
+            return node;
+        }
+        return copy(node);
+    }
+
+    private final Map<Integer, Node> nodeMap = new HashMap<>();
+
+    public Node copy(Node source) {
+        if (source == null) {
+            return null;
+        }
+        Node target;
+        if (nodeMap.containsKey(source.val)) {
+            return nodeMap.get(source.val);
+        } else {
+            target = new Node();
+            target.val = source.val;
+            nodeMap.put(source.val, target);
+        }
+        List<Node> neighbors = source.neighbors;
+        neighbors.forEach(neighbor -> target.neighbors.add(copy(neighbor)));
+        return target;
+    }
+
+
+//
+//    /**
+//     * 399. 除法求值
+//     * */
+//    public double[] calcEquation(List<List<String>> equations, double[] values, List<List<String>> queries) {
+//
+//    }
 
 
 }
-
-
-
 
 
