@@ -18,6 +18,8 @@ dependencies {
     api 'org.redisson:redisson-spring-boot-starter:3.27.2'
     api("org.apache.poi:poi-ooxml:5.2.3")
     api("org.springframework.boot:spring-boot-starter-quartz")
+    implementation 'org.apache.shardingsphere:shardingsphere-jdbc-core-spring-boot-starter:5.2.1'
+    implementation 'com.baomidou:mybatis-plus-spring-boot3-starter:3.5.7'
 }
 bootJar {
     enabled = true

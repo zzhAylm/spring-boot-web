@@ -2,6 +2,7 @@ package com.zzh.springboot3;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -14,6 +15,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
  * @Author: zzh
  * @Crete ${DATE} ${TIME}
  */
+@MapperScan("com.zzh.springboot3.mapper")
 @SpringBootApplication
 public class SpringBoot3Application {
     private static final Logger log = LogManager.getLogger(SpringBoot3Application.class);

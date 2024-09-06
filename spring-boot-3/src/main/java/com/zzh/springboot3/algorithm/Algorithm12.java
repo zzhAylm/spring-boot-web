@@ -2262,8 +2262,11 @@ public class Algorithm12 {
             return false;
         }
         return isValidBSTTreeNode(node.left, min, (long) node.val) && isValidBSTTreeNode(node.right, (long) node.val, max);
-
     }
+
+
+
+
 
 }
 

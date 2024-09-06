@@ -5,7 +5,7 @@ server:
     max-http-form-post-size: 50MB
 spring:
   profiles:
-    active: ${profile:dev}
+    active: ${profile:test}
   application:
     name: SpringBoot3Application
   security:

@@ -1,0 +1,166 @@
+mybatis-plus:
+  mapper-locations: classpath:/mapper/*.xml
+  type-aliases-package: com.zzh.springboot3
+
+spring:
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+  shardingsphere:
+    datasource:
+      names: write_db0,write_db1,read1_db0,read1_db1,read2_db0,read2_db1
+      write_db0:
+        type: com.zaxxer.hikari.HikariDataSource
+        jdbc-url: jdbc:mysql://127.0.0.1:3306/ds0?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&zeroDateTimeBehavior=convertToNull
+        username: root
+        password: 123456
+        driver-class-name: com.mysql.cj.jdbc.Driver
+      write_db1:
+        type: com.zaxxer.hikari.HikariDataSource
+        jdbc-url: jdbc:mysql://127.0.0.1:3306/ds1?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&zeroDateTimeBehavior=convertToNull
+        username: root
+        password: 123456
+        driver-class-name: com.mysql.cj.jdbc.Driver
+      read1_db0:
+        type: com.zaxxer.hikari.HikariDataSource
+        jdbc-url: jdbc:mysql://127.0.0.1:3306/ds0?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&zeroDateTimeBehavior=convertToNull
+        username: root
+        password: 123456
+        driver-class-name: com.mysql.cj.jdbc.Driver
+      read1_db1:
+        type: com.zaxxer.hikari.HikariDataSource
+        jdbc-url: jdbc:mysql://127.0.0.1:3306/ds1?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&zeroDateTimeBehavior=convertToNull
+        username: root
+        password: 123456
+        driver-class-name: com.mysql.cj.jdbc.Driver
+      read2_db0:
+        type: com.zaxxer.hikari.HikariDataSource
+        jdbc-url: jdbc:mysql://127.0.0.1:3306/ds0?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&zeroDateTimeBehavior=convertToNull
+        username: root
+        password: 123456
+        driver-class-name: com.mysql.cj.jdbc.Driver
+      read2_db1:
+        type: com.zaxxer.hikari.HikariDataSource
+        jdbc-url: jdbc:mysql://127.0.0.1:3306/ds1?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&zeroDateTimeBehavior=convertToNull
+        username: root
+        password: 123456
+        driver-class-name: com.mysql.cj.jdbc.Driver
+    rules:
+      sharding:
+        # 配置分片规则
+        tables:
+          # 配置 t_order 表规则
+          t_order:
+            actualDataNodes: read_write_db${0..1}.t_order_${0..1}
+            # 配置分库策略
+            databaseStrategy:
+              standard:
+                shardingColumn: id
+                shardingAlgorithmName: order_database_inline
+            # 配置分表策略
+            tableStrategy:
+              standard:
+                shardingColumn: id
+                shardingAlgorithmName: order_table_inline
+            keyGenerateStrategy:
+              column: id
+              key-generator-name: snowflake
+          t_user:
+            actualDataNodes: read_write_db${0..1}.t_user_${0..1}
+            # 配置分库策略
+            databaseStrategy:
+              complex:
+                sharding-columns: id,role_id
+                shardingAlgorithmName: user_database_complex
+            # 配置分表策略
+            tableStrategy:
+              complex:
+                sharding-columns: id,role_id
+                shardingAlgorithmName: user_table_complex
+            keyGenerateStrategy:
+              column: id
+              key-generator-name: snowflake
+          t_role:
+            actualDataNodes: read_write_db${0..1}.t_role_${0..1}
+            # 配置分库策略
+            databaseStrategy:
+              complex:
+                sharding-columns: id,name
+                shardingAlgorithmName: role_database_complex
+            # 配置分表策略
+            tableStrategy:
+              complex:
+                sharding-columns: id,name
+                shardingAlgorithmName: role_table_complex
+            keyGenerateStrategy:
+              column: id
+              key-generator-name: snowflake
+        # 配置分片算法
+        sharding-algorithms:
+          order_database_inline:
+            type: INLINE
+            props:
+              algorithm-expression: read_write_db${id % 2}
+          order_table_inline:
+            type: INLINE
+            props:
+              algorithm-expression: t_order_${id % 2}
+          user_database_complex:
+            type: COMPLEX_INLINE
+            props:
+              algorithm-expression: read_write_db${((id % 2)+(role_id%2))%2}
+          user_table_complex:
+            type: CLASS_BASED
+            props:
+              strategy: COMPLEX
+              algorithmClassName: com.zzh.springboot3.shardingsphere.UserShardingAlgorithm
+          role_database_complex:
+            type: COMPLEX_INLINE
+            props:
+              algorithm-expression: read_write_db${id % 2}
+          role_table_complex:
+            type: CLASS_BASED
+            props:
+              strategy: COMPLEX
+              algorithmClassName: com.zzh.springboot3.shardingsphere.RoleShardingAlgorithm
+          default_database_inline:
+            type: INLINE
+            props:
+              algorithm-expression: read_write_db${id % 2}
+        #          default_table_inline:
+        #            type: INLINE
+        #            props:
+        #              algorithm-expression: t_order_${id % 2}
+        default-database-strategy:
+          standard:
+            sharding-column: id
+            sharding-algorithm-name: default_database_inline
+        #        default-table-strategy:
+        #          standard:
+        #            sharding-column: id
+        #            sharding-algorithm-name: default_table_inline
+        key-generators:
+          snowflake:
+            type: SNOWFLAKE
+            props:
+              worker-id: 0  # 可配置为你希望的 worker-id
+        default-sharding-column: id
+      readwrite-splitting:
+        data-sources:
+          read_write_db0:
+            static-strategy:
+              read-data-source-names: read1_db0,read2_db0
+              write-data-source-name: write_db0
+            load-balancer-name: round_robin
+          read_write_db1:
+            static-strategy:
+              read-data-source-names: read1_db1,read2_db1
+              write-data-source-name: write_db1
+            load-balancer-name: round_robin
+        load-balancers:
+          round_robin:
+            type: ROUND_ROBIN
+
+
+
