@@ -3,15 +3,13 @@ package com.zzh.springboot3;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.zzh.springboot3.domain.Dept;
 import com.zzh.springboot3.domain.Order;
 import com.zzh.springboot3.domain.Role;
 import com.zzh.springboot3.domain.User;
-import com.zzh.springboot3.service.OrderService;
-import com.zzh.springboot3.service.RoleService;
-import com.zzh.springboot3.service.UserService;
+import com.zzh.springboot3.service.*;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.weaver.ast.Or;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -44,7 +42,7 @@ public class ApplicationMapperTest {
     }
 
     @Test
-    public void orderServiceQuery(){
+    public void orderServiceQuery() {
         Order order = orderService.getById(1038846286184316928L);
         log.info("query order is : {}", JSONUtil.toJsonStr(order));
     }
@@ -83,4 +81,28 @@ public class ApplicationMapperTest {
         Role role = roleService.getById(1831952957720940545L);
         log.info("query role is :{}", JSONUtil.toJsonStr(role));
     }
+
+    @Resource
+    private DeptService deptService;
+
+    @Test
+    public void deptTest() {
+        Dept dept = new Dept();
+        dept.setLeaderId(1L);
+        dept.setName("架构部");
+        dept.setParentId(0L);
+        deptService.deptService(dept);
+        log.info("query dept is :{}", JSONUtil.toJsonStr(dept));
+    }
+
+
+    @Resource
+    private TransactionService transactionService;
+
+
+    @Test
+    public void transactionService() {
+        transactionService.transaction();
+    }
+
 }

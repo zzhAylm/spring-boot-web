@@ -9,6 +9,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * @Description:
@@ -17,6 +18,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
  */
 @MapperScan("com.zzh.springboot3.mapper")
 @SpringBootApplication
+@EnableTransactionManagement
 public class SpringBoot3Application {
     private static final Logger log = LogManager.getLogger(SpringBoot3Application.class);
 

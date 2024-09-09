@@ -1,6 +1,8 @@
 mybatis-plus:
   mapper-locations: classpath:/mapper/*.xml
   type-aliases-package: com.zzh.springboot3
+  configuration:
+      log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # 使用标准输出日志
 
 spring:
   data:
@@ -127,7 +129,7 @@ spring:
           default_database_inline:
             type: INLINE
             props:
-              algorithm-expression: read_write_db${id % 2}
+              algorithm-expression: read_write_db0
         #          default_table_inline:
         #            type: INLINE
         #            props:
@@ -161,6 +163,14 @@ spring:
         load-balancers:
           round_robin:
             type: ROUND_ROBIN
-
-
+  datasource:
+    hikari:
+      data-source-class-name:
+logging:
+  level:
+    root: INFO
+    org.springframework.transaction.interceptor.TransactionInterceptor: DEBUG
+    org.springframework.transaction.support.TransactionSynchronizationManager: DEBUG
+    org.springframework.orm.mybatis: DEBUG  # 额外增加 MyBatis 相关日志
+    org.springframework.jdbc.support.JdbcTransactionManager: DEBUG
 
