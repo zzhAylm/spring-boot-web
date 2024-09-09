@@ -1,11 +1,11 @@
 package com.zzh.springboot3.algorithm;
 
-import cn.hutool.core.lang.func.VoidFunc;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @Description: 面试经典150题
@@ -2424,14 +2424,184 @@ public class Algorithm12 {
     }
 
 
-//
 //    /**
 //     * 399. 除法求值
-//     * */
+//     */
 //    public double[] calcEquation(List<List<String>> equations, double[] values, List<List<String>> queries) {
+//        if (equations == null || equations.size() == 0 || queries == null || queries.size() == 0) {
+//            return new double[0];
+//        }
+//        double[][] temp = new double[26][26];
+//        queries.forEach(arr->{
+//            int s = arr.get(0).-'a';
+//            char s = arr.get(1);
+//
+//
+//        });
 //
 //    }
 
+
+    /**
+     * 207. 课程表
+     **/
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        if (numCourses == 0 || prerequisites == null || prerequisites.length <= 1) {
+            return true;
+        }
+        Map<Integer, List<Integer>> courses = new HashMap<>();
+        for (int[] ints : prerequisites) {
+            List<Integer> list = courses.computeIfAbsent(ints[0], (key) -> new ArrayList<>());
+            list.add(ints[1]);
+        }
+        List<Integer> visited = new ArrayList<>();
+        LinkedList<Integer> visitedPath = new LinkedList<>();
+        for (Map.Entry<Integer, List<Integer>> entry : courses.entrySet()) {
+            if (!course(visited, visitedPath, courses, entry.getKey(), entry.getValue())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    public boolean course(List<Integer> visited, LinkedList<Integer> visitedPath, Map<Integer, List<Integer>> courses, int course, List<Integer> preCourses) {
+        if (visited.contains(course)) {
+            return true;
+        }
+        for (Integer preCourse : preCourses) {
+            if (visited.contains(preCourse)) {
+                continue;
+            }
+            if (visitedPath.contains(preCourse)) {
+                return false;
+            }
+            visitedPath.add(course);
+            if (courses.containsKey(preCourse) && !course(visited, visitedPath, courses, preCourse, courses.get(preCourse))) {
+                return false;
+            }
+        }
+        visited.add(course);
+        return true;
+    }
+
+    @Test
+    public void testCourse() {
+        int[][] courses = {{1, 4}, {2, 4}, {3, 1}, {3, 2}};
+        System.out.println(canFinish(5, courses));
+    }
+
+
+    /**
+     * 210. 课程表 II
+     */
+    public int[] findOrder(int numCourses, int[][] prerequisites) {
+        if (prerequisites == null || prerequisites.length == 0) {
+            int[] arr = new int[numCourses];
+            for (int i = 0; i < arr.length; i++) {
+                arr[i] = i;
+            }
+        }
+        List<Integer>[] graph = graph(prerequisites, numCourses);
+        boolean[] visited = new boolean[numCourses];
+        boolean[] path = new boolean[numCourses];
+        for (int i = 0; i < graph.length; i++) {
+            leanCourse(graph, i, graph[i], visited, path);
+        }
+        if (cycle) {
+            return new int[0];
+        }
+        int[] res = new int[courses.size()];
+        for (int i = 0; i < courses.size(); i++) {
+            res[i] = courses.get(i);
+        }
+        return res;
+    }
+
+    List<Integer> courses = new ArrayList<>();
+    boolean cycle = false;
+
+    public void leanCourse(List<Integer>[] graph, int course, List<Integer> preCourses, boolean[] visited, boolean[] path) {
+        if (path[course] || cycle) {
+            cycle = true;
+            return;
+        }
+        if (visited[course]) {
+            return;
+        }
+        path[course] = true;
+        for (Integer pre : preCourses) {
+            leanCourse(graph, pre, graph[pre], visited, path);
+        }
+        visited[course] = true;
+        courses.add(course);
+        path[course] = false;
+    }
+
+    public List<Integer>[] graph(int[][] prerequisites, int numCourses) {
+        List<Integer>[] graph = new LinkedList[numCourses];
+        for (int i = 0; i < graph.length; i++) {
+            graph[i] = new LinkedList<>();
+        }
+        for (int[] arr : prerequisites) {
+            graph[arr[0]].add(arr[1]);
+        }
+        return graph;
+    }
+
+
+    /***
+     *  课程表： List<Integer>[] graph=new LinkedList[num];
+     * */
+
+
+    /**
+     * 433. 最小基因变化
+     **/
+    public int minMutation(String startGene, String endGene, String[] bank) {
+        if (startGene == null || endGene == null || startGene.equals(endGene)) {
+            return 0;
+        }
+        if (bank == null || bank.length == 0) {
+            return -1;
+        }
+        Set<String> bankSet = new HashSet<>(Arrays.asList(bank));
+        char[] start = startGene.toCharArray();
+        char[] end = endGene.toCharArray();
+        if (minMutation(start, end, bankSet, 0)) {
+            return minMutation;
+        }
+        return -1;
+    }
+
+    Integer minMutation = 0;
+
+    public boolean minMutation(char[] start, char[] end, Set<String> bankSet, int count) {
+        if (new String(start).equals(new String(end))) {
+            minMutation = count;
+            return true;
+        }
+        for (int i = 0; i < start.length; i++) {
+            if (start[i] == end[i]) {
+                continue;
+            }
+            char pre = start[i];
+            start[i] = end[i];
+            count++;
+            if (bankSet.contains(new String(start))) {
+                return minMutation(start, end, bankSet, count);
+            }
+            count--;
+            start[i] = pre;
+        }
+        return false;
+    }
+
+    @Test
+    public void minMutationTest() {
+        String[] strs = new String[]{"AACCGATT","AACCGATA","AAACGATA","AAACGGTA"};
+        minMutation("AACCGGTT", "AAACGGTA", strs);
+    }
 
 }
 
