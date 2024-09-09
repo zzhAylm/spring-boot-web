@@ -1,5 +1,6 @@
 package com.zzh.springboot3.algorithm;
 
+import jodd.util.StringUtil;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -2644,6 +2645,53 @@ public class Algorithm12 {
         }
         return -1;
     }
+
+
+    class Trie {
+
+        Trie[] children;
+        boolean flag = false;
+
+        public Trie() {
+            children = new Trie[26];
+        }
+
+        public void insert(String word) {
+            Trie cur = this;
+            for (int i = 0; i < word.length(); i++) {
+                Trie child = cur.children[word.charAt(i) - 'a'];
+                if (child == null) {
+                    child = new Trie();
+                    cur.children[word.charAt(i) - 'a'] = child;
+                }
+                cur = child;
+            }
+            cur.flag = true;
+        }
+
+        public boolean search(String word) {
+            return searchWord(word, false);
+        }
+
+        public boolean startsWith(String prefix) {
+            return searchWord(prefix, true);
+        }
+
+        public boolean searchWord(String word, boolean prefix) {
+            Trie node = this;
+            for (int i = 0; i < word.length(); i++) {
+                int index = word.charAt(i) - 'a';
+                Trie child = node.children[index];
+                if (child == null) {
+                    return false;
+                }
+                node = child;
+            }
+            return prefix || node.flag;
+        }
+
+    }
+
 
 }
 
