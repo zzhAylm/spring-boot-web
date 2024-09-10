@@ -2693,6 +2693,151 @@ public class Algorithm12 {
     }
 
 
+    /**
+     * 211. 添加与搜索单词 - 数据结构设计
+     */
+    class WordDictionary {
+
+        private WordDictionary[] wordDictionaries;
+        private boolean flag = false;
+
+        public WordDictionary() {
+            wordDictionaries = new WordDictionary[26];
+        }
+
+        public void addWord(String word) {
+            if (word == null) {
+                return;
+            }
+            WordDictionary cur = this;
+            char[] chars = word.toCharArray();
+            for (char c : chars) {
+                WordDictionary child = cur.wordDictionaries[c - 'a'];
+                if (child == null) {
+                    child = new WordDictionary();
+                    cur.wordDictionaries[c - 'a'] = child;
+                }
+                cur = child;
+            }
+            cur.flag = true;
+        }
+
+        public boolean search(String word) {
+            return search(word, 0, this);
+        }
+
+        public boolean search(String word, int index, WordDictionary wordDictionary) {
+            if (wordDictionary == null) {
+                return false;
+            }
+            if (index == word.length()) {
+                return wordDictionary.flag;
+            }
+            char c = word.charAt(index);
+            if (c == '.') {
+                for (int i = 0; i < 26; i++) {
+                    WordDictionary child = wordDictionary.wordDictionaries[i];
+                    if (child != null && search(word, index + 1, child)) {
+                        return true;
+                    }
+                }
+                return false;
+            } else {
+                return wordDictionary.wordDictionaries[c - 'a'] != null && search(word, index + 1, wordDictionary.wordDictionaries[c - 'a']);
+            }
+        }
+    }
+
+
+    /**
+     * 17. 电话号码的字母组合
+     **/
+    public List<String> letterCombinations(String digits) {
+        if (digits == null || digits.length() == 0) {
+            return new ArrayList<>();
+        }
+        List<String> letters = new ArrayList<>();
+        for (int i = 0; i < digits.length(); i++) {
+            letters.add(getCharsByNum(digits.charAt(i)));
+        }
+        letterCombinationBackTrack(letters, 0, new StringBuilder());
+        return letterCombinations;
+    }
+
+    List<String> letterCombinations = new ArrayList<>();
+
+    public void letterCombinationBackTrack(List<String> letters, Integer index, StringBuilder stringBuilder) {
+        if (index == letters.size()) {
+            letterCombinations.add(stringBuilder.toString());
+            return;
+        }
+        String letter = letters.get(index);
+        for (int i = 0; i < letter.length(); i++) {
+            stringBuilder.append(letter.charAt(i));
+            letterCombinationBackTrack(letters, index + 1, stringBuilder);
+            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+        }
+    }
+
+    public String getCharsByNum(Character num) {
+        switch (num) {
+            case '2' -> {
+                return "abc";
+            }
+            case '3' -> {
+                return "def";
+            }
+            case '4' -> {
+                return "ghi";
+            }
+            case '5' -> {
+                return "jkl";
+            }
+            case '6' -> {
+                return "mno";
+            }
+            case '7' -> {
+                return "pqrs";
+            }
+            case '8' -> {
+                return "tuv";
+            }
+            case '9' -> {
+                return "wxyz";
+            }
+            default -> {
+                return "";
+            }
+        }
+    }
+
+
+    /**
+     * 77. 组合
+     **/
+    public List<List<Integer>> combine(int n, int k) {
+        if (k == 0) {
+            return new ArrayList<>();
+        }
+        combineNum(n, 1, k, 0, new LinkedList<>());
+        return combineList;
+    }
+
+    List<List<Integer>> combineList = new ArrayList<>();
+
+    public void combineNum(int n, int curNum, int k, int count, LinkedList<Integer> cur) {
+        if (count == k) {
+            combineList.add(new ArrayList<>(cur));
+            return;
+        }
+        for (int i = curNum; i <= n; i++) {
+            cur.add(i);
+            combineNum(n, i + 1, k, count + 1, cur);
+            cur.removeLast();
+        }
+    }
+
+
 }
 
 
