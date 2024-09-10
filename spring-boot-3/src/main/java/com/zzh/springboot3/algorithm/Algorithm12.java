@@ -2838,6 +2838,35 @@ public class Algorithm12 {
     }
 
 
+    /**
+     * 46. 全排列
+     **/
+    public List<List<Integer>> permute(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return new ArrayList<>();
+        }
+        permuteBackTrack(new LinkedList<>(),nums);
+        return permute;
+    }
+
+    List<List<Integer>> permute = new ArrayList<>();
+
+    public void permuteBackTrack(LinkedList<Integer> cur, int[] nums) {
+        if (cur.size() == nums.length) {
+            permute.add(new ArrayList<>(cur));
+            return;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (cur.contains(nums[i])) {
+                continue;
+            }
+            cur.add(nums[i]);
+            permuteBackTrack(cur, nums);
+            cur.removeLast();
+        }
+
+    }
+
 }
 
 
