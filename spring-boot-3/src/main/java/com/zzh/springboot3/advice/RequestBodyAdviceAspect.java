@@ -78,11 +78,20 @@ public class RequestBodyAdviceAspect extends RequestBodyAdviceAdapter {
         return ResponseDto.build(HttpStatus.BAD_REQUEST.value(), "参数校验失败", errors);
     }
 
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseBody
+    public ResponseDto<Object> runtimeException(RuntimeException e) {
+        log.error("运行时未知异常", e);
+        return ResponseDto.build(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), null);
+    }
+
+
     @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public ResponseDto<Object> otherException(Exception e) {
         log.error("未知异常", e);
-        return ResponseDto.build(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+        return ResponseDto.build(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), null);
     }
 }
