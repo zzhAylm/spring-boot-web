@@ -2845,7 +2845,7 @@ public class Algorithm12 {
         if (nums == null || nums.length == 0) {
             return new ArrayList<>();
         }
-        permuteBackTrack(new LinkedList<>(),nums);
+        permuteBackTrack(new LinkedList<>(), nums);
         return permute;
     }
 
@@ -2867,6 +2867,132 @@ public class Algorithm12 {
 
     }
 
+
+    /**
+     * 39.组合总和
+     **/
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        if (candidates == null || candidates.length == 0) {
+            return new ArrayList<>();
+        }
+        combinationSumBackTrack(new LinkedList<>(), 0, target, candidates, 0);
+
+        return combinationSum;
+
+    }
+
+    List<List<Integer>> combinationSum = new ArrayList<>();
+
+    public void combinationSumBackTrack(LinkedList<Integer> cur, int sum, int target, int[] candidates, int index) {
+        if (sum > target) {
+            return;
+        }
+        if (sum == target) {
+            combinationSum.add(new ArrayList<>(cur));
+            return;
+        }
+        for (int i = index; i < candidates.length; i++) {
+            cur.add(candidates[i]);
+            combinationSumBackTrack(cur, sum + candidates[i], target, candidates, i);
+            cur.removeLast();
+        }
+    }
+
+
+    /**
+     * 22. 括号生成
+     */
+    public List<String> generateParenthesis(int n) {
+        if (n == 0) {
+            return new ArrayList<>();
+        }
+        generateParenthesisBackTrack(new StringBuilder(), 0, 0, n);
+        return generateParenthesis;
+    }
+
+    List<String> generateParenthesis = new ArrayList<>();
+
+    public void generateParenthesisBackTrack(StringBuilder builder, int left, int right, int n) {
+        if (left > n || right > n || left < right) {
+            return;
+        }
+        if (left == n && right == n) {
+            generateParenthesis.add(builder.toString());
+            return;
+        }
+        builder.append("(");
+        generateParenthesisBackTrack(builder, left + 1, right, n);
+        builder.deleteCharAt(builder.length() - 1);
+
+        builder.append(")");
+        generateParenthesisBackTrack(builder, left, right + 1, n);
+        builder.deleteCharAt(builder.length() - 1);
+    }
+
+
+    /**
+     * 79. 单词搜索
+     **/
+    public boolean exist(char[][] board, String word) {
+        if (board == null || board.length == 0 || word == null || word.length() == 0) {
+            return false;
+        }
+        boolean[][] visited = new boolean[board.length][board[0].length];
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                existBackTrack(word.toCharArray(), 0, board, i, j, visited);
+            }
+        }
+        return existBackTrack;
+    }
+
+    boolean existBackTrack = false;
+
+
+    public void existBackTrack(char[] words, int index, char[][] board, int x, int y, boolean[][] visited) {
+        if (index == words.length || existBackTrack) {
+            existBackTrack = true;
+            return;
+        }
+        if (x < 0 || y < 0 || x >= board.length || y >= board[0].length) {
+            return;
+        }
+        if (!visited[x][y] && board[x][y] == words[index]) {
+            visited[x][y] = true;
+            existBackTrack(words, index + 1, board, x, y - 1, visited);
+            existBackTrack(words, index + 1, board, x, y + 1, visited);
+            existBackTrack(words, index + 1, board, x + 1, y, visited);
+            existBackTrack(words, index + 1, board, x - 1, y, visited);
+            visited[x][y] = false;
+        }
+    }
+
+
+    /**
+     * 108. 将有序数组转换为二叉搜索树
+     */
+    public TreeNode sortedArrayToBST(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return null;
+        }
+        return buildSortedArrayToBST(nums, 0, nums.length - 1);
+    }
+
+    public TreeNode buildSortedArrayToBST(int[] nums, int left, int right) {
+        if (left > right) {
+            return null;
+        }
+        int mid = (left + right) / 2;
+        TreeNode treeNode = new TreeNode(nums[mid]);
+        treeNode.left = buildSortedArrayToBST(nums, left, mid - 1);
+        treeNode.right = buildSortedArrayToBST(nums, mid + 1, right);
+        return treeNode;
+    }
+
+
+//    public ListNode sortList(ListNode head) {
+//
+//    }
 }
 
 
