@@ -2990,9 +2990,201 @@ public class Algorithm12 {
     }
 
 
-//    public ListNode sortList(ListNode head) {
+    /**
+     * 148. 排序链表 (自顶向上归并排序)
+     */
+    public ListNode sortList(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        return sortList(head, null);
+    }
+
+    public ListNode sortList(ListNode head, ListNode tail) {
+        if (head == null || head.next == null || head == tail) {
+            return head;
+        }
+        if (head.next == tail) {
+            head.next = null;
+            return head;
+        }
+
+        ListNode slow = head;
+        ListNode fast = head;
+        while (fast != tail) {
+            fast = fast.next;
+            slow = slow.next;
+            if (fast != tail) {
+                fast = fast.next;
+            }
+        }
+        ListNode left = sortList(head, slow);
+        ListNode right = sortList(slow, tail);
+        return merge(left, right);
+    }
+
+    public ListNode merge(ListNode left, ListNode right) {
+        if (left == null) {
+            return right;
+        }
+        if (right == null) {
+            return left;
+        }
+        ListNode pre = new ListNode(-1);
+        ListNode p = pre;
+
+        while (left != null && right != null) {
+            if (left.val <= right.val) {
+                ListNode next = left.next;
+                left.next = null;
+                p.next = left;
+                left = next;
+            } else {
+                ListNode next = right.next;
+                right.next = null;
+                p.next = right;
+                right = next;
+            }
+            p = p.next;
+        }
+        while (left != null) {
+            ListNode next = left.next;
+            left.next = null;
+            p.next = left;
+            left = next;
+            p = p.next;
+        }
+        while (right != null) {
+            ListNode next = right.next;
+            right.next = null;
+            p.next = right;
+            right = next;
+            p = p.next;
+        }
+        return pre.next;
+    }
+
+
+    // 插入排序
+    public ListNode sortList1(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode pre = new ListNode(Integer.MIN_VALUE);
+        pre.next = head;
+        ListNode p = pre;
+        while (p.next != null) {
+            ListNode next = p.next;
+            if (next.val >= p.val) {
+                p = p.next;
+            } else {
+                p.next = next.next;
+                ListNode cur = pre;
+                while (cur.next.val <= next.val) {
+                    cur = cur.next;
+                }
+                next.next = cur.next;
+                cur.next = next;
+            }
+        }
+        return pre.next;
+    }
+
+    @Test
+    public void testSortList() {
+        ListNode head = new ListNode(-1);
+        head.next = new ListNode(5);
+        head.next.next = new ListNode(3);
+        head.next.next.next = new ListNode(4);
+        head.next.next.next.next = new ListNode(0);
+        sortList(head);
+    }
+
+
+    /**
+     * 427.建立四叉树
+     */
+//    public Node construct(int[][] grid) {
+//
 //
 //    }
+
+
+    /**
+     * 23. 合并 K 个升序链表
+     **/
+    public ListNode mergeKLists(ListNode[] lists) {
+        if (lists == null || lists.length == 0) {
+            return null;
+        }
+        ListNode pre = new ListNode(-1);
+        ListNode p = pre;
+        while (true) {
+            ListNode cur = null;
+            int index = -1;
+            for (int i = 0; i < lists.length; i++) {
+                if (lists[i] == null) {
+                    continue;
+                }
+                if (cur == null || lists[i].val < cur.val) {
+                    cur = lists[i];
+                    index = i;
+                }
+            }
+            if (cur == null) {
+                break;
+            }
+            lists[index] = cur.next;
+            cur.next = null;
+            p.next = cur;
+            p = p.next;
+        }
+        return pre.next;
+    }
+
+
+    /**
+     * 53. 最大子数组和
+     */
+    public int maxSubArray(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+
+        int[] ints = new int[nums.length];
+        ints[0] = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            ints[i] = Math.max(ints[i - 1] + nums[i], nums[i]);
+        }
+        return Arrays.stream(ints).max().getAsInt();
+    }
+
+
+    /**
+     * 918. 环形子数组的最大和
+     **/
+    public int maxSubarraySumCircular(int[] nums) {
+        int max = nums[0];
+        int[] ints = new int[nums.length];
+        int[] leftMax = new int[nums.length];
+        ints[0] = nums[0];
+        leftMax[0] = nums[0];
+        int leftSum = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            ints[i] = Math.max(nums[i], nums[i] + ints[i - 1]);
+            max = Math.max(ints[i], max);
+            leftSum += nums[i];
+            leftMax[i] = Math.max(leftSum, leftMax[i - 1]);
+        }
+
+        int rightSum = 0;
+        for (int i = nums.length - 1; i > 0; i--) {
+            rightSum += nums[i];
+            max = Math.max(max, rightSum + leftMax[i - 1]);
+        }
+
+        return max;
+    }
 }
 
 

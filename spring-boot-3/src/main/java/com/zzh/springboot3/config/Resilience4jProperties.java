@@ -15,7 +15,7 @@ import java.util.Map;
 @Data
 @ConfigurationProperties(prefix = Resilience4jProperties.PREFIX)
 public class Resilience4jProperties {
-    public static final String PREFIX = "com.zzh.resilience4j";
+    public static final String PREFIX = "zzh.resilience4j";
 
     private Map<String, CommonCircuitBreakerConfigurationProperties.InstanceProperties> circuitBreaker = new HashMap<>();
 
