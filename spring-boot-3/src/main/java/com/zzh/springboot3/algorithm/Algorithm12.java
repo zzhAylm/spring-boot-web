@@ -3492,6 +3492,75 @@ public class Algorithm12 {
         return str.substring(left + 1, right);
     }
 
+
+    /**
+     * 97. 交错字符串
+     **/
+    public boolean isInterleave(String s1, String s2, String s3) {
+        if (s2 == null && s1 == null) {
+            return s3 == null || s3.length() == 0;
+        }
+        if (s1 == null) {
+            return s2.equals(s3);
+        }
+        if (s2 == null) {
+            return s1.equals(s3);
+        }
+        if (s3 == null || s1.length() + s2.length() != s3.length()) {
+            return false;
+        }
+        boolean[][] dp = new boolean[s1.length() + 1][s2.length() + 1];
+        dp[0][0] = true;
+        for (int i = 0; i <= s1.length(); i++) {
+            for (int j = 0; j <= s2.length(); j++) {
+                int index = i + j - 1;
+                if (i > 0) {
+                    dp[i][j] = dp[i][j] || dp[i - 1][j] && s1.charAt(i - 1) == s3.charAt(index);
+                }
+                if (j > 0) {
+                    dp[i][j] = dp[i][j] || dp[i][j - 1] && s2.charAt(j - 1) == s3.charAt(index);
+                }
+            }
+        }
+        return dp[s1.length()][s2.length()];
+    }
+
+
+    /**
+     * 221. 最大正方形
+     **/
+    public int maximalSquare(char[][] matrix) {
+        if (matrix == null || matrix.length == 0) {
+            return 0;
+        }
+        int max = 0;
+        int[][] dp = new int[matrix.length][matrix[0].length];
+
+        for (int i = 0; i < dp.length; i++) {
+            if (matrix[i][0] == '1') {
+                dp[i][0] = 1;
+                max = Math.max(max, dp[i][0]);
+            }
+        }
+        for (int i = 0; i < dp[0].length; i++) {
+            if (matrix[0][i] == '1') {
+                dp[0][i] = 1;
+                max = Math.max(max, dp[0][i]);
+            }
+        }
+        for (int i = 1; i < dp.length; i++) {
+            for (int j = 1; j < dp[i].length; j++) {
+                if (matrix[i][j] == '1') {
+                    dp[i][j] = Math.min(Math.min(dp[i - 1][j], dp[i][j - 1]), dp[i - 1][j - 1]) + 1;
+                    max = Math.max(max, dp[i][j]);
+                }
+            }
+        }
+
+
+        return max * max;
+    }
+
 }
 
 
