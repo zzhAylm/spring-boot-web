@@ -3242,6 +3242,122 @@ public class Algorithm12 {
         return nums[n];
     }
 
+
+    /**
+     * 198. 打家劫舍
+     */
+    public int rob(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        if (nums.length == 1) {
+            return nums[0];
+        }
+        int[][] ints = new int[nums.length][2];
+        ints[0][0] = nums[0];
+        int max = nums[0];
+        for (int i = 1; i < ints.length; i++) {
+            ints[i][0] = Math.max(ints[i - 1][1] + nums[i], ints[i - 1][0]);
+            ints[i][1] = Math.max(ints[i - 1][0], ints[i - 1][1]);
+            max = Math.max(ints[i][0], max);
+        }
+        return max;
+    }
+
+
+    /**
+     * 139. 单词拆分
+     **/
+    public boolean wordBreak(String s, List<String> wordDict) {
+        if (s == null || s.length() == 0) {
+            return true;
+        }
+        if (wordDict == null || wordDict.size() == 0) {
+            return false;
+        }
+        Set<String> strings = new HashSet<>(wordDict);
+        boolean[] word = new boolean[s.length() + 1];
+        word[0] = true;
+        for (int i = 1; i <= s.length(); i++) {
+            for (int j = 0; j < i; j++) {
+                if (word[j] && strings.contains(s.substring(j, i))) {
+                    word[i] = true;
+                    break;
+                }
+            }
+        }
+        return word[s.length()];
+    }
+
+    @Test
+    public void testWordBreak() {
+        String str = "zzh";
+        System.out.println(str.substring(0, str.length()));
+    }
+
+
+    /***
+     * 322. 零钱兑换
+     * */
+    public int coinChange(int[] coins, int amount) {
+        if (amount <= 0) {
+            return 0;
+        }
+        if (coins == null || coins.length == 0) {
+            return -1;
+        }
+        Set<Integer> coinSet = new HashSet<>();
+        Arrays.stream(coins).forEach(coinSet::add);
+        int[] dp = new int[amount + 1];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0;
+        for (int i = 1; i < dp.length; i++) {
+            if (coinSet.contains(i)) {
+                dp[i] = 1;
+            } else {
+                for (int coin : coins) {
+                    if (i >= coin && dp[i - coin] != Integer.MAX_VALUE) {
+                        dp[i] = Math.min(dp[i], dp[i - coin] + 1);
+                    }
+                }
+            }
+        }
+        return dp[dp.length - 1] == Integer.MAX_VALUE ? -1 : dp[dp.length - 1];
+    }
+
+
+    /**
+     * 300. 最长递增子序列
+     */
+    public int lengthOfLIS(int[] nums) {
+        if (nums == null) {
+            return 0;
+        }
+        if (nums.length <= 1) {
+            return nums.length;
+        }
+        int[] dp = new int[nums.length];
+        Arrays.fill(dp, 1);
+        for (int i = 1; i < dp.length; i++) {
+            for (int j = 0; j < i; j++) {
+                if (nums[i] > nums[j]) {
+                    dp[i] = Math.max(dp[j] + 1, dp[i]);
+                }
+            }
+        }
+        return Arrays.stream(dp).max().orElse(1);
+    }
+
+
+//    /**
+//     *
+//     * **/
+//    public int minimumTotal(List<List<Integer>> triangle) {
+//
+//    }
+
+
+
 }
 
 
