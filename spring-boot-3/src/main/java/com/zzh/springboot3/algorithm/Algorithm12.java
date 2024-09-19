@@ -3349,14 +3349,148 @@ public class Algorithm12 {
     }
 
 
-//    /**
-//     *
-//     * **/
-//    public int minimumTotal(List<List<Integer>> triangle) {
-//
-//    }
+    /**
+     * 120. 三角形最小路径和
+     **/
+    public int minimumTotal(List<List<Integer>> triangle) {
+        if (triangle == null || triangle.size() == 0) {
+            return 0;
+        }
+        int[][] dp = new int[triangle.size()][triangle.size()];
+        dp[0][0] = triangle.get(0).get(0);
+        for (int i = 1; i < triangle.size(); i++) {
+            for (int j = 0; j < triangle.get(i).size(); j++) {
+                if (j == 0) {
+                    dp[i][j] = dp[i - 1][j] + triangle.get(i).get(j);
+                } else if (j == triangle.get(i).size() - 1) {
+                    dp[i][j] = dp[i - 1][j - 1] + triangle.get(i).get(j);
+                } else {
+                    dp[i][j] = Math.min(dp[i - 1][j], dp[i - 1][j - 1]) + triangle.get(i).get(j);
+                }
+            }
+        }
+        return Arrays.stream(dp[dp.length - 1]).min().orElse(0);
+    }
 
 
+    @Test
+    public void testMinNumTotal() {
+        List<List<Integer>> triangle = new ArrayList<>();
+        ArrayList<Integer> e = new ArrayList<>();
+        e.add(2);
+        triangle.add(e);
+
+        ArrayList<Integer> e1 = new ArrayList<>();
+        e1.add(3);
+        e1.add(4);
+        triangle.add(e1);
+
+        ArrayList<Integer> e2 = new ArrayList<>();
+        e2.add(6);
+        e2.add(5);
+        e2.add(7);
+        triangle.add(e2);
+
+        ArrayList<Integer> e3 = new ArrayList<>();
+        e3.add(4);
+        e3.add(1);
+        e3.add(8);
+        e3.add(3);
+        triangle.add(e3);
+
+        System.out.println(minimumTotal(triangle));
+    }
+
+    /***
+     * 64. 最小路径和
+     * */
+    public int minPathSum(int[][] grid) {
+        if (grid == null || grid.length == 0) {
+            return 0;
+        }
+        int[][] dp = new int[grid.length][grid[0].length];
+        dp[0][0] = grid[0][0];
+        for (int i = 1; i < grid[0].length; i++) {
+            dp[0][i] = dp[0][i - 1] + grid[0][i];
+        }
+        for (int i = 1; i < grid.length; i++) {
+            dp[i][0] = dp[i - 1][0] + grid[i][0];
+        }
+        for (int i = 1; i < dp.length; i++) {
+            for (int j = 1; j < dp[i].length; j++) {
+                dp[i][j] = Math.min(dp[i][j - 1], dp[i - 1][j]) + grid[i][j];
+            }
+        }
+        return dp[dp.length - 1][dp[0].length - 1];
+    }
+
+
+    /**
+     * 63. 不同路径 II
+     **/
+    public int uniquePathsWithObstacles(int[][] obstacleGrid) {
+        if (obstacleGrid == null || obstacleGrid.length == 0) {
+            return 0;
+        }
+        int[][] dp = new int[obstacleGrid.length][obstacleGrid[0].length];
+        if (obstacleGrid[0][0] == 1) {
+            return 0;
+        }
+        dp[0][0] = 1;
+        for (int i = 1; i < dp.length; i++) {
+            if (obstacleGrid[i][0] == 1) {
+                continue;
+            }
+            dp[i][0] = dp[i - 1][0];
+        }
+        for (int i = 1; i < dp[0].length; i++) {
+            if (obstacleGrid[0][i] == 1) {
+                continue;
+            }
+            dp[0][i] = dp[0][i - 1];
+        }
+
+        for (int i = 1; i < dp.length; i++) {
+            for (int j = 1; j < dp[i].length; j++) {
+                if (obstacleGrid[i][j] == 1) {
+                    dp[i][j] = 0;
+                    continue;
+                }
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+            }
+        }
+        return dp[dp.length - 1][dp[0].length - 1];
+    }
+
+
+    /**
+     * 5. 最长回文子串
+     **/
+    public String longestPalindrome(String s) {
+        if (s == null || s.length() <= 1) {
+            return s;
+        }
+        String res = "";
+        for (int i = 0; i < s.length(); i++) {
+            String s1 = sub(s, i, i + 1);
+            String s2 = sub(s, i, i);
+            if (s1.length() > res.length()) {
+                res = s1;
+            }
+            if (s2.length() > res.length()) {
+                res = s2;
+            }
+        }
+        return res;
+    }
+
+    public String sub(String str, int left, int right) {
+        while (left >= 0 && right < str.length() && str.charAt(left) == str.charAt(right)) {
+            left--;
+            right++;
+        }
+        return str.substring(left + 1, right);
+    }
 
 }
 
