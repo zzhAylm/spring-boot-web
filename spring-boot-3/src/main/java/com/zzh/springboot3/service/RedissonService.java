@@ -3,6 +3,7 @@ package com.zzh.springboot3.service;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RBucket;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
@@ -19,15 +20,20 @@ import java.util.concurrent.TimeUnit;
 public class RedissonService {
 
     private static final String LOCK = "REDIS_DISTRIBUTED_LOCK";
+    private static final String BUCKET = "REDIS_DISTRIBUTED_BUCKET";
 
     @Resource(name = "redisson")
     private RedissonClient redisson;
 
     private static RLock lock;
 
+    private static RBucket<Object> bucket;
+
     @PostConstruct
     public void init() {
         lock = redisson.getLock(LOCK);
+
+        bucket = redisson.getBucket(BUCKET);
     }
 
     public void getRedisLock() {
@@ -80,5 +86,5 @@ public class RedissonService {
 
     }
 
-//    public  void
+
 }

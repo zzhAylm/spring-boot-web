@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
  * @Crete 2024/9/9 17:50
  */
 @Service
-public class Tesilience4jService {
+public class Resilience4jService {
 
 
     // 熔断器
