@@ -66,3 +66,18 @@ management:
       enabled: true
   metrics:
     use-global-registry: true
+
+eureka:
+  user:
+    name: admin
+    password: 123456
+  instance:
+    prefer-ip-address: true
+    instance-id: 172.16.41.140:808
+  client:
+    register-with-eureka: true # 不需要将自己注册到注册中心
+    serviceUrl:
+      defaultZone: "https://${eureka.user.name}:${eureka.user.password}@eureka-test.suixingpay.com/eureka/"
+logging:
+  level:
+    org.springframework.cloud: DEBUG

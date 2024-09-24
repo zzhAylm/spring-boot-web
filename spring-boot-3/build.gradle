@@ -23,6 +23,14 @@ dependencies {
     implementation 'io.github.resilience4j:resilience4j-all:2.1.0'
     implementation("io.github.resilience4j:resilience4j-reactor:2.1.0")
     implementation("io.github.resilience4j:resilience4j-spring-boot3:2.1.0")
+
+//    implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
+//    implementation 'org.springframework.cloud:spring-cloud-starter-zipkin'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server:2.0.0.RELEASE'
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign:2.0.0.RELEASE")
+//    api("org.springframework.cloud:spring-cloud-starter-loadbalancer:2.0.0.RELEASE")
+//    api("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
+//    api("org.springframework.cloud:spring-cloud-starter-openfeign")
 }
 bootJar {
     enabled = true

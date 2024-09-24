@@ -20,5 +20,18 @@ subprojects {
     group 'com.zzh'
     version '1.0-SNAPSHOT'
     apply from: resources.text.fromInsecureUri(gradleHome + 'subprojects.gradle')
+    ext {
+        version = "1.0.0"
+        springCloudVersion = "2022.0.5"
+        guavaVersion = "32.1.1-jre"
+    }
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        }
+        dependencies {
+            dependency("com.google.guava:guava:${guavaVersion}")
+        }
+    }
 }
 description = "SpringBoot3Application"

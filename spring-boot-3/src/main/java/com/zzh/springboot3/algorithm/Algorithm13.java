@@ -235,6 +235,107 @@ public class Algorithm13 {
     }
 
 
+    /**
+     * 15. 三数之和
+     **/
+    public List<List<Integer>> threeSum(int[] nums) {
+        if (nums == null || nums.length < 3) {
+            return new ArrayList<>();
+        }
+        Arrays.sort(nums);
+        List<List<Integer>> res = new ArrayList<>();
+        int left = 0;
+        int right = nums.length - 1;
+        while (left < right) {
+            if (nums[left] > 0 || (left > 0 && nums[left] == nums[left - 1])) {
+                left++;
+                continue;
+            }
+            int mid = left + 1;
+            right = nums.length - 1;
+            while (mid < right) {
+                int sum = nums[left] + nums[right] + nums[mid];
+                if (sum < 0) {
+                    mid++;
+                } else if (sum > 0) {
+                    right--;
+                } else {
+                    List<Integer> temp = new ArrayList<>();
+                    temp.add(nums[left]);
+                    temp.add(nums[mid]);
+                    temp.add(nums[right]);
+                    res.add(temp);
+                    while (mid < right && nums[mid] == nums[mid + 1]) {
+                        mid++;
+                    }
+                    while (right > mid && nums[right] == nums[right - 1]) {
+                        right--;
+                    }
+                    mid++;
+                    right--;
+                }
+            }
+            left++;
+        }
+        return res;
+    }
+
+
+    /**
+     * 53.在最大子数组和
+     **/
+    public int maxSubArray(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        int[] dp = new int[nums.length];
+        dp[0] = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            dp[i] = Math.max(dp[i - 1] + nums[i], nums[i]);
+        }
+        return Arrays.stream(dp).max().getAsInt();
+    }
+
+
+    /**
+     * 912. 排序数组
+     **/
+    public int[] sortArray(int[] nums) {
+        if (nums == null || nums.length <= 1) {
+            return nums;
+        }
+        tmp = new int[nums.length];
+        mergeSort(nums, 0, nums.length - 1);
+        return nums;
+    }
+
+    int[] tmp;
+    public void mergeSort(int[] nums, int l, int r) {
+        if (l >= r) {
+            return;
+        }
+        int mid = (l + r) >> 1;
+        mergeSort(nums, l, mid);
+        mergeSort(nums, mid + 1, r);
+        int i = l, j = mid + 1;
+        int cnt = 0;
+        while (i <= mid && j <= r) {
+            if (nums[i] <= nums[j]) {
+                tmp[cnt++] = nums[i++];
+            } else {
+                tmp[cnt++] = nums[j++];
+            }
+        }
+        while (i <= mid) {
+            tmp[cnt++] = nums[i++];
+        }
+        while (j <= r) {
+            tmp[cnt++] = nums[j++];
+        }
+        for (int k = 0; k < r - l + 1; ++k) {
+            nums[k + l] = tmp[k];
+        }
+    }
 
 
 }
