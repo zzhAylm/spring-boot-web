@@ -45,9 +45,10 @@ public class BulkHeadService {
     public void threadPoolBulkHead() {
         ThreadPoolBulkhead bulkhead = ThreadPoolBulkhead.ofDefaults("threadPoolBulkhead");
 
-// Decorate or execute immediately a lambda expression with a ThreadPoolBulkhead.
+        // Decorate or execute immediately a lambda expression with a ThreadPoolBulkhead.
         Supplier<CompletionStage<String>> supplier = ThreadPoolBulkhead
                 .decorateSupplier(bulkhead, () -> {
+
                     return "";
                 });
 
