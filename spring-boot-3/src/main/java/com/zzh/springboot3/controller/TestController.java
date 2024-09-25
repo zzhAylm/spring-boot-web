@@ -2,6 +2,8 @@ package com.zzh.springboot3.controller;
 
 import cn.hutool.json.JSONUtil;
 import com.zzh.springboot3.dto.ResponseDto;
+import com.zzh.springboot3.service.TestService;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,9 +17,15 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/test")
 public class TestController {
 
+    @Resource
+    private TestService testService;
+
     @GetMapping
     public void get() {
-        log.info("get method");
+        log.info("get start");
+        testService.get();
+        log.info("get stop");
+        log.info("get stop");
     }
 
     @PostMapping

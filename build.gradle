@@ -33,5 +33,9 @@ subprojects {
             dependency("com.google.guava:guava:${guavaVersion}")
         }
     }
+    configurations.configureEach {
+        exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-netflix-eureka-server'
+    }
+
 }
 description = "SpringBoot3Application"

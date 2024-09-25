@@ -1,6 +1,8 @@
 package com.zzh.springboot3.algorithm;
 
 import cn.hutool.json.JSONUtil;
+import com.zzh.springboot3.listener.ApplicationPublish;
+import com.zzh.springboot3.listener.CustomApplicationEvent;
 import com.zzh.springboot3.service.BulkHeadService;
 import com.zzh.springboot3.service.RedissonService;
 import com.zzh.springboot3.service.RetryService;
@@ -174,10 +176,38 @@ class ApplicationTest {
     private BulkHeadService bulkHeadService;
 
     @Test
-    public void bulkHeadTest(){
+    public void bulkHeadTest() {
         for (int i = 0; i < 10; i++) {
             bulkHeadService.bulkHead();
         }
+    }
+
+    @Test
+    public void mapUsedTest() {
+        Map<String, String> stringMap = new ConcurrentHashMap<>();
+        // 如果不能再存，就进行覆盖
+        stringMap.putIfAbsent("zzh", "zzh");
+
+        // 如果Map 通过旧值计算新值，并进行替换
+        stringMap.compute("zzh", (k, oldValue) -> oldValue + "zzh");
+
+        // 如果Map中存在key，才进行操作
+        stringMap.computeIfPresent("ylm", (k, oldValue) -> oldValue + "zzh");
+
+        //如果Map中不存在key,才进行操作
+        stringMap.putIfAbsent("zzhYlm_absent", "zzh");
+        stringMap.putIfAbsent("ylm_absent", "zzh");
+        stringMap.putIfAbsent("ylm", "absent");
+        log.info("{}", stringMap);
+    }
+
+    @Resource
+    private ApplicationPublish applicationPublish;
+
+
+    @Test
+    public void applicationListenerTest() {
+        applicationPublish.publishEvent(new CustomApplicationEvent(ApplicationTest.class));
     }
 
 }

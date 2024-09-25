@@ -300,41 +300,231 @@ public class Algorithm13 {
     /**
      * 912. 排序数组
      **/
+
     public int[] sortArray(int[] nums) {
         if (nums == null || nums.length <= 1) {
             return nums;
         }
-        tmp = new int[nums.length];
+        temp = new int[nums.length];
         mergeSort(nums, 0, nums.length - 1);
         return nums;
     }
 
-    int[] tmp;
-    public void mergeSort(int[] nums, int l, int r) {
-        if (l >= r) {
+    int[] temp;
+
+    public void mergeSort(int[] nums, int left, int right) {
+        if (left >= right) {
             return;
         }
-        int mid = (l + r) >> 1;
-        mergeSort(nums, l, mid);
-        mergeSort(nums, mid + 1, r);
-        int i = l, j = mid + 1;
-        int cnt = 0;
-        while (i <= mid && j <= r) {
+        int mid = (left + right) >> 1;
+        mergeSort(nums, left, mid);
+        mergeSort(nums, mid + 1, right);
+        int count = 0;
+        int i = left;
+        int j = mid + 1;
+        while (i <= mid && j <= right) {
             if (nums[i] <= nums[j]) {
-                tmp[cnt++] = nums[i++];
+                temp[count++] = nums[i++];
             } else {
-                tmp[cnt++] = nums[j++];
+                temp[count++] = nums[j++];
             }
         }
         while (i <= mid) {
-            tmp[cnt++] = nums[i++];
+            temp[count++] = nums[i++];
         }
-        while (j <= r) {
-            tmp[cnt++] = nums[j++];
+        while (j <= right) {
+            temp[count++] = nums[j++];
         }
-        for (int k = 0; k < r - l + 1; ++k) {
-            nums[k + l] = tmp[k];
+        if (right + 1 - left >= 0) System.arraycopy(temp, 0, nums, left, right + 1 - left);
+    }
+
+
+    /**
+     * 21. 合并两个有序链表
+     */
+    public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
+        if (list1 == null) {
+            return list2;
         }
+        if (list2 == null) {
+            return list1;
+        }
+        ListNode pre = new ListNode();
+        ListNode cur = pre;
+        while (list1 != null && list2 != null) {
+            if (list1.val <= list2.val) {
+                cur.next = list1;
+                list1 = list1.next;
+            } else {
+                cur.next = list2;
+                list2 = list2.next;
+            }
+            cur = cur.next;
+        }
+        while (list1 != null) {
+            cur.next = list1;
+            list1 = list1.next;
+            cur = cur.next;
+        }
+        while (list2 != null) {
+            cur.next = list2;
+            list2 = list2.next;
+            cur = cur.next;
+        }
+        return pre.next;
+    }
+
+
+    /**
+     * 5. 最长回文子串
+     **/
+    public String longestPalindrome(String s) {
+        if (s == null || s.length() <= 1) {
+            return s;
+        }
+
+        String res = "";
+        for (int i = 0; i < s.length(); i++) {
+            String s1 = subLongestPalindrome(s, i, i);
+            String s2 = subLongestPalindrome(s, i, i + 1);
+            res = s1.length() > res.length() ? s1 : res;
+            res = s2.length() > res.length() ? s2 : res;
+        }
+
+        return res;
+    }
+
+    public String subLongestPalindrome(String s, int left, int right) {
+        while (left >= 0 && right < s.length() && s.charAt(left) == s.charAt(right)) {
+            left--;
+            right++;
+        }
+        return s.substring(left + 1, right);
+    }
+
+
+    /**
+     * 1.两数之和
+     */
+    public int[] twoSum(int[] nums, int target) {
+        if (nums == null || nums.length < 2) {
+            return new int[2];
+        }
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            if (map.containsKey(nums[i])) {
+                return new int[]{i, map.get(nums[i])};
+            }
+            map.put(target - nums[i], i);
+        }
+        return new int[2];
+    }
+
+
+    /**
+     * 33. 搜索旋转排序数组
+     */
+    public int search(int[] nums, int target) {
+        if (nums == null || nums.length == 0) {
+            return -1;
+        }
+        return binarySearch(nums, target, 0, nums.length - 1);
+    }
+
+    public int binarySearch(int[] nums, int target, int left, int right) {
+        if (left > right) {
+            return -1;
+        }
+        int mid = left + (right - left) / 2;
+        if (target > nums[mid]) {
+            if (target <= nums[right]) {
+                return binarySearch(nums, target, mid + 1, right);
+            } else {
+                if (nums[mid] >= nums[left]) {
+                    return binarySearch(nums, target, mid + 1, right);
+                } else {
+                    return binarySearch(nums, target, left, mid - 1);
+                }
+            }
+        } else if (target < nums[mid]) {
+            if (target >= nums[left]) {
+                return binarySearch(nums, target, left, mid - 1);
+            } else {
+                if (nums[mid] >= nums[right]) {
+                    return binarySearch(nums, target, mid + 1, right);
+                } else {
+                    return binarySearch(nums, target, left, mid - 1);
+                }
+            }
+        } else {
+            return mid;
+        }
+    }
+
+
+    /**
+     * 92. 反转链表 II
+     **/
+    public ListNode reverseBetween(ListNode head, int left, int right) {
+        if (head == null || head.next == null || left == right) {
+            return head;
+        }
+        ListNode pre = new ListNode();
+        pre.next = head;
+        ListNode cur = pre;
+        int count = 1;
+        while (count != left) {
+            count++;
+            cur = cur.next;
+        }
+        ListNode first = cur.next;
+
+        while (left < right) {
+            ListNode p = first.next;
+            first.next = first.next.next;
+            ListNode next = cur.next;
+            cur.next = p;
+            p.next = next;
+            left++;
+        }
+        return pre.next;
+    }
+
+
+    /**
+     * 23. 合并 K 个升序链表
+     */
+    public ListNode mergeKLists(ListNode[] lists) {
+        if (lists == null || lists.length == 0) {
+            return null;
+        }
+        if (lists.length == 1) {
+            return lists[0];
+        }
+        ListNode pre = new ListNode();
+        ListNode cur = pre;
+        while (true) {
+            int index = -1;
+            for (int i = 0; i < lists.length; i++) {
+                if (lists[i] == null) {
+                    continue;
+                }
+                if (index == -1) {
+                    index = i;
+                } else {
+                    if (lists[i].val < lists[index].val) {
+                        index = i;
+                    }
+                }
+            }
+            if (index == -1) {
+                break;
+            }
+            cur.next = lists[index];
+            lists[index] = lists[index].next;
+            cur = cur.next;
+        }
+        return pre.next;
     }
 
 
