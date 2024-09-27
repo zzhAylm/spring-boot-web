@@ -3,6 +3,7 @@ package com.zzh.springboot3.algorithm;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * @Description: CodeTop
@@ -527,5 +528,311 @@ public class Algorithm13 {
         return pre.next;
     }
 
+
+    /***
+     * 103. 二叉树的锯齿形层序遍历
+     * */
+    public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
+        if (root == null) {
+            return new ArrayList<>();
+        }
+        List<List<Integer>> res = new ArrayList<>();
+        Queue<TreeNode> queue = new LinkedBlockingQueue<>();
+        queue.add(root);
+        int level = 0;
+        while (!queue.isEmpty()) {
+            List<Integer> temp = new ArrayList<>();
+            int size = queue.size();
+            Stack<Integer> stack = new Stack<>();
+            for (int i = 0; i < size; i++) {
+                TreeNode poll = queue.poll();
+                if (poll == null) {
+                    continue;
+                }
+                if (level % 2 == 0) {
+                    temp.add(poll.val);
+                } else {
+                    stack.push(poll.val);
+                }
+                if (poll.left != null) {
+                    queue.add(poll.left);
+                }
+                if (poll.right != null) {
+                    queue.add(poll.right);
+                }
+            }
+            while (!stack.isEmpty()) {
+                temp.add(stack.pop());
+            }
+            res.add(temp);
+            level++;
+        }
+
+        return res;
+    }
+
+
+    /**
+     * 236. 二叉树的最近公共祖先
+     **/
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null || (root.left == null && root.right == null)) {
+            return root;
+        }
+        commonAncestor(root, p, q);
+        return commonParent;
+    }
+
+    public boolean commonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null) {
+            return false;
+        }
+        boolean left = commonAncestor(root.left, p, q);
+        boolean right = commonAncestor(root.right, p, q);
+        if ((left && right) || ((root == p || root == q) && (left || right))) {
+            commonParent = root;
+        }
+        return root == p || root == q || left || right;
+    }
+
+    TreeNode commonParent = null;
+
+    public boolean isParent(TreeNode node, TreeNode cur) {
+        if (node == null) {
+            return false;
+        }
+        return node.val == cur.val || isParent(node.left, cur) || isParent(node.right, cur);
+    }
+
+    /**
+     * 143. 重排链表
+     */
+    public void reorderList(ListNode head) {
+        if (head == null || head.next == null || head.next.next == null) {
+            return;
+        }
+        ListNode slow = head;
+        ListNode fast = head;
+        while (fast.next != null && fast.next.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        Stack<ListNode> stack = new Stack<>();
+        while (slow.next != null) {
+            ListNode next = slow.next;
+            slow.next = null;
+            slow = next;
+            stack.push(next);
+        }
+        ListNode cur = head;
+        while (cur != null && !stack.isEmpty()) {
+            ListNode pop = stack.pop();
+            ListNode next = cur.next;
+            cur.next = pop;
+            pop.next = next;
+            cur = next;
+        }
+    }
+
+
+    /***
+     * 200. 岛屿数量
+     * */
+    public int numIslands(char[][] grid) {
+        if (grid == null || grid.length == 0) {
+            return 0;
+        }
+        int count = 0;
+        boolean[][] visited = new boolean[grid.length][grid[0].length];
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                if (grid[i][j] == '1') {
+                    count++;
+                    printNums(grid, i, j, visited);
+                }
+            }
+        }
+        return count;
+    }
+
+
+    public void printNums(char[][] grid, int i, int j, boolean[][] visited) {
+        if (i < 0 || j < 0 || i >= grid.length || j >= grid[0].length || grid[i][j] != '1' || visited[i][j]) {
+            return;
+        }
+        grid[i][j] = '2';
+        visited[i][j] = true;
+        if (j + 1 < visited[0].length && !visited[i][j + 1]) {
+            printNums(grid, i, j + 1, visited);
+        }
+        if (j - 1 >= 0 && !visited[i][j - 1]) {
+            printNums(grid, i, j - 1, visited);
+        }
+        if (i + 1 < visited.length && !visited[i + 1][j]) {
+            printNums(grid, i + 1, j, visited);
+        }
+        if (i - 1 >= 0 && !visited[i - 1][j]) {
+            printNums(grid, i - 1, j, visited);
+        }
+
+    }
+
+
+    /***
+     * 54. 螺旋矩阵
+     * **/
+    public List<Integer> spiralOrder(int[][] matrix) {
+        if (matrix == null || matrix.length == 0) {
+            return new ArrayList<>();
+        }
+        List<Integer> res = new ArrayList<>();
+        int x1 = 0;
+        int x2 = matrix[0].length - 1;
+        int y1 = 0;
+        int y2 = matrix.length - 1;
+        boolean[][] visited = new boolean[matrix.length][matrix[0].length];
+        while (x1 <= x2 && y1 <= y2) {
+            for (int i = x1; i < x2; i++) {
+                if (visited[y1][i]) {
+                    continue;
+                }
+                visited[y1][i] = true;
+                res.add(matrix[y1][i]);
+            }
+            for (int i = y1; i < y2; i++) {
+                if (visited[i][x2]) {
+                    continue;
+                }
+                visited[i][x2] = true;
+                res.add(matrix[i][x2]);
+            }
+            for (int i = x2; i > 0; i--) {
+                if (visited[y2][i]) {
+                    continue;
+                }
+                visited[y2][i] = true;
+                res.add(matrix[y2][i]);
+            }
+            for (int i = y2; i > 0; i--) {
+                if (visited[i][x1]) {
+                    continue;
+                }
+                visited[i][x1] = true;
+                res.add(matrix[i][x1]);
+            }
+            if (x1 == x2 && y1 == y2 && !visited[x1][y1]) {
+                res.add(matrix[y1][x1]);
+                visited[y1][x1] = true;
+            }
+            x1++;
+            x2--;
+            y1++;
+            y2--;
+        }
+        return res;
+    }
+
+
+    /**
+     * 42. 接雨水
+     **/
+    public int trap(int[] height) {
+        if (height == null || height.length <= 2) {
+            return 0;
+        }
+        int max = 0;
+        for (int i = 0; i < height.length; i++) {
+            max = height[i] > height[max] ? i : max;
+        }
+        int sum = 0;
+        int leftMax = 0;
+        for (int i = leftMax; i < max; i++) {
+            if (height[i] >= height[leftMax]) {
+                leftMax = i;
+            } else {
+                sum += (height[leftMax] - height[i]);
+            }
+        }
+        int rightMax = height.length - 1;
+        for (int i = height.length - 1; i > max; i--) {
+            if (height[i] >= height[rightMax]) {
+                rightMax = i;
+            } else {
+                sum += (height[rightMax] - height[i]);
+            }
+        }
+        return sum;
+    }
+
+
+    /**
+     * 121. 买卖股票的最佳时机
+     **/
+    public int maxProfit(int[] prices) {
+        if (prices == null || prices.length <= 1) {
+            return 0;
+        }
+        int[][] dp = new int[prices.length][2];
+        dp[0][0] = 0;
+        dp[0][1] = prices[0];
+        for (int i = 1; i < prices.length; i++) {
+            dp[i][0] = Math.max(dp[i - 1][0], prices[i] - dp[i - 1][1]);
+            dp[i][1] = Math.min(dp[i - 1][1], prices[i]);
+        }
+        return dp[prices.length - 1][0];
+    }
+
+
+    /**
+     * 160. 相交链表
+     **/
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        if (headA == null || headB == null) {
+            return null;
+        }
+        ListNode p1 = headA;
+        ListNode p2 = headB;
+        boolean initA = true;
+        boolean initB = true;
+        while (p1 != p2) {
+            if (p1.next != null) {
+                p1 = p1.next;
+            } else if (initA) {
+                p1 = headB;
+                initA = false;
+            } else {
+                return null;
+            }
+            if (p2.next != null) {
+                p2 = p2.next;
+            } else if (initB) {
+                p2 = headA;
+                initB = false;
+            } else {
+                return null;
+            }
+        }
+        return p1;
+    }
+
+
+    /**
+     * 141. 环形链表
+     **/
+    public boolean hasCycle(ListNode head) {
+        if (head == null || head.next == null) {
+            return false;
+        }
+        ListNode fast = head;
+        ListNode slow = head;
+        while (fast != null && fast.next != null && slow != null) {
+            fast = fast.next.next;
+            slow = slow.next;
+            if (slow == fast) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

@@ -1,5 +1,6 @@
 package com.zzh.springboot3.algorithm;
 
+import cn.hutool.crypto.digest.MD5;
 import cn.hutool.json.JSONUtil;
 import com.zzh.springboot3.listener.ApplicationPublish;
 import com.zzh.springboot3.listener.CustomApplicationEvent;
@@ -12,16 +13,20 @@ import io.micrometer.core.instrument.Tags;
 import io.vertx.core.json.impl.JsonUtil;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.ognl.security.OgnlSecurityManager;
 import org.apache.poi.ss.formula.functions.T;
 import org.junit.jupiter.api.Test;
 import org.redisson.api.*;
 import org.redisson.api.listener.MessageListener;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import javax.crypto.JceSecurityManager;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -169,7 +174,7 @@ class ApplicationTest {
 
     @Test
     public void retrySpringTest() {
-        retryService.retrySpring();
+//        retryService.retrySpring();
     }
 
     @Resource
@@ -210,4 +215,139 @@ class ApplicationTest {
         applicationPublish.publishEvent(new CustomApplicationEvent(ApplicationTest.class));
     }
 
+    @Test
+    public void encryptTest() {
+        long start = System.currentTimeMillis();
+        String digest = MD5.create().digestHex16("zzhAylm");
+        log.info("digest is {},耗时：{} ", digest, System.currentTimeMillis() - start);
+    }
+
+
+    ThreadPoolExecutor productThreadPoolExecutor = new ThreadPoolExecutor(1,
+            1,
+            1,
+            TimeUnit.SECONDS,
+            new LinkedBlockingQueue<>(1),
+            new MyThreadFactory("product"),
+            new MyRejectedPolicy());
+
+    @Test
+    public void threadPoolTest() throws InterruptedException {
+        TimeUnit.SECONDS.sleep(1);
+        new Thread(() -> {
+            ArrayList<Future<Integer>> futureList = new ArrayList<>();
+            //从数据库获取产品信息
+            int productNum = 5;
+            for (int i = 0; i < productNum; i++) {
+                try {
+                    int finalI = i;
+                    Future<Integer> future = productThreadPoolExecutor.submit(() -> {
+                        System.out.println("Thread.currentThread().getName() = " + Thread.currentThread().getName());
+                        return finalI * 10;
+                    });
+                    futureList.add(future);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            for (Future<Integer> integerFuture : futureList) {
+                try {
+                    Integer integer = integerFuture.get();
+                    System.out.println(integer);
+                    System.out.println("future.get() = " + integer);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+
+    @Test
+    public void executorsTest() {
+        // 队列大小无限
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        //队列大小无限
+        ExecutorService executorService1 = Executors.newFixedThreadPool(1);
+        // 线程大小无限
+        ExecutorService executorService2 = Executors.newCachedThreadPool();
+        //队列大小无限
+        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+        //队列大小无限
+        ScheduledExecutorService scheduledExecutorService1 = Executors.newSingleThreadScheduledExecutor();
+    }
+
+
+    private static class MyThreadFactory implements ThreadFactory {
+        private static final AtomicInteger poolNumber = new AtomicInteger(1);
+        private final ThreadGroup group;
+        private final AtomicInteger threadNumber = new AtomicInteger(1);
+        private final String namePrefix;
+        private final String threadFactoryName;
+
+        public String getThreadFactoryName() {
+            return threadFactoryName;
+        }
+
+        MyThreadFactory(String threadStartName) {
+            SecurityManager s = System.getSecurityManager();
+            group = (s != null) ? s.getThreadGroup() :
+                    Thread.currentThread().getThreadGroup();
+            namePrefix = threadStartName + "-pool-" +
+                    poolNumber.getAndIncrement() +
+                    "-thread-";
+            threadFactoryName = threadStartName;
+        }
+
+        public Thread newThread(Runnable r) {
+            Thread t = new Thread(group, r,
+                    namePrefix + threadNumber.getAndIncrement(),
+                    0);
+            if (t.isDaemon())
+                t.setDaemon(false);
+            if (t.getPriority() != Thread.NORM_PRIORITY)
+                t.setPriority(Thread.NORM_PRIORITY);
+            return t;
+        }
+    }
+
+    private static class MyRejectedPolicy implements RejectedExecutionHandler {
+
+        @Override
+        public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
+            if (e.getThreadFactory() instanceof MyThreadFactory myThreadFactory) {
+                if ("product".equals(myThreadFactory.getThreadFactoryName())) {
+                    System.out.println("线程池有任务被拒绝了,请关注");
+                }
+            }
+        }
+    }
+
+
+    @Test
+    public void threadPoolShoutDownTest() {
+        List<Callable<Void>> tasks = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            int finalI = i;
+            tasks.add(() -> {
+                System.out.println("callable " + finalI);
+                Thread.sleep(500);
+                return null;
+            });
+        }
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        Thread executorInvokerThread = new Thread(() -> {
+            try {
+                executor.invokeAll(tasks);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("invokeAll returned");
+        });
+        executorInvokerThread.start();
+
+        log.info("主线程");
+        executor.shutdown();
+        log.info("主线程完成并退出");
+    }
 }
