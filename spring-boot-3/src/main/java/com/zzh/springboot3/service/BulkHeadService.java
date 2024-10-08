@@ -6,6 +6,7 @@ import io.github.resilience4j.bulkhead.ThreadPoolBulkhead;
 import io.github.resilience4j.decorators.Decorators;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -19,6 +20,7 @@ import java.util.function.Supplier;
  */
 @Slf4j
 @Service
+@RefreshScope
 public class BulkHeadService {
 
 

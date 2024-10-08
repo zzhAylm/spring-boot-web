@@ -835,4 +835,93 @@ public class Algorithm13 {
         return false;
     }
 
+
+    /***
+     * 46. 全排列
+     * */
+    public List<List<Integer>> permute(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return new ArrayList<>();
+        }
+        backTrack(nums, new LinkedList<>());
+        return permuteList;
+    }
+
+    List<List<Integer>> permuteList = new ArrayList<>();
+
+    public void backTrack(int[] nums, LinkedList<Integer> temp) {
+        if (temp.size() == nums.length) {
+            permuteList.add(new ArrayList<>(temp));
+            return;
+        }
+        for (int num : nums) {
+            if (!temp.contains(num)) {
+                temp.add(num);
+                backTrack(nums, temp);
+                temp.removeLast();
+            }
+        }
+    }
+
+
+    /**
+     * 300. 最长递增子序列
+     **/
+    public int lengthOfLIS(int[] nums) {
+        if (nums == null) {
+            return 0;
+        }
+        if (nums.length <= 1) {
+            return nums.length;
+        }
+        int[] dp = new int[nums.length];
+        Arrays.fill(dp, 1);
+        for (int i = 1; i < dp.length; i++) {
+            for (int j = 0; j < i; j++) {
+                if (nums[i] > nums[j]) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+        }
+        return Arrays.stream(dp).max().getAsInt();
+    }
+
+
+    /**
+     * 82. 删除排序链表中的重复元素 II
+     */
+    public ListNode deleteDuplicates(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode pre = new ListNode(Integer.MIN_VALUE);
+        pre.next = head;
+        ListNode p = pre;
+        ListNode first = head;
+        while (first != null) {
+            ListNode next = first.next;
+            if (next != null && first.val == next.val) {
+                while (next != null && next.val == first.val) {
+                    next = next.next;
+                }
+                p.next = next;
+            } else {
+                p = p.next;
+            }
+            first = p.next;
+        }
+
+        return pre.next;
+    }
+
+
+
+    /**
+     * 88. 合并两个有序数组
+     * **/
+    public void merge(int[] nums1, int m, int[] nums2, int n) {
+
+    }
+
+
 }
