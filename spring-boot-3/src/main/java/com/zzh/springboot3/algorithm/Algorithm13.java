@@ -3,6 +3,7 @@ package com.zzh.springboot3.algorithm;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -915,13 +916,105 @@ public class Algorithm13 {
     }
 
 
-
     /**
      * 88. 合并两个有序数组
-     * **/
+     **/
     public void merge(int[] nums1, int m, int[] nums2, int n) {
-
+        if (nums2 == null || nums2.length == 0) {
+            return;
+        }
+        int[] temp = new int[nums1.length];
+        int index1 = 0;
+        int index2 = 0;
+        int index = 0;
+        while (index1 < m && index2 < n) {
+            if (nums1[index1] <= nums2[index2]) {
+                temp[index++] = nums1[index1++];
+            } else {
+                temp[index++] = nums2[index2++];
+            }
+        }
+        while (index1 < m) {
+            temp[index++] = nums1[index1++];
+        }
+        while (index2 < n) {
+            temp[index++] = nums2[index2++];
+        }
+        System.arraycopy(temp, 0, nums1, 0, temp.length);
     }
+
+
+    /**
+     * 124. 二叉树中的最大路径和
+     **/
+    public int maxPathSum(TreeNode root) {
+        pathSum(root);
+
+        return maxPathSum;
+    }
+
+    Integer maxPathSum = Integer.MIN_VALUE;
+
+    public int pathSum(TreeNode node) {
+        if (node == null) {
+            return 0;
+        }
+        int leftSum = 0;
+        int rightSum = 0;
+        if (node.left != null) {
+            leftSum = Math.max(pathSum(node.left), leftSum);
+        }
+        if (node.right != null) {
+            rightSum = Math.max(rightSum, pathSum(node.right));
+        }
+        maxPathSum = Math.max(maxPathSum, node.val + leftSum + rightSum);
+        return leftSum > rightSum ? node.val + leftSum : node.val + rightSum;
+    }
+
+
+    /**
+     * 199.二叉树的右视图
+     **/
+    public List<Integer> rightSideView(TreeNode root) {
+        if (root == null) {
+            return new ArrayList<>();
+        }
+        Queue<TreeNode> queue = new ConcurrentLinkedQueue<>();
+        queue.add(root);
+        List<Integer> res = new ArrayList<>();
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode poll = queue.poll();
+                if (poll == null) {
+                    continue;
+                }
+                if (i == size - 1) {
+                    res.add(poll.val);
+                }
+                if (poll.left != null) {
+                    queue.add(poll.left);
+                }
+                if (poll.right != null) {
+                    queue.add(poll.right);
+                }
+            }
+        }
+        return res;
+    }
+
+
+    /**
+     * 56. 合并区间
+     **/
+//    public int[][] merge(int[][] intervals) {
+//        if (intervals == null || intervals.length <= 1) {
+//            return intervals;
+//        }
+//
+//
+//
+//    }
 
 
 }

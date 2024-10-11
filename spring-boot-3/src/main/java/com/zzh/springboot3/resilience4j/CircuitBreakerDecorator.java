@@ -31,15 +31,13 @@ public class CircuitBreakerDecorator extends AbstractCircuitBreakerDecorator {
     @Override
     public void doMethod() {
         try {
-            Decorators.ofRunnable(() -> {
-                log.info("runnable is running!!");
-                try {
-                    Thread.sleep(1000 * 3);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                throw new RuntimeException("runnable error!");
-            }).withCircuitBreaker(circuitBreaker).decorate().run();
+            log.info("runnable is running!!");
+            try {
+                Thread.sleep(1000 * 3);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            throw new RuntimeException("runnable error!");
         } catch (Exception e) {
             log.error("fail back is running");
         }

@@ -4,6 +4,7 @@ import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
 import io.github.resilience4j.common.circuitbreaker.configuration.CommonCircuitBreakerConfigurationProperties;
 import io.github.resilience4j.core.ClassUtils;
+import io.github.resilience4j.decorators.Decorators;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.function.Predicate;
@@ -117,9 +118,9 @@ public abstract class AbstractCircuitBreakerDecorator {
 
     abstract void doMethod();
 
-    public void method() {
+    public void circuitBreakerMethod() {
         log.info("start do method.....");
-        doMethod();
+        Decorators.ofRunnable(this::doMethod).withCircuitBreaker(getCircuitBreaker()).decorate().run();
         log.info("end do method.....");
     }
 

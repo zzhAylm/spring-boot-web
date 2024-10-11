@@ -1,9 +1,11 @@
 package com.zzh.springboot3.service;
 
+import com.zzh.springboot3.resilience4j.AbstractBulkheadDecorator;
 import io.github.resilience4j.bulkhead.Bulkhead;
 import io.github.resilience4j.bulkhead.BulkheadConfig;
 import io.github.resilience4j.bulkhead.ThreadPoolBulkhead;
 import io.github.resilience4j.decorators.Decorators;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -32,7 +34,7 @@ public class BulkHeadService {
                 .build();
         Bulkhead bulkhead = Bulkhead.of("bulkHead", config);
         Decorators.ofRunnable(() -> {
-            log.info("bulkhead is :{}",bulkhead.getMetrics().getAvailableConcurrentCalls());
+            log.info("bulkhead is :{}", bulkhead.getMetrics().getAvailableConcurrentCalls());
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -40,8 +42,6 @@ public class BulkHeadService {
             }
         }).withBulkhead(bulkhead).decorate().run();
     }
-
-
 
 
     public void threadPoolBulkHead() {
@@ -61,4 +61,33 @@ public class BulkHeadService {
     }
 
 
+    @Resource
+    private AbstractBulkheadDecorator bulkheadDecorator;
+
+    public void bulkheadA() {
+        bulkheadDecorator.bulkheadMethod();
+    }
+
+    @io.github.resilience4j.bulkhead.annotation.Bulkhead(name = "bulkheadAnnotation", type = io.github.resilience4j.bulkhead.annotation.Bulkhead.Type.SEMAPHORE, fallbackMethod = "bulkheadFallbackMethod")
+    public void bulkheadB() {
+        log.info("annotation bulkhead running.");
+    }
+
+    public void bulkheadFallbackMethod(Throwable t) {
+        log.info("bulkheadFallbackMethod running,error is:", t);
+    }
+
+
+    public void threadPoolBulkheadA() {
+        bulkheadDecorator.threadPoolBulkheadMethod();
+    }
+
+    @io.github.resilience4j.bulkhead.annotation.Bulkhead(name = "threadPoolBulkheadAnnotation", type = io.github.resilience4j.bulkhead.annotation.Bulkhead.Type.THREADPOOL, fallbackMethod = "threadPoolBulkheadFallbackMethod")
+    public void threadPoolBulkheadB() {
+        log.info("annotation threadPoolBulkheadB running.");
+    }
+
+    public void threadPoolBulkheadFallbackMethod(Throwable t) {
+        log.info("threadPoolBulkheadFallbackMethod running,error is:", t);
+    }
 }

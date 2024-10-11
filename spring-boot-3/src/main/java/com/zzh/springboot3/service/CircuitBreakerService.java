@@ -1,18 +1,12 @@
 package com.zzh.springboot3.service;
 
-import com.zzh.springboot3.config.Resilience4jProperties;
 import com.zzh.springboot3.resilience4j.AbstractCircuitBreakerDecorator;
-import com.zzh.springboot3.resilience4j.Resilience4j;
-import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import io.github.resilience4j.common.circuitbreaker.configuration.CommonCircuitBreakerConfigurationProperties;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpServerErrorException;
-
-import java.util.Map;
 
 /**
  * @Description:
@@ -46,7 +40,7 @@ public class CircuitBreakerService {
 
 
     public void circuitBreakerB() {
-        circuitBreakerDecorator.method();
+        circuitBreakerDecorator.circuitBreakerMethod();
     }
 
 

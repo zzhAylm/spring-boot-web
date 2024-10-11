@@ -192,6 +192,37 @@ resilience4j:
         #          - java.util.concurrent.TimeoutException
         ignoreExceptions:
           - com.zzh.springboot3.exception.BusinessException  # 被忽略的异常类型（这些异常不会触发熔断器）
+  bulkhead:
+    instances:
+      bulkheadAnnotation:
+        max-concurrent-calls: 1
+        max-wait-duration: 0s
+  thread-pool-bulkhead:
+    instances:
+      threadPoolBulkheadAnnotation:
+        core-thread-pool-size: 1
+        max-thread-pool-size: 1
+        queue-capacity: 0
+  rate-limiter:
+    instances:
+      rateLimiterA:
+        #线程等待次数
+        timeout-duration: 1s
+        #一个周期内，允许的最大次数
+        limit-for-period: 1
+        #一个周期
+        limit-refresh-period: 1s
+
+  retry:
+    instances:
+      retryB:
+        #最大重试次数
+        max-attempts: 3
+        #两次重试之间的时间间隔
+        wait-duration: 500ms
+        retry-exceptions:
+          - java.lang.Throwable
+
 zzh:
   resilience4j:
     circuit-breaker:
