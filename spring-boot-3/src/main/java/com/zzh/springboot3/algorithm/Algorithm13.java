@@ -1,6 +1,9 @@
 package com.zzh.springboot3.algorithm;
 
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
+import org.junit.jupiter.api.Test;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -1007,14 +1010,274 @@ public class Algorithm13 {
     /**
      * 56. 合并区间
      **/
-//    public int[][] merge(int[][] intervals) {
-//        if (intervals == null || intervals.length <= 1) {
-//            return intervals;
-//        }
-//
-//
-//
-//    }
+    public int[][] merge(int[][] intervals) {
+        if (intervals == null || intervals.length <= 1) {
+            return intervals;
+        }
+        Arrays.sort(intervals, Comparator.comparing(ints -> ints[0]));
+        List<String> list = new ArrayList<>();
+        int left = intervals[0][0];
+        int right = intervals[0][1];
+        for (int i = 1; i < intervals.length; i++) {
+            int l = intervals[i][0];
+            int r = intervals[i][1];
+            if (l > right) {
+                list.add(left + "," + right);
+                left = l;
+                right = r;
+            } else {
+                right = Math.max(right, r);
+            }
+        }
+        list.add(left + "," + right);
+        int[][] res = new int[list.size()][2];
+        for (int i = 0; i < list.size(); i++) {
+            String s = list.get(i);
+            String[] split = s.split(",");
+            res[i][0] = Integer.parseInt(split[0]);
+            res[i][1] = Integer.parseInt(split[1]);
+        }
+        return res;
+    }
+
+
+    /**
+     * 31. 下一个排列
+     **/
+    public void nextPermutation(int[] nums) {
+        if (nums == null || nums.length <= 1) {
+            return;
+        }
+        int left = nums.length - 2;
+        while (left >= 0) {
+            if (nums[left] < nums[left + 1]) {
+                for (int i = nums.length - 1; i >= 0; i--) {
+                    if (nums[i] > nums[left]) {
+                        int temp = nums[left];
+                        nums[left] = nums[i];
+                        nums[i] = temp;
+                        Arrays.sort(nums, left + 1, nums.length);
+                        return;
+                    }
+                }
+            }
+            left--;
+        }
+        Arrays.sort(nums, left + 1, nums.length);
+    }
+
+    @Test
+    public void nextPermutationTest() {
+        int[] nums = {1, 3, 2};
+        nextPermutation(nums);
+    }
+
+
+    /**
+     * 415. 字符串相加
+     */
+    public String addStrings(String num1, String num2) {
+        if (num1 == null || num1.length() == 0) {
+            return num2;
+        }
+        if (num2 == null || num2.length() == 0) {
+            return num1;
+        }
+        StringBuilder builder = new StringBuilder();
+        char[] chars1 = num1.toCharArray();
+        char[] chars2 = num2.toCharArray();
+        int index1 = chars1.length - 1;
+        int index2 = chars2.length - 1;
+        int pre = 0;
+        while (index2 >= 0 && index1 >= 0) {
+            char c1 = chars1[index1--];
+            char c2 = chars2[index2--];
+            int sum = getIntByChar(c1) + getIntByChar(c2) + pre;
+            pre = sum / 10;
+            builder.append(sum % 10);
+        }
+        while (index1 >= 0) {
+            char c1 = chars1[index1--];
+            int sum = getIntByChar(c1) + pre;
+            pre = sum / 10;
+            builder.append(sum % 10);
+        }
+        while (index2 >= 0) {
+            char c2 = chars2[index2--];
+            int sum = getIntByChar(c2) + pre;
+            pre = sum / 10;
+            builder.append(sum % 10);
+        }
+        if (pre != 0) {
+            builder.append(pre);
+        }
+        return builder.reverse().toString();
+    }
+
+    public int getIntByChar(char c) {
+        return switch (c) {
+            case '1' -> 1;
+            case '2' -> 2;
+            case '3' -> 3;
+            case '4' -> 4;
+            case '5' -> 5;
+            case '6' -> 6;
+            case '7' -> 7;
+            case '8' -> 8;
+            case '9' -> 9;
+            default -> 0;
+        };
+    }
+
+
+    /***
+     * 142. 环形链表 II
+     * **/
+    public ListNode detectCycle(ListNode head) {
+        if (head == null || head.next == null) {
+            return null;
+        }
+        ListNode slow = head;
+        ListNode fast = head;
+        while (slow != null && fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+            if (fast == slow) {
+                break;
+            }
+        }
+        if (slow == null || fast == null) {
+            return null;
+        }
+        ListNode first = head;
+        ListNode second = slow;
+
+        while (first != null && second != null) {
+            if (first == second) {
+                return first;
+            }
+            first = first.next;
+            second = second.next;
+        }
+
+        return null;
+    }
+
+
+    /**
+     * 148. 排序链表
+     **/
+    public ListNode sortList(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        return mergeSort(head, null);
+    }
+
+    // 归并排序
+    public ListNode mergeSort(ListNode start, ListNode end) {
+        if (start == null) {
+            return null;
+        }
+        if (start.next == end) {
+            start.next = null;
+            return start;
+        }
+        ListNode slow = start;
+        ListNode fast = start;
+        while (fast != end) {
+            slow = slow.next;
+            fast = fast.next;
+            if (fast != end) {
+                fast = fast.next;
+            }
+        }
+        ListNode left = mergeSort(start, slow);
+        ListNode right = mergeSort(slow, end);
+        return merge(left, right);
+    }
+
+    public ListNode merge(ListNode left, ListNode right) {
+        if (left == null) {
+            return right;
+        }
+        if (right == null) {
+            return left;
+        }
+        ListNode pre = new ListNode(-1);
+        ListNode temp = pre;
+        while (left != null && right != null) {
+            if (left.val < right.val) {
+                temp.next = left;
+                left = left.next;
+            } else {
+                temp.next = right;
+                right = right.next;
+            }
+            temp = temp.next;
+        }
+        while (left != null) {
+            temp.next = left;
+            left = left.next;
+            temp = temp.next;
+        }
+        while (right != null) {
+            temp.next = right;
+            right = right.next;
+            temp = temp.next;
+        }
+        return pre.next;
+    }
+
+    /**
+     * 19. 删除链表的倒数第 N 个结点
+     **/
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        if (head == null) {
+            return null;
+        }
+        ListNode pre = new ListNode();
+        pre.next = head;
+        ListNode fast = pre;
+        ListNode slow = pre;
+
+        for (int i = 0; i < n; i++) {
+            fast = fast.next;
+        }
+        while (fast.next != null) {
+            slow = slow.next;
+            fast = fast.next;
+        }
+        slow.next = slow.next.next;
+        return pre.next;
+    }
+
+    /**
+     * 20. 有效的括号
+     **/
+    public boolean isValid(String s) {
+        if (s == null || s.length() % 2 != 0) {
+            return false;
+        }
+        Stack<Character> stack = new Stack<>();
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (!stack.isEmpty() && match(stack.peek(), c)) {
+                stack.pop();
+            } else {
+                stack.push(c);
+            }
+        }
+        return stack.isEmpty();
+    }
+
+    public boolean match(Character left, Character right) {
+        return (left == '(' && right == ')') || (left == '{' && right == '}') || (left == '[' && right == ']');
+    }
+
+
+
+
 
 
 }
