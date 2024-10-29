@@ -1,5 +1,6 @@
 package com.zzh.springboot3.algorithm;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -15,7 +16,7 @@ public class Algorithm01 {
 
     /**
      * 21. 合并两个有序链表
-     * */
+     */
     public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
         ListNode res = new ListNode(-1);
         ListNode index = res;
@@ -44,4 +45,27 @@ public class Algorithm01 {
         }
         return res.next;
     }
+
+    /**
+     * 300. 最长递增子序列
+     **/
+    public int lengthOfLIS(int[] nums) {
+        if (nums == null) {
+            return 0;
+        }
+        if (nums.length <= 1) {
+            return nums.length;
+        }
+        int[] dp = new int[nums.length];
+        Arrays.fill(dp, 1);
+        for (int i = 1; i < nums.length; i++) {
+            for (int j = i - 1; j >= 0; j--) {
+                if (nums[i] > nums[j]) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+        }
+        return Arrays.stream(dp).max().getAsInt();
+    }
+
 }

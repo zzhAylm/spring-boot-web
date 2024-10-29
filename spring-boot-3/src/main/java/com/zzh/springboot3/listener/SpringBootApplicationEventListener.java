@@ -21,6 +21,6 @@ public class SpringBootApplicationEventListener implements GenericApplicationLis
 
     @Override
     public void onApplicationEvent(ApplicationEvent event) {
-        log.info("application event is appear , event is {}", event.getSource());
+        log.debug("application event is appear , event is {}", event.getSource());
     }
 }

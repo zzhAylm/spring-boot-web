@@ -1,5 +1,6 @@
 package com.zzh.springboot3.pattern;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -11,17 +12,23 @@ import java.util.regex.Pattern;
  * @Author: zzh
  * @Crete 2024/6/12 10:00
  */
-public class PatternMain {
+@Slf4j
+public class PatternMainTest {
 
-    public static void main(String[] args) {
+    @Test
+    public void pattern() {
         String str = "zzh-ylm-zzh";
-        Pattern pattern = Pattern.compile("(\\w)(\\w)+");
+        Pattern pattern = Pattern.compile("(\\w)(\\w+)");
         Matcher matcher = pattern.matcher(str);
         while (matcher.find()) {
-            System.out.println(matcher.group(0));
-            System.out.println(matcher.group(1));
-            System.out.println(matcher.group(2));
+            log.info("matcher count is :{}", matcher.groupCount());
+            log.info("{}", matcher.group());
+            log.info(matcher.group(1));
+            log.info(matcher.group(2));
         }
+    }
+
+    public static void main(String[] args) {
 
 
         String str1 = "18348950824";
@@ -162,7 +169,7 @@ public class PatternMain {
     }
 
     @Test
-    public void replacePatternTest2(){
+    public void replacePatternTest2() {
         String input = "Hello, world! How are you?";
         Pattern pattern = Pattern.compile("(\\w+),\\s+(\\w+)!");
         Matcher matcher = pattern.matcher(input);
@@ -170,6 +177,12 @@ public class PatternMain {
         System.out.println(output); // "world, Hello! How are you?"
     }
 
+    @Test
+    public void patternTest() {
+        
+
+
+    }
 
 
 }

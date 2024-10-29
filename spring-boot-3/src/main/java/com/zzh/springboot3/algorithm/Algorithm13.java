@@ -1276,8 +1276,72 @@ public class Algorithm13 {
     }
 
 
+    /**
+     * 2. 两数相加
+     **/
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        if (l1 == null) {
+            return l2;
+        }
+        if (l2 == null) {
+            return l1;
+        }
+        ListNode pre = new ListNode();
+        ListNode p = pre;
+        int val = 0;
+        while (l1 != null && l2 != null) {
+            int sum = l1.val + l2.val + val;
+            p.next = new ListNode(sum % 10);
+            val = sum / 10;
+            p = p.next;
+            l1 = l1.next;
+            l2 = l2.next;
+        }
+        while (l1 != null) {
+            int sum = l1.val + val;
+            p.next = new ListNode(sum % 10);
+            val = sum / 10;
+            p = p.next;
+            l1 = l1.next;
+        }
+        while (l2 != null) {
+            int sum = l2.val + val;
+            p.next = new ListNode(sum % 10);
+            val = sum / 10;
+            p = p.next;
+            l2 = l2.next;
+        }
+        if (val != 0) {
+            p.next = new ListNode(val);
+        }
+        return pre.next;
+    }
 
 
+    /**
+     * 41. 缺失的第一个正数
+     */
+    public int firstMissingPositive(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 1;
+        }
+        Set<Integer> set = new HashSet<>();
+        int min = Integer.MAX_VALUE;
+        for (int num : nums) {
+            if (num <= 0) {
+                continue;
+            }
+            if (num < min) {
+                min = num;
+            }
+            set.add(num);
+        }
+        if (min != 1) return 1;
+        while (set.contains(min)) {
+            min++;
+        }
+        return min;
+    }
 
 
 }

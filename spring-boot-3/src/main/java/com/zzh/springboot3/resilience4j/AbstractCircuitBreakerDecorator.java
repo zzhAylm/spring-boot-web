@@ -5,6 +5,7 @@ import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
 import io.github.resilience4j.common.circuitbreaker.configuration.CommonCircuitBreakerConfigurationProperties;
 import io.github.resilience4j.core.ClassUtils;
 import io.github.resilience4j.decorators.Decorators;
+import io.github.resilience4j.ratelimiter.internal.AtomicRateLimiter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.function.Predicate;
@@ -121,7 +122,22 @@ public abstract class AbstractCircuitBreakerDecorator {
     public void circuitBreakerMethod() {
         log.info("start do method.....");
         Decorators.ofRunnable(this::doMethod).withCircuitBreaker(getCircuitBreaker()).decorate().run();
+
+        try {
+            Decorators.ofCallable(()->"").withCircuitBreaker(getCircuitBreaker()).withFallback(throwable -> "").call();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         log.info("end do method.....");
+    }
+
+
+    public void circuitBreaker(){
+        Decorators.ofSupplier(()->{
+            return "";
+        }).withCircuitBreaker(getCircuitBreaker()).withFallback((s, throwable) -> {
+            return "";
+        }).decorate().get();
     }
 
 }

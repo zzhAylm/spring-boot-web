@@ -12,6 +12,7 @@ import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilde
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 
 import java.net.InetSocketAddress;
 
@@ -49,5 +50,17 @@ public class SpringBoot3Config {
     public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer() {
         return (jacksonObjectMapperBuilder) -> jacksonObjectMapperBuilder.postConfigurer(objectMapper -> objectMapper.getFactory().setStreamReadConstraints(StreamReadConstraints.builder().maxNestingDepth(2000).maxStringLength(100_000_000).build()));
     }
+
+
+//    @Bean
+//    public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory() {
+//        ConcurrentKafkaListenerContainerFactory<String, String> factory =
+//                new ConcurrentKafkaListenerContainerFactory<>();
+////        factory.setConsumerFactory();
+//        factory.setConcurrency(3); // 设置并发数
+//        factory.getContainerProperties().setPollTimeout(3000);
+//        return factory;
+//    }
+
 
 }
