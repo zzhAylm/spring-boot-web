@@ -13,6 +13,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 public class WebSecurityConfig {
     @Bean
     public WebSecurityCustomizer ignoringCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/test/**", "/static/**","/*");
+        return (web) -> web.ignoring().requestMatchers("/test/**", "/static/**","/**");
     }
 }

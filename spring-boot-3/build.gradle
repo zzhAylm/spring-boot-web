@@ -33,6 +33,8 @@ dependencies {
 //    api("org.springframework.cloud:spring-cloud-starter-openfeign")
 
     api('org.springframework.boot:spring-boot-starter-data-elasticsearch')
+
+//    api("")
 }
 bootJar {
     enabled = true
