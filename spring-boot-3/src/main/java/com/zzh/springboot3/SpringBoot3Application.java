@@ -1,5 +1,6 @@
 package com.zzh.springboot3;
 
+import com.zzh.springboot3.cache.EnableDoubleCache;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mybatis.spring.annotation.MapperScan;
@@ -8,8 +9,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.ApplicationContext;
-import org.springframework.kafka.annotation.EnableKafka;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -20,6 +19,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @MapperScan("com.zzh.springboot3.mapper")
 @SpringBootApplication
 @EnableFeignClients
+@EnableDoubleCache
 @EnableTransactionManagement
 public class SpringBoot3Application {
     private static final Logger log = LogManager.getLogger(SpringBoot3Application.class);

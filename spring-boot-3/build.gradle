@@ -34,7 +34,7 @@ dependencies {
 
     api('org.springframework.boot:spring-boot-starter-data-elasticsearch')
 
-//    api("")
+//    implementation 'net.oschina.j2cache:j2cache-core:2.8.5-release'
 }
 bootJar {
     enabled = true

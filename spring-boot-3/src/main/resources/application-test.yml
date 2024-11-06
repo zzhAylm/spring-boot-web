@@ -271,3 +271,9 @@ zzh:
         permittedNumberOfCallsInHalfOpenState: 3  # 半开状态下允许的调用次数
         automaticTransitionFromOpenToHalfOpenEnabled: true  # 自动从打开状态转换到半开状态
         maxWaitDurationInHalfOpenState: 2m   # 半开状态最多保持的时间
+  dubbo-cache:
+    cache-manager:
+      default:
+        capacity: 1024
+      zzh:
+        capacity: 1024

@@ -23,7 +23,7 @@ import java.net.InetSocketAddress;
  */
 @Slf4j
 @Configuration
-@EnableConfigurationProperties({ConfigProperties.class,Resilience4jProperties.class})
+@EnableConfigurationProperties({ConfigProperties.class,Resilience4jProperties.class,DubboProperties.class})
 public class SpringBoot3Config {
 
     @Resource
