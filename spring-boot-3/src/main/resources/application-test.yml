@@ -1,3 +1,15 @@
+eureka:
+  user:
+    name: admin
+    password: 123456
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+  client:
+    register-with-eureka: true # 不需要将自己注册到注册中心
+    serviceUrl:
+      defaultZone: "https://${eureka.user.name}:${eureka.user.password}@eureka-test.suixingpay.com/eureka/"
+
 mybatis-plus:
   mapper-locations: classpath:/mapper/*.xml
   type-aliases-package: com.zzh.springboot3
@@ -199,9 +211,7 @@ spring:
         load-balancers:
           round_robin:
             type: ROUND_ROBIN
-  datasource:
-    hikari:
-      data-source-class-name:
+
 logging:
   level:
     root: INFO
@@ -271,7 +281,7 @@ zzh:
         permittedNumberOfCallsInHalfOpenState: 3  # 半开状态下允许的调用次数
         automaticTransitionFromOpenToHalfOpenEnabled: true  # 自动从打开状态转换到半开状态
         maxWaitDurationInHalfOpenState: 2m   # 半开状态最多保持的时间
-  dubbo-cache:
+  double-cache:
     cache-manager:
       default:
         capacity: 1024

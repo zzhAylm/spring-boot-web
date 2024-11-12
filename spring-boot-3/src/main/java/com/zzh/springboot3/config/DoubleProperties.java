@@ -13,10 +13,10 @@ import java.util.Map;
  * @Crete 2024/11/5 14:25
  */
 @Data
-@ConfigurationProperties(prefix = DubboProperties.PREFIX)
-public class DubboProperties implements Serializable {
+@ConfigurationProperties(prefix = DoubleProperties.PREFIX)
+public class DoubleProperties implements Serializable {
 
-    public static final String PREFIX = "zzh.dubbo-cache";
+    public static final String PREFIX = "zzh.double-cache";
 
     private Map<String, CacheProperties> cacheManager = new HashMap<>();
 

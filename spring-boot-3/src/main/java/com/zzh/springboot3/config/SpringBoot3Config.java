@@ -12,7 +12,6 @@ import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilde
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 
 import java.net.InetSocketAddress;
 
@@ -23,7 +22,7 @@ import java.net.InetSocketAddress;
  */
 @Slf4j
 @Configuration
-@EnableConfigurationProperties({ConfigProperties.class,Resilience4jProperties.class,DubboProperties.class})
+@EnableConfigurationProperties({ConfigProperties.class,Resilience4jProperties.class, DoubleProperties.class})
 public class SpringBoot3Config {
 
     @Resource

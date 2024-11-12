@@ -2,7 +2,7 @@ package com.zzh.springboot3.cache;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.zzh.springboot3.config.DubboProperties;
+import com.zzh.springboot3.config.DoubleProperties;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import lombok.Data;
@@ -33,14 +33,14 @@ public class DoubleCachePointcutAdvisor implements PointcutAdvisor {
     private Map<String, Cache<String, Object>> cacheManager = new HashMap<>();
 
     @Resource
-    private DubboProperties dubboProperties;
+    private DoubleProperties doubleProperties;
 
 
     @PostConstruct
     public void init() {
         pointcut = new DoubleCacheMethodMatcherPointcut();
 
-        Map<String, DubboProperties.CacheProperties> cachePropertiesMap = dubboProperties.getCacheManager();
+        Map<String, DoubleProperties.CacheProperties> cachePropertiesMap = doubleProperties.getCacheManager();
 
         cacheManager.put("default", Caffeine.newBuilder()
                 .initialCapacity(1024)
