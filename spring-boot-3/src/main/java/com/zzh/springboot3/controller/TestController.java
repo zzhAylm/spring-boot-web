@@ -58,5 +58,9 @@ public class TestController {
         return ResponseDto.success(ipAddress);
     }
 
+    @GetMapping("/customAnnotation")
+    public ResponseDto<String> customAnnotation() {
+        return testService.customAnnotation();
+    }
 
 }

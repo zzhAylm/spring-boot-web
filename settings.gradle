@@ -1,4 +1,5 @@
 rootProject.name = 'spring-boot-web'
 include 'spring-boot-3'
 include 'spring-boot-common'
+include 'spring-boot-streams'
 

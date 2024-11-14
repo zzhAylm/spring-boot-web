@@ -1,0 +1,11 @@
+dependencies {
+  api project(":spring-boot-common")
+  api("org.springframework.boot:spring-boot-starter-web")
+  api("org.springframework.cloud:spring-cloud-starter-bootstrap:3.0.0")
+  api('org.springframework.kafka:spring-kafka')
+  api("org.apache.kafka:kafka-streams")
+  api 'cn.hutool:hutool-all:5.8.25'
+}
+bootJar {
+  enabled = true
+}

@@ -1,6 +1,9 @@
 package com.zzh.springboot3.service;
 
+import com.zzh.springboot3.advice.CustomAnnotation;
+import com.zzh.springboot3.dto.ResponseDto;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.stereotype.Service;
 
 /**
@@ -22,6 +25,12 @@ public class TestService {
         }
 
         log.info("test service test method end");
+    }
+
+    @CustomAnnotation
+    public ResponseDto<String> customAnnotation(){
+        log.info("custom annotation is running");
+        return ResponseDto.success("test");
     }
 
 }
