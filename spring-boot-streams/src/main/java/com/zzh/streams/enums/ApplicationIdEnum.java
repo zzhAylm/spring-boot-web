@@ -8,11 +8,11 @@ import lombok.Getter;
  * @Crete 2024/11/14 20:38
  */
 @Getter
-public enum StreamsApplicationIDEnums {
+public enum ApplicationIdEnum {
 
-    TRACE_APPLICATION_ID("trace", "调用链");
+    TRACE_APPLICATION_ID("trace_zipkin_application_id", "调用链");
 
-    StreamsApplicationIDEnums(String code, String name) {
+    ApplicationIdEnum(String code, String name) {
         this.code = code;
         this.name = name;
     }

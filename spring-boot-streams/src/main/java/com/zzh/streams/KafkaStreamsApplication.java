@@ -5,7 +5,6 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContext;
-import org.springframework.kafka.annotation.EnableKafkaStreams;
 
 /**
  * @Description:
@@ -13,7 +12,6 @@ import org.springframework.kafka.annotation.EnableKafkaStreams;
  * @Crete 2024/11/14 19:41
  */
 @Slf4j
-
 @SpringBootApplication
 public class KafkaStreamsApplication {
 

@@ -2,3 +2,4 @@ zzh:
   streams:
     topic: zipkin-test
     bootstrap-servers: 22.50.2.212:9092,22.50.2.203:9092,22.50.2.206:9092
+    num-thread: 2

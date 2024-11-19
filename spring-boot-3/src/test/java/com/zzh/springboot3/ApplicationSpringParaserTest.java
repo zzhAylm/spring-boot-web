@@ -1,5 +1,6 @@
 package com.zzh.springboot3;
 
+import cn.hutool.core.io.resource.ResourceUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -10,11 +11,13 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
-import java.io.Serializable;
+import java.io.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
@@ -486,7 +489,7 @@ public class ApplicationSpringParaserTest {
         }).toList();
 
 
-        try (ExcelWriter writer = ExcelUtil.getWriter("/Users/zzh/Company/projects/spring-boot-web/spring-boot-3/src/main/resources/static/项目考勤1.xlsx")){
+        try (ExcelWriter writer = ExcelUtil.getWriter("/Users/zzh/Company/projects/spring-boot-web/spring-boot-3/src/main/resources/static/项目考勤1.xlsx")) {
             //自定义标题别名
             writer.addHeaderAlias("projectName", "项目名称");
             writer.addHeaderAlias("realCycle", "项目周期");
@@ -495,7 +498,7 @@ public class ApplicationSpringParaserTest {
             writer.setOnlyAlias(true);
             // 一次性写出内容，使用默认样式，强制输出标题
             writer.write(projects, true);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -509,5 +512,30 @@ public class ApplicationSpringParaserTest {
         private String attendDates;
     }
 
+
+    private static final String URL = "curl http://localhost:8080/geo/delete-position-redis -X POST -d \"positionInfo=1|192.168.1.143|||||0000|00000000||869861069669872|1|1|||&sysId=XYF\"";
+
+    private Pattern pattern = Pattern.compile("(.)*positionInfo:(.*)");
+
+    @Test
+    public void stringRemoveRedis() throws IOException {
+        BufferedReader utf8Reader = ResourceUtil.getUtf8Reader("static/基站清理.java");
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("/Users/zzh/Company/projects/spring-boot-web/spring-boot-3/src/main/resources/static/基站清理1.java"));
+        String line;
+        int count = 0;
+        while ((line = utf8Reader.readLine()) != null) {
+            Matcher matcher = pattern.matcher(line);
+            while (matcher.find()) {
+                log.info("line is :{}",++count);
+                String group = matcher.group(2);
+                String replace = URL.replace("1|192.168.1.143|||||0000|00000000||869861069669872|1|1|||", group);
+                log.info("new url is :{}",replace);
+                bufferedWriter.write(replace + "\n");
+            }
+        }
+        utf8Reader.close();
+        bufferedWriter.close();
+
+    }
 
 }

@@ -5,6 +5,8 @@ dependencies {
   api('org.springframework.kafka:spring-kafka')
   api("org.apache.kafka:kafka-streams")
   api 'cn.hutool:hutool-all:5.8.25'
+  api("io.micrometer:micrometer-registry-prometheus")
+  api("org.springframework.boot:spring-boot-starter-actuator")
 }
 bootJar {
   enabled = true

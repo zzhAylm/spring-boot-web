@@ -3,3 +3,61 @@ spring:
     name: SPRING-BOOT-STREAMS
   profiles:
     active: ${profile:test}
+  security:
+    user:
+      name: admin
+      password: 123456
+  servlet:
+    multipart:
+      max-request-size: 50MB
+      max-file-size: 50MB
+management:
+  server:
+    port: 36666
+  endpoints:
+    web:
+      base-path: /_manage
+      discovery:
+        enabled: true
+      exposure:
+        include: "*"
+        exclude: "heapdump"
+    jmx:
+      exposure:
+        include: "*"
+        exclude: "heapdump"
+    enabled-by-default: true
+  health:
+    defaults:
+      enabled: false
+    db:
+      enabled: true
+    redis:
+      enabled: true
+    rabbit:
+      enabled: true
+    diskspace:
+      enabled: true
+    readinessstate:
+      enabled: true
+  endpoint:
+    health:
+      show-details: always
+      status:
+        http-mapping:
+          up: 200
+          down: 503
+          fatal: 503
+          out-of-service: 503
+    refresh:
+      enabled: true
+    heapdump:
+      enabled: false
+    prometheus:
+      enabled: true
+    shutdown:
+      enabled: false
+    mappings:
+      enabled: true
+  metrics:
+    use-global-registry: true
