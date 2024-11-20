@@ -5,6 +5,8 @@ import com.zzh.streams.metric.TracingMetric;
 import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.Tags;
+import io.micrometer.core.instrument.Timer;
+import io.prometheus.client.Histogram;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MetricController {
 
 
-    @RequestMapping()
+    @RequestMapping("/summary")
     public void metrics() {
         DistributionSummary summary1 = Metrics.summary(TracingMetricEnum.TRACING_REQUEST_DURATION_SECONDS_METRIC.getName(), Tags.of("url", "/zzh"));
         DistributionSummary summary2 = Metrics.summary(TracingMetricEnum.TRACING_REQUEST_DURATION_SECONDS_METRIC.getName(), Tags.of("url", "/ylm"));
@@ -34,5 +36,16 @@ public class MetricController {
         summary4.record(1000);
         summary5.record(2000);
         summary6.record(3000);
+    }
+
+    @RequestMapping("historm")
+    public void hist() {
+
+        Histogram histogram = Histogram.build().name("histogram_test")
+                .create();
+        Histogram.Timer timer = histogram.startTimer();
+
+        timer.observeDuration();
+
     }
 }

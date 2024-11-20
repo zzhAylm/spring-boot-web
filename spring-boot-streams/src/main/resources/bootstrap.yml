@@ -11,6 +11,8 @@ spring:
     multipart:
       max-request-size: 50MB
       max-file-size: 50MB
+server:
+  port: ${port:8080}
 management:
   server:
     port: 36666
@@ -61,3 +63,4 @@ management:
       enabled: true
   metrics:
     use-global-registry: true
+

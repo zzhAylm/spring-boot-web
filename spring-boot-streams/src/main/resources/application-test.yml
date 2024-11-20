@@ -1,5 +1,16 @@
+eureka:
+  user:
+    name: admin
+    password: 123456
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+  client:
+    register-with-eureka: true # 不需要将自己注册到注册中心
+    serviceUrl:
+      defaultZone: "https://${eureka.user.name}:${eureka.user.password}@eureka-test.suixingpay.com/eureka/"
 zzh:
   streams:
     topic: zipkin-test
     bootstrap-servers: 22.50.2.212:9092,22.50.2.203:9092,22.50.2.206:9092
-    num-thread: 2
+    num-thread: 3

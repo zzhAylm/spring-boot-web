@@ -1,7 +1,6 @@
 package com.zzh.streams.metric;
 
 import com.zzh.streams.enums.TracingMetricEnum;
-import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.Tag;
 import lombok.Data;
@@ -25,16 +24,13 @@ public class TracingMetric {
     }
 
 
-    public static void tracingRequestDurationSecondsMetric(Map<String, String> tags, Long duration) {
-        DistributionSummary summary = Metrics.summary(TracingMetricEnum.TRACING_REQUEST_DURATION_SECONDS_METRIC.getName());
-        summary.record(duration);
-    }
 
 
 
     private static final Map<String, TracingRequestGauge> TRACING_REQUEST_GAUGE_SET = new ConcurrentHashMap<>();
 
-    public static void tracingRequestMetric(Map<String, String> tags, Long num) {
+    public static void tracingRequestSummaryMetric(Map<String, String> tags, Long num) {
+
         String generateMetricName = generateMetricName(TracingMetricEnum.TRACING_REQUEST_DURATION_SECONDS_METRIC.getName(), tags);
 
         TracingRequestGauge gauge = TRACING_REQUEST_GAUGE_SET.get(generateMetricName);
