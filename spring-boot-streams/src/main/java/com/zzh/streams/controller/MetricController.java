@@ -8,8 +8,12 @@ import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.Timer;
 import io.prometheus.client.Histogram;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @Description:
@@ -47,5 +51,13 @@ public class MetricController {
 
         timer.observeDuration();
 
+    }
+
+    @RequestMapping("/gauge/{name}/{age}/{num}")
+    public void gauge(@PathVariable String age, @PathVariable String name, @PathVariable Long num) {
+        Map<String, String> tags = new HashMap<>();
+        tags.put("name", name);
+        tags.put("age", age);
+        TracingMetric.tracingRequestSummaryMetric(tags,num);
     }
 }

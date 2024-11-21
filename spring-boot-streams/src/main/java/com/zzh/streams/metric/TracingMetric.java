@@ -1,5 +1,6 @@
 package com.zzh.streams.metric;
 
+import cn.hutool.json.JSONUtil;
 import com.zzh.streams.enums.TracingMetricEnum;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.Tag;
@@ -8,6 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.LongAdder;
 import java.util.stream.Collectors;
 
 /**
@@ -24,34 +28,30 @@ public class TracingMetric {
     }
 
 
-
-
-
-    private static final Map<String, TracingRequestGauge> TRACING_REQUEST_GAUGE_SET = new ConcurrentHashMap<>();
+    private static final Map<String, AtomicLong> TRACING_REQUEST_GAUGE_SET = new ConcurrentHashMap<>();
 
     public static void tracingRequestSummaryMetric(Map<String, String> tags, Long num) {
 
-        String generateMetricName = generateMetricName(TracingMetricEnum.TRACING_REQUEST_DURATION_SECONDS_METRIC.getName(), tags);
+        String generateMetricName = generateMetricName(TracingMetricEnum.TRACING_REQUEST_SUMMARY_METRIC.getCode(), tags);
 
-        TracingRequestGauge gauge = TRACING_REQUEST_GAUGE_SET.get(generateMetricName);
-        if (Objects.nonNull(gauge)) {
-            gauge.setCount(num);
+        AtomicLong atomicLong = TRACING_REQUEST_GAUGE_SET.get(generateMetricName);
+        if (Objects.nonNull(atomicLong)) {
+            atomicLong.set(num);
             return;
         }
-        TracingRequestGauge tracingRequestGauge = new TracingRequestGauge();
-        tracingRequestGauge.setTags(tags);
-        tracingRequestGauge.setCount(num);
-        Metrics.gauge(TracingMetricEnum.TRACING_REQUEST_DURATION_SECONDS_METRIC.getName(), tags.keySet().stream().map(o -> Tag.of(o, o)).collect(Collectors.toList()), tracingRequestGauge, TracingRequestGauge::getCount);
-        TRACING_REQUEST_GAUGE_SET.put(generateMetricName, tracingRequestGauge);
+        AtomicLong target = new AtomicLong(num);
+        log.info("tars is :{}", JSONUtil.toJsonStr(tags));
+        Metrics.gauge(TracingMetricEnum.TRACING_REQUEST_SUMMARY_METRIC.getCode(), tags.entrySet().stream().filter(entry -> Objects.nonNull(entry) && Objects.nonNull(entry.getKey()) && Objects.nonNull(entry.getValue())).map(entry -> Tag.of(entry.getKey(), entry.getValue())).collect(Collectors.toList()), target, AtomicLong::get);
+        TRACING_REQUEST_GAUGE_SET.put(generateMetricName, target);
 
     }
 
-    public static String generateMetricName(String metricName, Map<String, String> tags) {
-        return metricName + tags.entrySet().stream().map(entry -> String.format("%s=%s", entry.getKey(), entry.getValue())).collect(Collectors.joining(","));
+    private static String generateMetricName(String metricName, Map<String, String> tags) {
+        return metricName + tags.entrySet().stream().map(entry -> String.format("%s=%s", entry.getKey(), entry.getValue())).collect(Collectors.joining("&"));
     }
 
     @Data
-    public static class TracingRequestGauge {
+    private static class TracingRequestGauge {
         private Map<String, String> tags;
         private Long count;
 

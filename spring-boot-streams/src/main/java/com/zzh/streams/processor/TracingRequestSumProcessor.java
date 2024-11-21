@@ -45,7 +45,7 @@ public class TracingRequestSumProcessor extends ContextualProcessor<String, Span
         this.windowStore = context().getStateStore(TRACING_REQUEST_SUM_WINDOW_STORE);
         context().schedule(Duration.ofSeconds(5), PunctuationType.WALL_CLOCK_TIME, (timestamp -> {
             long timeTo = timestamp - timestamp % 5000;
-            log.info("窗口定时任务执行，time is :{},time to is :{}", timestamp,timeTo);
+//            log.info("窗口定时任务执行，time is :{},time to is :{}", timestamp,timeTo);
             KeyValueIterator<Windowed<String>, Long> windowedLongKeyValueIterator = windowStore.fetchAll(timeTo - 5000, timeTo);
             while (windowedLongKeyValueIterator.hasNext()) {
                 KeyValue<Windowed<String>, Long> next = windowedLongKeyValueIterator.next();

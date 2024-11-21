@@ -1,22 +1,15 @@
 package com.zzh.streams.serde;
 
-import cn.hutool.core.util.ReflectUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * @Description:
  * @Author: zzh
  * @Crete 2024/11/19 14:32
  */
-@Slf4j
 @Data
 public class TracingSummaryMetric implements Serializable {
 

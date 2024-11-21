@@ -10,7 +10,10 @@ import com.zzh.streams.enums.ApplicationIdEnum;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
@@ -19,6 +22,7 @@ import org.apache.kafka.streams.kstream.*;
 import org.apache.kafka.streams.processor.WallclockTimestampExtractor;
 import org.apache.kafka.streams.processor.api.Processor;
 import org.apache.kafka.streams.processor.api.ProcessorSupplier;
+import org.apache.kafka.streams.processor.api.Record;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.StoreBuilder;
 import org.apache.kafka.streams.state.Stores;
@@ -29,12 +33,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
 import org.springframework.kafka.config.StreamsBuilderFactoryBean;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerde;
 
 import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.atomic.LongAdder;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static com.zzh.streams.constant.TracingConstant.*;
 
@@ -57,15 +62,6 @@ public class StreamsConfiguration {
         Map<String, Object> props = commonDefaultProperties();
         props.put(StreamsConfig.NUM_STREAM_THREADS_CONFIG, streamsProperties.getNumThread());
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, ApplicationIdEnum.TRACE_APPLICATION_ID.getCode());
-
-//        props.put(StreamsConfig.consumerPrefix(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG), logKafkaStreamsProperties.getStreams().getConsumer().getAutoOffsetReset());
-//        props.put(StreamsConfig.consumerPrefix(ConsumerConfig.MAX_POLL_RECORDS_CONFIG), logKafkaStreamsProperties.getStreams().getConsumer().getMaxPollRecords());
-//
-//        props.put(StreamsConfig.consumerPrefix(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG), Math.toIntExact(logKafkaStreamsProperties.getStreams().getConsumer().getAutoCommitInterval().toMillis()));
-//        props.put(StreamsConfig.consumerPrefix(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG), Math.toIntExact(logKafkaStreamsProperties.getStreams().getConsumer().getFetchMaxWait().toMillis()));
-//
-//        props.put(StreamsConfig.consumerPrefix(ConsumerConfig.FETCH_MIN_BYTES_CONFIG), Math.toIntExact(logKafkaStreamsProperties.getStreams().getConsumer().getFetchMinSize().toBytes()));
-//        props.put(StreamsConfig.consumerPrefix(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG), logKafkaStreamsProperties.getStreams().getConsumer().getEnableAutoCommit());
 
         return new StreamsBuilderFactoryBean(new KafkaStreamsConfiguration(props));
     }
@@ -92,8 +88,8 @@ public class StreamsConfiguration {
 //        });
 
         // 根据 request summary 重分区
-        spanKStream.map((key, value) -> new KeyValue<>(generateMetricName(value), value.getDuration()), Named.as("tracing_request_summary_map"))
-                .to(TRACING_SPAN_GROUP_BY_SUMMARY_TOPIC, Produced.with(new JsonSerde<>(), Serdes.Long()));
+        spanKStream.map((key, value) -> KeyValue.pair(generateMetricName(value), value.getDuration()), Named.as("tracing_request_summary_map"))
+                .to(TRACING_SPAN_GROUP_BY_SUMMARY_TOPIC, Produced.with(new JsonSerde<>(TracingSummaryMetric.class), Serdes.Long()).withName("tracing_request_summary_map_to"));
 
         return streamsBuilder.build();
     }
@@ -138,6 +134,8 @@ public class StreamsConfiguration {
         Map<String, Object> props = commonDefaultProperties();
         props.put(StreamsConfig.NUM_STREAM_THREADS_CONFIG, streamsProperties.getNumThread());
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, ApplicationIdEnum.TRACE_REQUEST_SUMMARY_APPLICATION_ID.getCode());
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, CustomJsonDeserializer.class);
         return new StreamsBuilderFactoryBean(new KafkaStreamsConfiguration(props));
     }
 
@@ -145,16 +143,24 @@ public class StreamsConfiguration {
     @Bean
     public Topology tracingRequestTopology(@Qualifier(value = TRACING_REQUEST_SUMMARY_STREAMS_BUILDER) StreamsBuilder streamsBuilder) {
         KStream<TracingSummaryMetric, Long> summarySteam = streamsBuilder.stream(TRACING_SPAN_GROUP_BY_SUMMARY_TOPIC, Consumed.with(new JsonSerde<>(TracingSummaryMetric.class), Serdes.Long()).withName("tracing-span-by-summary-repartition-topic-input-processor"));
-        summarySteam.groupByKey(Grouped.with(new JsonSerde<>(TracingSummaryMetric.class), Serdes.Long()))
-                .windowedBy(TimeWindows.ofSizeAndGrace(Duration.ofMinutes(1), Duration.ofSeconds(30)))
-                .aggregate(HashMap::new, (key, value, aggregate) -> {
-                    aggregate.put(key,value);
-                    log.info("key is {},value is :{}", JSONUtil.toJsonStr(key),value);
+
+        // 自定义状态存储配置，关闭变更日志记录
+        Materialized<TracingSummaryMetric, Long, WindowStore<Bytes, byte[]>> materialized = Materialized.<TracingSummaryMetric, Long, WindowStore<org.apache.kafka.common.utils.Bytes, byte[]>>as("tracingRequestSummaryAggregate").withKeySerde(new JsonSerde<>(TracingSummaryMetric.class)).withValueSerde(Serdes.Long()).withLoggingDisabled(); // 关闭变更日志记录
+
+        summarySteam
+                .groupByKey(Grouped.as("tracingRequestGroupByKey"))
+                .windowedBy(TimeWindows.ofSizeAndGrace(Duration.ofMinutes(1), Duration.ofSeconds(30))).emitStrategy(EmitStrategy.onWindowClose())
+                .aggregate(() -> Long.valueOf(0), (key, value, aggregate) -> {
+//                    log.info("key is {},value is :{}", JSONUtil.toJsonStr(key), value);
                     TracingMetric.tracingRequestSummaryMetric(tags(key), value);
                     return aggregate;
-                });
+                }, Named.as("tracing_request_summary_aggregate"), materialized)
+        ;
+
         return streamsBuilder.build();
     }
+
+
 
 
 
@@ -189,14 +195,19 @@ public class StreamsConfiguration {
         return tracMetric;
     }
 
-    public static  <T> Map<String, String> tags(T obj) {
+    public static <T> Map<String, String> tags(T obj) {
         Map<String, String> tags = new HashMap<>();
         Arrays.stream(ReflectUtil.getFields(obj.getClass())).forEach(field -> {
             String value = "EMPTY";
             try {
-                value = (String) field.get(obj);
+                field.setAccessible(true);
+                if (field.getType().equals(Integer.class)) {
+                    value = String.valueOf(field.get(obj));
+                } else {
+                    value = (String) field.get(obj);
+                }
             } catch (IllegalAccessException e) {
-                log.error("获取字段值失败，使用默认值EMPTY",e);
+                log.error("获取字段值失败，使用默认值EMPTY", e);
             }
             tags.put(field.getName(), value);
         });
