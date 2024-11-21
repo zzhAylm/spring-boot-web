@@ -1,6 +1,7 @@
 package com.zzh.streams.metric;
 
 import cn.hutool.json.JSONUtil;
+import com.google.common.util.concurrent.AtomicDouble;
 import com.zzh.streams.enums.TracingMetricEnum;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.Tag;
@@ -40,7 +41,7 @@ public class TracingMetric {
             return;
         }
         AtomicLong target = new AtomicLong(num);
-        log.info("tars is :{}", JSONUtil.toJsonStr(tags));
+//        log.info("tars is :{}", JSONUtil.toJsonStr(tags));
         Metrics.gauge(TracingMetricEnum.TRACING_REQUEST_SUMMARY_METRIC.getCode(), tags.entrySet().stream().filter(entry -> Objects.nonNull(entry) && Objects.nonNull(entry.getKey()) && Objects.nonNull(entry.getValue())).map(entry -> Tag.of(entry.getKey(), entry.getValue())).collect(Collectors.toList()), target, AtomicLong::get);
         TRACING_REQUEST_GAUGE_SET.put(generateMetricName, target);
 
@@ -50,10 +51,21 @@ public class TracingMetric {
         return metricName + tags.entrySet().stream().map(entry -> String.format("%s=%s", entry.getKey(), entry.getValue())).collect(Collectors.joining("&"));
     }
 
-    @Data
-    private static class TracingRequestGauge {
-        private Map<String, String> tags;
-        private Long count;
+
+    private static final Map<String, AtomicDouble> TRACING_REQUEST_RATE_GAUGE_SET = new ConcurrentHashMap<>();
+
+    public static void tracingRequestRateMetric(Map<String, String> tags, Double num) {
+
+        String generateMetricName = generateMetricName(TracingMetricEnum.TRACING_REQUEST_RATE_METRIC.getCode(), tags);
+
+        AtomicDouble rate = TRACING_REQUEST_RATE_GAUGE_SET.get(generateMetricName);
+        if (Objects.nonNull(rate)) {
+            rate.set(num);
+            return;
+        }
+        AtomicDouble target = new AtomicDouble(num);
+        Metrics.gauge(TracingMetricEnum.TRACING_REQUEST_RATE_METRIC.getCode(), tags.entrySet().stream().filter(entry -> Objects.nonNull(entry) && Objects.nonNull(entry.getKey()) && Objects.nonNull(entry.getValue())).map(entry -> Tag.of(entry.getKey(), entry.getValue())).collect(Collectors.toList()), target, AtomicDouble::get);
+        TRACING_REQUEST_RATE_GAUGE_SET.put(generateMetricName, target);
 
     }
 

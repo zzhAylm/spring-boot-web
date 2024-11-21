@@ -91,6 +91,11 @@ public class StreamsConfiguration {
         spanKStream.map((key, value) -> KeyValue.pair(generateMetricName(value), value.getDuration()), Named.as("tracing_request_summary_map"))
                 .to(TRACING_SPAN_GROUP_BY_SUMMARY_TOPIC, Produced.with(new JsonSerde<>(TracingSummaryMetric.class), Serdes.Long()).withName("tracing_request_summary_map_to"));
 
+
+        // 根据 request rate 重分区
+        spanKStream.map((key, value) -> KeyValue.pair(rateMetric(value), 1.0), Named.as("tracing_request_rate_map"))
+                .to(TRACING_SPAN_REQUEST_TATE_TOPIC, Produced.with(new JsonSerde<>(TracingRequestRateMetric.class), Serdes.Double()).withName("tracing_request_rate_to"));
+
         return streamsBuilder.build();
     }
 
@@ -108,6 +113,10 @@ public class StreamsConfiguration {
 
         KStream<String, Span> spanKStream = streamsBuilder.stream(TRACING_SPAN_GROUP_BY_TRACING_ID_TOPIC, Consumed.with(Serdes.String(), new JsonSerde<>(Span.class)).withName("tracing-span-request-sum-repartition-topic-input-processor"));
 
+        // 不能进行分区，所以就不能进行聚合，不能用group 所以只能用 processor，在processor中因为没有分区，所以会有跨分区的操作，key需要加入 partitionId 字段，来防止线程安全问题
+        // 多个线程操作key相同，所以使用windowStore的时候会有线程安全的问题
+
+        // 如果：所有的自己，统计日志量，我们没办法进行分组，所以只能使用processor ，processor中的windows 不是线程安全的，所以key要加入partitionId ，解决线程安全问题。
         spanKStream.process(new ProcessorSupplier<String, Span, String, Long>() {
             @Override
             public Set<StoreBuilder<?>> stores() {
@@ -161,7 +170,36 @@ public class StreamsConfiguration {
     }
 
 
+    @Bean(name = TRACING_REQUEST_RATE_STREAMS_BUILDER)
+    public StreamsBuilderFactoryBean tracingRequestRateStreamsBuilder() {
+        Map<String, Object> props = commonDefaultProperties();
+        props.put(StreamsConfig.NUM_STREAM_THREADS_CONFIG, streamsProperties.getNumThread());
+        props.put(StreamsConfig.APPLICATION_ID_CONFIG, ApplicationIdEnum.TRACE_REQUEST_TATE_APPLICATION_ID.getCode());
+        return new StreamsBuilderFactoryBean(new KafkaStreamsConfiguration(props));
+    }
 
+    @Bean
+    public Topology tracingRequestRateTopology(@Qualifier(value = TRACING_REQUEST_RATE_STREAMS_BUILDER) StreamsBuilder streamsBuilder) {
+        KStream<TracingRequestRateMetric, Long> rateStream = streamsBuilder.stream(TRACING_SPAN_REQUEST_TATE_TOPIC, Consumed.with(new JsonSerde<>(TracingRequestRateMetric.class), Serdes.Long()).withName("tracing-span-rate-repartition-topic-input-processor"));
+
+        // 自定义状态存储配置，关闭变更日志记录
+        Materialized<TracingRequestRateMetric, Long, WindowStore<Bytes, byte[]>> materialized = Materialized.<TracingRequestRateMetric, Long, WindowStore<org.apache.kafka.common.utils.Bytes, byte[]>>as("tracingRequestRateAggregate").withKeySerde(new JsonSerde<>(TracingRequestRateMetric.class)).withValueSerde(Serdes.Long()).withLoggingDisabled(); // 关闭变更日志记录
+
+        rateStream
+                .filter(((key, value) -> Objects.nonNull(key.getUrl())))
+                .groupByKey(Grouped.as("tracingRequestRateGroupByKey"))
+                .windowedBy(TimeWindows.ofSizeAndGrace(Duration.ofMinutes(1), Duration.ofSeconds(30)).advanceBy(Duration.ofSeconds(30))).emitStrategy(EmitStrategy.onWindowClose())
+                .count(Named.as("tracing_request_rate_count"), materialized)
+                .toStream()
+                .foreach((key, value) -> {
+                    TracingRequestRateMetric requestRateMetric = key.key();
+                    long count = value;
+                    log.info("key is :{},count is :{}", JSONUtil.toJsonStr(requestRateMetric), count);
+                    TracingMetric.tracingRequestRateMetric(tags(requestRateMetric), (count / 30.0));
+                });
+        ;
+        return streamsBuilder.build();
+    }
 
 
     private Map<String, Object> commonDefaultProperties() {
@@ -193,6 +231,22 @@ public class StreamsConfiguration {
             tracMetric.setUrl(span.getTags().get("http.path"));
         }
         return tracMetric;
+    }
+
+    public TracingRequestRateMetric rateMetric(Span span) {
+        TracingRequestRateMetric requestRateMetric = new TracingRequestRateMetric();
+        if (Objects.isNull(span)) {
+            return requestRateMetric;
+        }
+        if (Objects.nonNull(span.getLocalEndpoint())){
+            requestRateMetric.setApplicationName(span.getLocalEndpoint().getServiceName());
+            requestRateMetric.setInstance(span.getLocalEndpoint().getIpv4());
+        }
+        if (Objects.nonNull(span.getTags())){
+            requestRateMetric.setUrl(span.getTags().get("http.path"));
+            requestRateMetric.setMethod(span.getTags().get("http.method"));
+        }
+        return requestRateMetric;
     }
 
     public static <T> Map<String, String> tags(T obj) {

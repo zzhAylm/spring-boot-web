@@ -14,7 +14,7 @@ public enum TracingMetricEnum {
     TRACING_REQUEST_CONSUMER_SUM("tracing_request_consumer_sum", "消费者请求总量"),
     TRACING_REQUEST_DURATION_SECONDS_METRIC("tracing_request_duration_seconds_metric", "耗时，应用，实例，接口"),
     TRACING_REQUEST_SUMMARY_METRIC("tracing_request_summary_metric", "耗时，应用，实例，接口"),
-    ;
+    TRACING_REQUEST_RATE_METRIC("tracing_request_rate_metric", "接口的实时速率，label：应用，实例，接口");
 
     private final String code;
     private final String name;
