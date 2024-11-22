@@ -25,4 +25,8 @@ public class TracingConstant {
     public static final String TRACING_REQUEST_SUM_WINDOW_STORE = "tracing_request_sum_window_store";
 
 
+    //windows size
+    public static final long TRACING_REQUEST_RATE_WINDOW_SIZE = 60 * 1000;
+    public static final long TRACING_REQUEST_SUMMARY_WINDOW_SIZE = 60 * 1000;
+
 }

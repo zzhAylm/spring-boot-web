@@ -158,7 +158,7 @@ public class StreamsConfiguration {
 
         summarySteam
                 .groupByKey(Grouped.as("tracingRequestGroupByKey"))
-                .windowedBy(TimeWindows.ofSizeAndGrace(Duration.ofMinutes(1), Duration.ofSeconds(30))).emitStrategy(EmitStrategy.onWindowClose())
+                .windowedBy(TimeWindows.ofSizeAndGrace(Duration.ofMillis(TRACING_REQUEST_SUMMARY_WINDOW_SIZE), Duration.ofSeconds(30))).emitStrategy(EmitStrategy.onWindowClose())
                 .aggregate(() -> Long.valueOf(0), (key, value, aggregate) -> {
 //                    log.info("key is {},value is :{}", JSONUtil.toJsonStr(key), value);
                     TracingMetric.tracingRequestSummaryMetric(tags(key), value);
@@ -188,14 +188,14 @@ public class StreamsConfiguration {
         rateStream
                 .filter(((key, value) -> Objects.nonNull(key.getUrl())))
                 .groupByKey(Grouped.as("tracingRequestRateGroupByKey"))
-                .windowedBy(TimeWindows.ofSizeAndGrace(Duration.ofMinutes(1), Duration.ofSeconds(30)).advanceBy(Duration.ofSeconds(30))).emitStrategy(EmitStrategy.onWindowClose())
+                .windowedBy(TimeWindows.ofSizeAndGrace(Duration.ofMillis(TRACING_REQUEST_RATE_WINDOW_SIZE), Duration.ofSeconds(30)).advanceBy(Duration.ofSeconds(30))).emitStrategy(EmitStrategy.onWindowClose())
                 .count(Named.as("tracing_request_rate_count"), materialized)
                 .toStream()
                 .foreach((key, value) -> {
                     TracingRequestRateMetric requestRateMetric = key.key();
                     long count = value;
                     log.info("key is :{},count is :{}", JSONUtil.toJsonStr(requestRateMetric), count);
-                    TracingMetric.tracingRequestRateMetric(tags(requestRateMetric), (count / 30.0));
+                    TracingMetric.tracingRequestRateMetric(tags(requestRateMetric), count / (TRACING_REQUEST_RATE_WINDOW_SIZE/ 1000.0));
                 });
         ;
         return streamsBuilder.build();
@@ -238,11 +238,11 @@ public class StreamsConfiguration {
         if (Objects.isNull(span)) {
             return requestRateMetric;
         }
-        if (Objects.nonNull(span.getLocalEndpoint())){
+        if (Objects.nonNull(span.getLocalEndpoint())) {
             requestRateMetric.setApplicationName(span.getLocalEndpoint().getServiceName());
             requestRateMetric.setInstance(span.getLocalEndpoint().getIpv4());
         }
-        if (Objects.nonNull(span.getTags())){
+        if (Objects.nonNull(span.getTags())) {
             requestRateMetric.setUrl(span.getTags().get("http.path"));
             requestRateMetric.setMethod(span.getTags().get("http.method"));
         }

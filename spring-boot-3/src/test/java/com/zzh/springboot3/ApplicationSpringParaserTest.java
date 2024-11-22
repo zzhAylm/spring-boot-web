@@ -519,8 +519,8 @@ public class ApplicationSpringParaserTest {
 
     @Test
     public void stringRemoveRedis() throws IOException {
-        BufferedReader utf8Reader = ResourceUtil.getUtf8Reader("static/基站清理new.java");
-        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("/Users/zzh/Company/projects/spring-boot-web/spring-boot-3/src/main/resources/static/基站清理2.java"));
+        BufferedReader utf8Reader = ResourceUtil.getUtf8Reader("static/错误基站3.java");
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("/Users/zzh/Company/projects/spring-boot-web/spring-boot-3/src/main/resources/static/基站清理3.java"));
         String line;
         int count = 0;
         while ((line = utf8Reader.readLine()) != null) {
