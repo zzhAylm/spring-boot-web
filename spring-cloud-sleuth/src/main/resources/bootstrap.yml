@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: SPRING-CLOUD-SLEUTH-APPLICATION
+  profiles:
+    active: ${profile:test}
+server:
+  port: ${port:8080}
+

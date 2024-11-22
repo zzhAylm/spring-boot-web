@@ -1,6 +1,7 @@
 package com.zzh.springboot3;
 
 import cn.hutool.core.io.resource.ResourceUtil;
+import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -12,10 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -526,16 +524,71 @@ public class ApplicationSpringParaserTest {
         while ((line = utf8Reader.readLine()) != null) {
             Matcher matcher = pattern.matcher(line);
             while (matcher.find()) {
-                log.info("line is :{}",++count);
+                log.info("line is :{}", ++count);
                 String group = matcher.group(2);
                 String replace = URL.replace("1|192.168.1.143|||||0000|00000000||869861069669872|1|1|||", group);
-                log.info("new url is :{}",replace);
+                log.info("new url is :{}", replace);
                 bufferedWriter.write(replace + "\n");
             }
         }
         utf8Reader.close();
         bufferedWriter.close();
 
+    }
+
+
+    private String postGaode = "https://geo-test.vbill.cn/geo/position/gaode";
+
+    private String postBaidu = "https://geo-test.vbill.cn/geo/position/baidu";
+
+    @Test
+    public void geo() throws IOException {
+        BufferedReader utf8Reader = ResourceUtil.getUtf8Reader("static/问题基站.txt");
+        String line;
+        List<GeoResult> results = new ArrayList<>();
+        while ((line = utf8Reader.readLine()) != null) {
+            HashMap<String, String> paramMap = new HashMap<>();
+            paramMap.put("positionInfo", line);
+            paramMap.put("sysId", "zzh");
+            String collect = paramMap.entrySet().stream().map(entry -> String.format("%s=%s", entry.getKey(), entry.getValue())).collect(Collectors.joining("&"));
+            String baiduResult = HttpUtil.post(postBaidu, collect);
+            String gaoDeResult = HttpUtil.post(postGaode, collect);
+            GeoResult geoResult = new GeoResult();
+            geoResult.setPosition(line);
+            geoResult.setBaidu(baiduResult);
+            geoResult.setGaode(gaoDeResult);
+            results.add(geoResult);
+        }
+        utf8Reader.close();
+
+        try (ExcelWriter writer = ExcelUtil.getWriter("/Users/zzh/Company/projects/spring-boot-web/spring-boot-3/src/main/resources/static/定位结果.xlsx")) {
+            //自定义标题别名
+            writer.addHeaderAlias("position", "位置信息");
+            writer.addHeaderAlias("baidu", "百度结果");
+            writer.addHeaderAlias("gaode", "高德结果");
+            writer.setOnlyAlias(true);
+            // 一次性写出内容，使用默认样式，强制输出标题
+            writer.write(results, true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testPost() {
+
+
+    }
+
+
+    @Data
+    public static class GeoResult {
+
+        private String position;
+
+        private String baidu;
+
+        private String gaode;
     }
 
 }

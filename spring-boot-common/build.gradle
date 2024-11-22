@@ -1,4 +1,7 @@
 dependencies {
+    api 'cn.hutool:hutool-all:5.8.25'
+    api("io.micrometer:micrometer-registry-prometheus")
+    api("org.springframework.boot:spring-boot-starter-actuator")
     api('io.springfox:springfox-swagger2:3.0.0')
     api('io.springfox:springfox-swagger-ui:3.0.0')
     api("org.hibernate:hibernate-validator:8.0.1.Final")

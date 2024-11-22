@@ -1,0 +1,8 @@
+dependencies {
+    api project(":spring-boot-common")
+    api("org.springframework.boot:spring-boot-starter-web")
+    api("org.springframework.cloud:spring-cloud-starter-sleuth:3.1.11")
+    api("org.springframework.cloud:spring-cloud-starter-bootstrap")
+    api("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:2.2.9.RELEASE")
+}
+

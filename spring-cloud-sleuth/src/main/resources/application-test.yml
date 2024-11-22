@@ -1,0 +1,16 @@
+eureka:
+  user:
+    name: admin
+    password: 123456
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+  client:
+    register-with-eureka: true # 不需要将自己注册到注册中心
+    serviceUrl:
+      defaultZone: "https://${eureka.user.name}:${eureka.user.password}@eureka-test.suixingpay.com/eureka/"
+
+spring:
+  cloud:
+    compatibility-verifier:
+      enabled: false
