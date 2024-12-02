@@ -14,3 +14,15 @@ spring:
   cloud:
     compatibility-verifier:
       enabled: false
+  zipkin:
+    sender:
+      type: kafka
+    base-url:
+  kafka:
+    bootstrap-servers: 22.50.2.212:9092,22.50.2.203:9092,22.50.2.206:9092
+  sleuth:
+    enabled: true
+    sampler:
+      probability: 1.0
+    tracer:
+      mode: BRAVE

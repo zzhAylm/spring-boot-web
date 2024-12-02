@@ -4,12 +4,15 @@ import cn.hutool.json.JSONUtil;
 import com.zzh.springboot3.dto.RequestDto;
 import com.zzh.springboot3.dto.ResponseDto;
 import com.zzh.springboot3.dto.ValidDto;
+import com.zzh.springboot3.dto.ValidNotNullDto;
+import jakarta.validation.Valid;
+import jakarta.ws.rs.BadRequestException;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @Description:
@@ -27,9 +30,28 @@ public class ValidController {
         log.info("request is :{}", JSONUtil.toJsonStr(requestDto));
         return ResponseDto.success("zzh");
     }
+
     @RequestMapping("/custom")
-    public ResponseDto<String> valid(@Validated @RequestBody ValidDto validDto) {
+    public ResponseDto<String> valid(@Validated @Valid @RequestBody ValidDto validDto) {
         log.info("request is :{}", JSONUtil.toJsonStr(validDto));
         return ResponseDto.success("zzh");
+    }
+
+    @PostMapping("/post")
+    public ResponseDto<String> getValid(@Valid @RequestBody RequestDto<ValidNotNullDto> requestDto) {
+        log.info("request is :{}", JSONUtil.toJsonStr(requestDto));
+        return ResponseDto.success("zzh");
+    }
+
+    @ResponseStatus(HttpStatus.BAD_GATEWAY)
+    @PostMapping("/exception")
+    public ResponseDto<String> exception() {
+        throw new RuntimeException("参数异常");
+    }
+
+    @ResponseStatus(HttpStatus.BAD_GATEWAY)
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> exceptionHandler(RuntimeException exception) {
+        return ResponseEntity.ok().body(exception.getMessage());
     }
 }
