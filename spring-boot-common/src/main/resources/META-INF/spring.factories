@@ -1,0 +1,2 @@
+org.springframework.boot.env.EnvironmentPostProcessor=\
+com.zzh.springboot3.common.config.ActuatorPropertiesEnvironmentPostProcessor

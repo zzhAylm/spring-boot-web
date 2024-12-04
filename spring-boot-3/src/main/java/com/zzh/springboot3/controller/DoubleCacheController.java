@@ -1,7 +1,7 @@
 package com.zzh.springboot3.controller;
 
 import com.zzh.springboot3.cache.DoubleCacheService;
-import com.zzh.springboot3.dto.ResponseDto;
+import com.zzh.springboot3.common.dto.ResponseDto;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;

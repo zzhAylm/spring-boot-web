@@ -1,6 +1,6 @@
 package com.zzh.springboot3.advice;
 
-import com.zzh.springboot3.dto.ResponseDto;
+import com.zzh.springboot3.common.dto.ResponseDto;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;

@@ -1,13 +1,13 @@
 package com.zzh.sleuth.controller;
 
-import jakarta.annotation.Resource;
+import cn.hutool.json.JSONUtil;
+import com.zzh.springboot3.common.dto.RequestDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
-import org.springframework.boot.web.server.WebServer;
-import org.springframework.cloud.sleuth.Span;
-import org.springframework.cloud.sleuth.Tracer;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -46,7 +46,7 @@ public class SleuthController {
 //            // You can log an event on a span
 //            newSpan.event("taxCalculated");
 //        }
-//        finally {
+//        finally {v
 //            // Once done remember to end the span. This will allow collecting
 //            // the span to send it to a distributed tracing system e.g. Zipkin
 //            newSpan.end();
@@ -54,8 +54,16 @@ public class SleuthController {
 
 
 
-
     }
+
+
+
+    @PostMapping
+    public ResponseEntity<String> sleuthPost(HttpServletRequest httpServletRequest, @RequestBody RequestDto<String> requestDto) {
+       log.info("request body is:{}", JSONUtil.toJsonStr(requestDto));
+        return ResponseEntity.ok().body(httpServletRequest.getRequestURI());
+    }
+
 
 
 

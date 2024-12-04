@@ -1,6 +1,6 @@
 package com.zzh.springboot3.controller;
 
-import com.zzh.springboot3.dto.ResponseDto;
+import com.zzh.springboot3.common.dto.ResponseDto;
 import com.zzh.springboot3.service.RedissonService;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;

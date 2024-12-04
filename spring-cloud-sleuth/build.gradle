@@ -7,4 +7,6 @@ dependencies {
 //    api("org.springframework.cloud:spring-cloud-sleuth-zipkin:3.0.2")
     api("org.springframework.kafka:spring-kafka")
 }
-
+bootJar{
+    enabled=true
+}

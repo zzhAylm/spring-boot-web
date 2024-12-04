@@ -1,6 +1,6 @@
 package com.zzh.streams.serde;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -13,26 +13,24 @@ import java.io.Serializable;
 @Data
 public class TracingSummaryMetric implements Serializable {
 
-    @ApiModelProperty("调用链名称")
+    @Schema(name = "调用链名称")
     private String tracingName;
-    @ApiModelProperty("调用方ServiceName")
+    @Schema(name ="调用方ServiceName")
     private String serviceName;
-    @ApiModelProperty("调用方port")
+    @Schema(name ="调用方port")
     private Integer port;
-    @ApiModelProperty("接口地址")
+    @Schema(name ="接口地址")
     private String url;
-    @ApiModelProperty("请求方法类型：POST,GET")
+    @Schema(name ="请求方法类型：POST,GET")
     private String method;
-    @ApiModelProperty("请求类型：CLIENT,SERVICE")
+    @Schema(name ="请求类型：CLIENT,SERVICE")
     private String kind;
-    @ApiModelProperty("远程调用方的ServiceName（客户端或者服务端）")
+    @Schema(name ="远程调用方的ServiceName（客户端或者服务端）")
     private String remoteEndpointServiceName;
-    @ApiModelProperty("远程调用方的IP")
+    @Schema(name ="远程调用方的IP")
     private String remoteEndpointInstance;
-    @ApiModelProperty("远程调用方的端口")
+    @Schema(name ="远程调用方的端口")
     private Integer remoteEndpointPort;
-
-
 
 
 }

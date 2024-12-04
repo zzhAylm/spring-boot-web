@@ -1,10 +1,13 @@
 dependencies {
+    api("jakarta.servlet:jakarta.servlet-api")
+    api("jakarta.annotation:jakarta.annotation-api")
+    api("jakarta.validation:jakarta.validation-api")
+    api("io.swagger.core.v3:swagger-annotations:2.1.2")
+    api("io.swagger.core.v3:swagger-models:2.1.2")
+    api("io.swagger.core.v3:swagger-project:2.1.2")
     api 'cn.hutool:hutool-all:5.8.25'
     api("io.micrometer:micrometer-registry-prometheus")
     api("org.springframework.boot:spring-boot-starter-actuator")
-    api('io.springfox:springfox-swagger2:3.0.0')
-    api('io.springfox:springfox-swagger-ui:3.0.0')
-    api("org.hibernate:hibernate-validator:8.0.1.Final")
     api("org.springframework.boot:spring-boot-starter-test")
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
@@ -14,4 +17,7 @@ dependencies {
     testCompileOnly("org.springframework.boot:spring-boot-starter-test")
     testAnnotationProcessor("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+}
+springBoot {
+    mainClass='com.zzh.common.dto.RequestDto'
 }

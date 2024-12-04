@@ -2,7 +2,7 @@ package com.zzh.springboot3.controller;
 
 import cn.hutool.json.JSONUtil;
 import com.zzh.springboot3.dto.FormDto;
-import com.zzh.springboot3.dto.RequestDto;
+import com.zzh.springboot3.common.dto.RequestDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 

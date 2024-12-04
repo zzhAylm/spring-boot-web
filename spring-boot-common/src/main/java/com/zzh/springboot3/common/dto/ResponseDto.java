@@ -1,4 +1,4 @@
-package com.zzh.springboot3.dto;
+package com.zzh.springboot3.common.dto;
 
 import lombok.*;
 

@@ -1,7 +1,7 @@
 package com.zzh.springboot3.controller;
 
 import cn.hutool.json.JSONUtil;
-import com.zzh.springboot3.dto.ResponseDto;
+import com.zzh.springboot3.common.dto.ResponseDto;
 import com.zzh.springboot3.service.TestService;
 import com.zzh.springboot3.utils.IPUtil;
 import jakarta.annotation.Resource;

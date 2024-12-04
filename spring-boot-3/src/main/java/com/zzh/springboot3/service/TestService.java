@@ -1,9 +1,8 @@
 package com.zzh.springboot3.service;
 
 import com.zzh.springboot3.advice.CustomAnnotation;
-import com.zzh.springboot3.dto.ResponseDto;
+import com.zzh.springboot3.common.dto.ResponseDto;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.stereotype.Service;
 
 /**

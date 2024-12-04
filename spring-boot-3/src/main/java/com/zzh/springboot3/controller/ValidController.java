@@ -1,13 +1,11 @@
 package com.zzh.springboot3.controller;
 
 import cn.hutool.json.JSONUtil;
-import com.zzh.springboot3.dto.RequestDto;
-import com.zzh.springboot3.dto.ResponseDto;
+import com.zzh.springboot3.common.dto.RequestDto;
+import com.zzh.springboot3.common.dto.ResponseDto;
 import com.zzh.springboot3.dto.ValidDto;
 import com.zzh.springboot3.dto.ValidNotNullDto;
 import jakarta.validation.Valid;
-import jakarta.ws.rs.BadRequestException;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

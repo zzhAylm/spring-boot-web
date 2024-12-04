@@ -4,9 +4,6 @@ dependencies {
   api("org.springframework.cloud:spring-cloud-starter-bootstrap:3.0.0")
   api('org.springframework.kafka:spring-kafka')
   api("org.apache.kafka:kafka-streams")
-  api 'cn.hutool:hutool-all:5.8.25'
-  api("io.micrometer:micrometer-registry-prometheus")
-  api("org.springframework.boot:spring-boot-starter-actuator")
   api("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:2.2.9.RELEASE")
 }
 bootJar {
