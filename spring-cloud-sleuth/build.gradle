@@ -6,6 +6,8 @@ dependencies {
     api("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:2.2.9.RELEASE")
 //    api("org.springframework.cloud:spring-cloud-sleuth-zipkin:3.0.2")
     api("org.springframework.kafka:spring-kafka")
+    api 'com.lmax:disruptor:3.4.4'
+    api 'org.redisson:redisson:3.23.3'
 }
 bootJar{
     enabled=true
