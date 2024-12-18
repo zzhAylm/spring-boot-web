@@ -3,4 +3,5 @@ include 'spring-boot-3'
 include 'spring-boot-common'
 include 'spring-boot-streams'
 include 'spring-cloud-sleuth'
+include 'spring-cloud-redisson'
 

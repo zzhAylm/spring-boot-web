@@ -1,0 +1,10 @@
+dependencies {
+    api project(":spring-boot-common")
+    api("org.springframework.boot:spring-boot-starter-web")
+    api("org.springframework.cloud:spring-cloud-starter-bootstrap:3.0.0")
+    api 'org.redisson:redisson:3.23.3'
+    implementation 'org.codehaus.groovy:groovy:3.0.9'
+    implementation 'com.googlecode.aviator:aviator:5.2.5'
+    implementation 'org.redisson:redisson-spring-boot-starter:3.40.0'
+}
+

@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: RedissonApplication
+  profiles:
+    active: ${profile:test}

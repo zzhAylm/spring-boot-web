@@ -5,6 +5,9 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
+import org.springframework.cloud.loadbalancer.annotation.LoadBalancerClients;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
@@ -14,6 +17,8 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  * @Crete 2024/11/22 14:45
  */
 @Slf4j
+@EnableFeignClients
+//@LoadBalancerClients(defaultConfiguration = LoadBalancerClient.class)
 @SpringBootApplication
 public class SleuthApplication {
     public static void main(String[] args) {
