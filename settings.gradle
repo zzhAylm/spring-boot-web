@@ -4,4 +4,6 @@ include 'spring-boot-common'
 include 'spring-boot-streams'
 include 'spring-cloud-sleuth'
 include 'spring-cloud-redisson'
+include 'spring-cloud-design-patterns'
+include 'spring-cloud-design-patterns'
 

@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: PATTER-APPLICATION
+  profiles:
+    active: ${profile:test}
+server:
+  port: ${port:8080}
