@@ -5,7 +5,7 @@ package com.zzh.pattern.factory;
  * @Author: zzh
  * @Crete 2024/12/19 12:02
  */
-//抽象工厂
+//抽象工厂,spring 使用实例：AbstractFactoryBean
 public class AbstractBFactory implements AbstractFactory {
     @Override
     public Product createProduct() {

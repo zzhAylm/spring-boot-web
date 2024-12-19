@@ -5,7 +5,7 @@ package com.zzh.pattern.factory;
  * @Author: zzh
  * @Crete 2024/12/19 12:02
  */
-//抽象工厂
+//抽象工厂，AbstractFactoryBean
 public class AbstractAFactory implements AbstractFactory {
 
     @Override
