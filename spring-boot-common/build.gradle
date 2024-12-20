@@ -6,11 +6,14 @@ dependencies {
     api("io.swagger.core.v3:swagger-models:2.1.2")
     api("io.swagger.core.v3:swagger-project:2.1.2")
     api 'cn.hutool:hutool-all:5.8.25'
+    api("com.fasterxml.jackson.core:jackson-databind")
     api("io.micrometer:micrometer-registry-prometheus")
     api('io.github.mweirauch:micrometer-jvm-extras:0.2.2')
     api("org.springframework.boot:spring-boot-starter-actuator")
     api("org.springframework.boot:spring-boot-starter-test")
-    api("org.springframework.cloud:spring-cloud-starter-bootstrap:3.1.5")
+    api("org.springframework.cloud:spring-cloud-starter-bootstrap")
+    api 'org.springframework.boot:spring-boot-starter-validation'
+//    api("org.hibernate:hibernate-validator:8.0.1.Final")
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testCompileOnly("org.projectlombok:lombok")

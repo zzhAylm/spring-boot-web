@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: MVCApplication
+  profiles:
+    active: ${profile:test}
