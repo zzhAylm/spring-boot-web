@@ -8,4 +8,6 @@ include 'spring-cloud-design-patterns'
 include 'spring-cloud-design-patterns'
 include 'spring-boot-mvc'
 include 'spring-boot-proxy'
+include 'spring-cloud-eureka'
+include 'spring-cloud-eureka-provider'
 

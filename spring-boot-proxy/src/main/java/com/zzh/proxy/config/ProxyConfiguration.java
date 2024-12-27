@@ -19,7 +19,7 @@ public class ProxyConfiguration {
 
     @Bean
     public ProxyService proxyService() {
-        ProxyServiceImpl proxyService = new ProxyServiceImpl();
+        ProxyService proxyService = new ProxyServiceImpl();
         return (ProxyService) Proxy.newProxyInstance(proxyService.getClass().getClassLoader(), proxyService.getClass().getInterfaces(), new CustomInvocationHandler<>(proxyService));
     }
 
