@@ -1,0 +1,82 @@
+spring:
+  kafka:
+    bootstrap-servers: 22.50.2.203:9092,22.50.2.206:9092,22.50.2.212:9092
+    consumer:
+      auto-commit-interval: 10ms
+      ## 当kafka中没有初始偏移量，或者 偏移量没有在kafka中，自动偏移量重置策略， 默认latest，即自动提交偏移量到最新位置
+      ## earliest：自动提交偏移量到最早的位置
+      ## none：如果不存在抛出异常
+      auto-offset-reset: latest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      ## 消费者组ID
+      group-id: zzh
+      properties:
+        ## 会成为消费者组内的静态成员，在session time 时间内不会出发冲平衡，较少冲平衡的次数
+        group-instance-id: zzh
+        ## 会话超时时间，当静态消费者掉线后，会话超时后，会自动重连
+        session.timeout.ms: 30000
+        ## 心跳时间间隔
+        healthcheck.interval.ms: 10000
+        ## 获取的最大字节数
+        fetch.max.bytes: 1048576
+        ## 每个分区的最大字节数
+        max.partition.fetch.bytes: 1048576
+        ## 最大的轮训时间间隔，这个时间间隔内没有消费消息，就认为消费者死亡（解决消费者死锁或挂起 等其他原因造成的无法消费消息），默认是五分钟
+        max.poll.interval.ms: 300000
+        ## 请求超时时间
+        request.timeout.ms: 30000
+        ## 默认的API超时时间，默认1分钟
+        default.api.timeout.ms: 60000
+        ## 偏移量保存时间，默认七天，如果七天内没有消费者，后面进来的消费者组就是一个新的消费者组
+#        offsets.retention.minutes:
+      ## 拉取的最小字节数
+      fetch-min-size: 1
+      ## 拉取一个次，最高等待时间
+      fetch-max-wait: 500
+      ## 一次拉去的最大条目数
+      max-poll-records: 1024
+
+      ## 自动提交偏移量
+      enable-auto-commit: false
+
+
+    producer:
+      ## 控制生产者请求的应答级别，决定了消息写入的可靠性
+      acks: all
+      ## 批次大小
+      batch-size: 1024000
+      ## client id
+      client-id: zzh
+      ## 重试次数
+      retries: 3
+      ## 缓冲区内存大小，发送到缓冲区
+      buffer-memory: 1024000
+      # 消息压缩的类型
+      compression-type: snappy
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      properties:
+        ## 控制批次发送的之前等待额外的时间
+        linger.ms: 0
+        ## 发送到服务端的超时时间
+        request.timeout.ms: 5000
+        ## 最大的缓存阻塞时间
+        max.block.ms: 5000
+        ## 从发送消息开始到结束的最大等待时间,包括重试时间，这个时间比linger.ms 和 request.timeout.ms 大
+        delivery.timeout.ms: 120000
+        ## 重试时间间隔
+        retry.backoff.ms: 100
+        ## 是否启用幂等性,acks 必须是all
+        enable.idempotence: true
+        ## 最大的每连接飞行请求数：在不接受相应的情况下，向服务器发送多少批次的消息
+        max.in.flight.requests.per.connection: 5
+        ## 单个消息的最大大小
+        max.request.size: 1048576
+        ## 生产者拦截器
+        interceptor.classes: com.zzh.kafka.interceptor.CustomProducerInterceptor
+    listener:
+      ack-mode: MANUAL
+      concurrency: 1
+#      type: batch
+

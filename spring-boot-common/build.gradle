@@ -14,6 +14,7 @@ dependencies {
     api("org.springframework.cloud:spring-cloud-starter-bootstrap")
     api 'org.springframework.boot:spring-boot-starter-validation'
 //    api("org.hibernate:hibernate-validator:8.0.1.Final")
+    implementation 'it.unimi.dsi:fastutil:8.5.6'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testCompileOnly("org.projectlombok:lombok")
