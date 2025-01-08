@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: Resilience4jApplication
+  profiles:
+    active: ${profile:test}

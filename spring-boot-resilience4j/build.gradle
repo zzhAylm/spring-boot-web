@@ -1,0 +1,8 @@
+dependencies {
+    api project(":spring-boot-common")
+    api("org.springframework.boot:spring-boot-starter-web")
+    implementation 'io.github.resilience4j:resilience4j-all:2.1.0'
+//    implementation("io.github.resilience4j:resilience4j-reactor:2.1.0")
+    implementation("io.github.resilience4j:resilience4j-spring-boot3:2.1.0")
+
+}

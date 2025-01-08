@@ -1,6 +1,5 @@
 package com.zzh.springboot3;
 
-import com.zzh.springboot3.cache.EnableDoubleCache;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mybatis.spring.annotation.MapperScan;
@@ -20,7 +19,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @MapperScan("com.zzh.springboot3.mapper")
 @SpringBootApplication
 @EnableFeignClients
-@EnableDoubleCache
 @EnableCaching
 @EnableTransactionManagement
 public class SpringBoot3Application {

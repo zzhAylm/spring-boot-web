@@ -13,6 +13,7 @@ dependencies {
     api("org.springframework.boot:spring-boot-starter-test")
     api("org.springframework.cloud:spring-cloud-starter-bootstrap")
     api 'org.springframework.boot:spring-boot-starter-validation'
+    api("org.apache.commons:commons-lang3")
 //    api("org.hibernate:hibernate-validator:8.0.1.Final")
     implementation 'it.unimi.dsi:fastutil:8.5.6'
     compileOnly 'org.projectlombok:lombok'

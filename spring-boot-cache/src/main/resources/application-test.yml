@@ -1,0 +1,11 @@
+spring:
+  data:
+    redis:
+      host: 127.0.0.1
+zzh:
+  double-cache:
+    cache-manager:
+      default:
+        capacity: 1024
+      zzh:
+        capacity: 1024

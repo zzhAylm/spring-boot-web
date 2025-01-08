@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: CacheApplication
+  profiles:
+    active: ${profile:test}

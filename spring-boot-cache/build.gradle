@@ -1,0 +1,8 @@
+dependencies {
+    api project(":spring-boot-common")
+    api("org.springframework.boot:spring-boot-starter-web")
+    api('org.redisson:redisson-spring-boot-starter:3.27.2')
+    api("com.google.guava:guava:32.1.1-jre")
+    api("com.github.ben-manes.caffeine:caffeine")
+}
+

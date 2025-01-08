@@ -14,9 +14,9 @@ dependencies {
     api("org.springframework.boot:spring-boot-starter-quartz")
     implementation 'org.apache.shardingsphere:shardingsphere-jdbc-core-spring-boot-starter:5.2.1'
     implementation 'com.baomidou:mybatis-plus-spring-boot3-starter:3.5.7'
-    implementation 'io.github.resilience4j:resilience4j-all:2.1.0'
-    implementation("io.github.resilience4j:resilience4j-reactor:2.1.0")
-    implementation("io.github.resilience4j:resilience4j-spring-boot3:2.1.0")
+//    implementation 'io.github.resilience4j:resilience4j-all:2.1.0'
+//    implementation("io.github.resilience4j:resilience4j-reactor:2.1.0")
+//    implementation("io.github.resilience4j:resilience4j-spring-boot3:2.1.0")
 
 //    implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
 //    implementation 'org.springframework.cloud:spring-cloud-starter-zipkin'

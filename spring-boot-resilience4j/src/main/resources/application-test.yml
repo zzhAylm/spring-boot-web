@@ -1,0 +1,60 @@
+resilience4j:
+  circuitbreaker:
+    instances:
+      circuitBreakerA:
+        slidingWindowType: COUNT_BASED    # 滑动窗口类型，支持时间或计数
+        slidingWindowSize: 5       # 滑动窗口大小
+        minimumNumberOfCalls: 3     # 最小调用次数，超过该值才开始判断是否要熔断
+        failureRateThreshold: 50    # 失败率阈值，超过该值则开启熔断器（以百分比计算）
+        waitDurationInOpenState: 60s # 熔断器打开后的等待时间，时间到后熔断器进入半开状态
+        permittedNumberOfCallsInHalfOpenState: 3  # 半开状态下允许的调用次数
+        automaticTransitionFromOpenToHalfOpenEnabled: true  # 自动从打开状态转换到半开状态
+        maxWaitDurationInHalfOpenState: 2m   # 半开状态最多保持的时间
+        #        recordExceptions:
+        #          - java.io.IOException       # 记录为失败的异常类型
+        #          - java.util.concurrent.TimeoutException
+        ignoreExceptions:
+          - com.zzh.springboot3.common.exception.BusinessException # 被忽略的异常类型（这些异常不会触发熔断器）
+  bulkhead:
+    instances:
+      bulkheadAnnotation:
+        max-concurrent-calls: 1
+        max-wait-duration: 0s
+  thread-pool-bulkhead:
+    instances:
+      threadPoolBulkheadAnnotation:
+        core-thread-pool-size: 1
+        max-thread-pool-size: 1
+        queue-capacity: 0
+  rate-limiter:
+    instances:
+      rateLimiterA:
+        #线程等待次数
+        timeout-duration: 1s
+        #一个周期内，允许的最大次数
+        limit-for-period: 1
+        #一个周期
+        limit-refresh-period: 1s
+
+  retry:
+    instances:
+      retryB:
+        #最大重试次数
+        max-attempts: 3
+        #两次重试之间的时间间隔
+        wait-duration: 500ms
+        retry-exceptions:
+          - java.lang.Throwable
+
+zzh:
+  resilience4j:
+    circuit-breaker:
+      circuitBreakerB:
+        slidingWindowType: COUNT_BASED    # 滑动窗口类型，支持时间或计数
+        slidingWindowSize: 5       # 滑动窗口大小
+        minimumNumberOfCalls: 3     # 最小调用次数，超过该值才开始判断是否要熔断
+        failureRateThreshold: 50    # 失败率阈值，超过该值则开启熔断器（以百分比计算）
+        waitDurationInOpenState: 60s # 熔断器打开后的等待时间，时间到后熔断器进入半开状态
+        permittedNumberOfCallsInHalfOpenState: 3  # 半开状态下允许的调用次数
+        automaticTransitionFromOpenToHalfOpenEnabled: true  # 自动从打开状态转换到半开状态
+        maxWaitDurationInHalfOpenState: 2m   # 半开状态最多保持的时间
