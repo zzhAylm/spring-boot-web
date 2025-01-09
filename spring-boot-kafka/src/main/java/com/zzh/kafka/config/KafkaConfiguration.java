@@ -3,6 +3,8 @@ package com.zzh.kafka.config;
 import com.zzh.springboot3.common.utils.JsonUtil;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
@@ -46,5 +48,25 @@ public class KafkaConfiguration {
     @EventListener(condition = "event.listenerId.startsWith('qux-')")
     public void eventHandler(ListenerContainerIdleEvent event) {
         log.info("kafka event is :{}", event.getSource());
+    }
+
+
+    @Bean
+    public ApplicationListener<ApplicationEvent> applicationListener(ObjectProvider<ApplicationContext> contextObjectProvider) {
+        contextObjectProvider.ifAvailable((ctx) -> {
+            log.info("applicationContext is :{}",ctx.toString());
+        });
+
+        return new GenericApplicationListener() {
+            @Override
+            public boolean supportsEventType(@NonNull ResolvableType eventType) {
+                return eventType.isAssignableFrom(KafkaEvent.class);
+            }
+
+            @Override
+            public void onApplicationEvent(@NonNull ApplicationEvent event) {
+                log.info("kafka event is :{}", JsonUtil.toJson(event));
+            }
+        };
     }
 }

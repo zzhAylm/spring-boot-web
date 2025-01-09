@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: DisruptorApplication
+  profiles:
+    active: ${profile:test}

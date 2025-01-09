@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: ThreadApplication
+  profiles:
+    active: ${profile:test}
