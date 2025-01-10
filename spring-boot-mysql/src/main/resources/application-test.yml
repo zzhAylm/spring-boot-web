@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/zzh_db?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&zeroDateTimeBehavior=convertToNull
+mybatis-plus:
+  mapper-locations: classpath:/mapper/*.xml
+  type-aliases-package: com.zzh.springboot.mysql.mapper
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # 使用标准输出日志
+
+
+logging:
+  level:
+    root: info
+    sql: debug
+    org.springframework.transaction: debug
+    org.springframework.jdbc: debug

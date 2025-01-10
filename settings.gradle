@@ -15,4 +15,5 @@ include 'spring-boot-resilience4j'
 include 'spring-boot-cache'
 include 'spring-boot-thread'
 include 'spring-boot-disruptor'
+include 'spring-boot-mysql'
 

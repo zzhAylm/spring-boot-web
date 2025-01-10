@@ -1,0 +1,6 @@
+dependencies {
+    api project(":spring-boot-common")
+    api("org.springframework.boot:spring-boot-starter-web")
+    api("mysql:mysql-connector-java:8.0.32")
+    implementation 'com.baomidou:mybatis-plus-spring-boot3-starter:3.5.9'
+}
