@@ -67,7 +67,7 @@ public class RabbitServiceTest {
 
     @Test
     public void sendTopicRoutingKeys2MessageTest() {
-        String message = "hello,rabbit";
+        String message = "hello,rabbit,error";
         rabbitTemplate.send("topic.zzh_exchange", "zzh.name", new Message(message.getBytes()));
     }
 
