@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: RabbitApplication
+  profiles:
+    active: ${profile:test}
