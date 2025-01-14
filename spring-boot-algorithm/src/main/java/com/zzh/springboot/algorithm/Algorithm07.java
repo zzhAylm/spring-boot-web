@@ -1,10 +1,9 @@
-package com.zzh.springboot3.algorithm;
+package com.zzh.springboot.algorithm;
 
 import lombok.Data;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 

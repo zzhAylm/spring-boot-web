@@ -1,4 +1,4 @@
-package com.zzh.springboot3.algorithm;
+package com.zzh.springboot.algorithm;
 
 public class Singleton {
     // 使用 volatile 关键字确保 instance 在所有线程中同步

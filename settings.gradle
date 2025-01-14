@@ -17,4 +17,7 @@ include 'spring-boot-thread'
 include 'spring-boot-disruptor'
 include 'spring-boot-mysql'
 include 'spring-boot-rabbit'
+include 'spring-boot-algorithm'
+include 'spring-boot-jvm'
+include 'spring-boot-juc'
 

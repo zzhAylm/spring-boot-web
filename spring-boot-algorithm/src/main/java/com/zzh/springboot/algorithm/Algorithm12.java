@@ -1,12 +1,10 @@
-package com.zzh.springboot3.algorithm;
+package com.zzh.springboot.algorithm;
 
-import jodd.util.StringUtil;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @Description: 面试经典150题
@@ -1874,18 +1872,18 @@ public class Algorithm12 {
     /**
      * 117. 填充每个节点的下一个右侧节点指针 II
      **/
-    public com.zzh.springboot3.algorithm.Node connect(com.zzh.springboot3.algorithm.Node root) {
+    public com.zzh.springboot.algorithm.Node connect(com.zzh.springboot.algorithm.Node root) {
         if (root == null || (root.left == null && root.right == null)) {
             return root;
         }
-        Queue<com.zzh.springboot3.algorithm.Node> queue = new LinkedBlockingQueue<>();
+        Queue<com.zzh.springboot.algorithm.Node> queue = new LinkedBlockingQueue<>();
         queue.add(root);
 
         while (!queue.isEmpty()) {
             int size = queue.size();
-            com.zzh.springboot3.algorithm.Node pre = null;
+            com.zzh.springboot.algorithm.Node pre = null;
             for (int i = 0; i < size; i++) {
-                com.zzh.springboot3.algorithm.Node poll = queue.poll();
+                com.zzh.springboot.algorithm.Node poll = queue.poll();
                 if (poll == null) {
                     continue;
                 }
