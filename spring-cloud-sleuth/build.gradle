@@ -2,13 +2,11 @@ dependencies {
     api project(":spring-boot-common")
     api("org.springframework.boot:spring-boot-starter-web")
     api("org.springframework.cloud:spring-cloud-starter-sleuth:3.0.2")
-    api("org.springframework.cloud:spring-cloud-starter-bootstrap")
     api("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
     api("org.springframework.cloud:spring-cloud-starter-openfeign")
     api("org.springframework.cloud:spring-cloud-starter-loadbalancer")
 //    api("org.springframework.cloud:spring-cloud-sleuth-zipkin:3.0.2")
     api("org.springframework.kafka:spring-kafka")
-    api 'com.lmax:disruptor:3.4.4'
     api 'org.redisson:redisson:3.23.3'
 }
 bootJar{

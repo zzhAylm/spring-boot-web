@@ -1,6 +1,6 @@
-package com.zzh.sleuth.disruptor;
+package com.zzh.springboot.disruptor.disruptor;
 
-import com.lmax.disruptor.WorkHandler;
+import com.lmax.disruptor.EventHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +14,10 @@ import org.springframework.stereotype.Service;
 public class StringDisruptorService extends AbstractDisruptorService<String> {
 
     @Override
-    public WorkHandler<Event<String>> eventHandler() {
-        return event -> {
+    public EventHandler<Event<String>> eventHandler() {
+        return (event, sequence, endOfBatch) -> {
             String data = event.getData();
-            log.info("消费消息，event is :{}", data);
+            log.info("消费消息，sequence is :{},endOfBatch is :{} event is :{}", sequence, endOfBatch, data);
         };
     }
 }

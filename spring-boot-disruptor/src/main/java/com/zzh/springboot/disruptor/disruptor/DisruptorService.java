@@ -1,8 +1,7 @@
-package com.zzh.sleuth.disruptor;
+package com.zzh.springboot.disruptor.disruptor;
 
 import com.lmax.disruptor.EventFactory;
 import com.lmax.disruptor.EventHandler;
-import com.lmax.disruptor.WorkHandler;
 import com.lmax.disruptor.dsl.ProducerType;
 
 import java.util.concurrent.ThreadFactory;
@@ -16,9 +15,9 @@ public interface DisruptorService<T> {
 
     void publish(T data);
 
-    WorkHandler<Event<T>> eventHandler();
+    EventHandler<Event<T>> eventHandler();
 
-    WorkHandler<Event<T>>[] eventHandlers();
+    EventHandler<Event<T>>[] eventHandlers();
 
     Integer ringBufferSize();
 

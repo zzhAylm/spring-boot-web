@@ -1,12 +1,12 @@
-package com.zzh.sleuth.disruptor;
+package com.zzh.springboot.disruptor.disruptor;
 
+import ch.qos.logback.core.spi.LifeCycle;
 import com.lmax.disruptor.BlockingWaitStrategy;
 import com.lmax.disruptor.EventFactory;
+import com.lmax.disruptor.EventHandler;
 import com.lmax.disruptor.RingBuffer;
-import com.lmax.disruptor.WorkHandler;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
-import org.apache.hc.core5.concurrent.DefaultThreadFactory;
 
 import java.util.Objects;
 import java.util.concurrent.ThreadFactory;
@@ -24,9 +24,9 @@ public abstract class AbstractDisruptorService<T> implements DisruptorService<T>
     public AbstractDisruptorService() {
         this.disruptor = new Disruptor<>(eventFactory(), ringBufferSize(), threadFactory(), producerType(), new BlockingWaitStrategy());
         this.ringBuffer = this.disruptor.getRingBuffer();
-        this.disruptor.handleEventsWithWorkerPool(eventHandler());
+        this.disruptor.handleEventsWith(eventHandler());
         if (Objects.nonNull(eventHandlers())) {
-            this.disruptor.handleEventsWithWorkerPool();
+            this.disruptor.handleEventsWith(eventHandlers());
         }
         this.disruptor.start();
     }
@@ -58,16 +58,16 @@ public abstract class AbstractDisruptorService<T> implements DisruptorService<T>
 
     @Override
     public ThreadFactory threadFactory() {
-        return new DefaultThreadFactory("disruptor");
+        return r -> new Thread(r, "disruptor-thread-pool");
     }
 
     @Override
-    public WorkHandler<Event<T>>[] eventHandlers() {
+    public EventHandler<Event<T>>[] eventHandlers() {
         return null;
     }
 
     @Override
-    public void close() throws Exception {
-        disruptor.shutdown();
+    public void close() {
+        this.disruptor.shutdown();
     }
 }

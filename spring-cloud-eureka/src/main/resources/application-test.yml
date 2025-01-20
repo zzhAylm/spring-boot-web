@@ -1,11 +1,11 @@
-eureka:
-  user:
-    name: admin
-    password: 123456
-  instance:
-    prefer-ip-address: true
-    instance-id: ${spring.cloud.client.ip-address}:${server.port}
-  client:
-    register-with-eureka: true
-    serviceUrl:
-      defaultZone: "https://${eureka.user.name}:${eureka.user.password}@eureka-test.suixingpay.com/eureka/"
+#eureka:
+#  user:
+#    name: admin
+#    password: 123456
+#  instance:
+#    prefer-ip-address: true
+#    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+#  client:
+#    register-with-eureka: true
+#    serviceUrl:
+#      defaultZone: "https://${eureka.user.name}:${eureka.user.password}@eureka-test.suixingpay.com/eureka/"
