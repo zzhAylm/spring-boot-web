@@ -4,10 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Random;
 import java.util.concurrent.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @Description:
@@ -94,6 +94,34 @@ public class FutureServiceTest {
             log.info("wait....");
         }
         log.info("result is :{}", completableFuture.get());
+    }
+
+    @Test
+    public void completableFutureTest5(){
+        Random rand = new Random();
+        CompletableFuture<String> future1 = CompletableFuture.supplyAsync(() -> {
+            try {
+                Thread.sleep(1000 + rand.nextInt(1000));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+                System.out.println("future1 done...");
+            }
+            return "abc";
+        });
+        CompletableFuture<String> future2 = CompletableFuture.supplyAsync(() -> {
+            try {
+                Thread.sleep(1000 + rand.nextInt(1000));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+                System.out.println("future2 done...");
+            }
+            return "efg";
+        });
+        CompletableFuture<Void> voidCompletableFuture = CompletableFuture.allOf(future1, future2);
+        voidCompletableFuture.join();
+        assertTrue(voidCompletableFuture.isDone());
     }
 
 }

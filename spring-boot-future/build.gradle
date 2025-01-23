@@ -1,4 +1,7 @@
 dependencies {
     api project(":spring-boot-common")
     api("org.springframework.boot:spring-boot-starter-web")
+// https://mvnrepository.com/artifact/com.gitee.jd-platform-opensource/asyncTool
+//    implementation 'com.gitee.jd-platform-opensource:asyncTool:V1.2-01bd8a4fb7-1'
+
 }
