@@ -1022,7 +1022,322 @@ public class Algorithm14Test {
     }
 
 
+    /**
+     * 110. 平衡二叉树
+     */
+    public boolean isBalanced(TreeNode root) {
+        if (root == null || (root.left == null && root.right == null)) {
+            return true;
+        }
+        int left = height(root.left);
+        int right = height(root.right);
+        return Math.abs(left - right) <= 1 && isBalanced(root.left) && isBalanced(root.right);
+    }
+
+    public int height(TreeNode node) {
+        if (node == null) {
+            return 0;
+        }
+        return Math.max(height(node.left), height(node.right)) + 1;
+    }
 
 
+    /**
+     * 98.验证二叉搜索树
+     **/
+    public boolean isValidBST(TreeNode root) {
+        if (root == null || (root.left == null && root.right == null)) {
+            return true;
+        }
+        return isValidBST2(root, Long.MIN_VALUE, Long.MAX_VALUE);
+    }
+
+    public boolean isValidBST2(TreeNode node, Long min, Long max) {
+        if (node == null) {
+            return true;
+        }
+        if (node.val <= min || node.val >= max) {
+            return false;
+        }
+        return isValidBST2(node.left, min, (long) node.val) && isValidBST2(node.right, (long) node.val, max);
+    }
+
+
+    /**
+     * 146. LRU 缓存
+     **/
+    class LRUCache {
+
+        private final Integer capacity;
+        private final Map<Integer, LRUNode> values;
+
+        private final LRUNode head;
+        private final LRUNode tail;
+
+        public LRUCache(int capacity) {
+            this.capacity = capacity;
+            this.values = new HashMap<>();
+            this.head = new LRUNode();
+            this.tail = new LRUNode();
+            this.head.setNext(tail);
+            this.tail.setPre(head);
+        }
+
+        public int get(int key) {
+            if (!values.containsKey(key)) {
+                return -1;
+            }
+            LRUNode node = values.get(key);
+            remove(node);
+            addHead(node);
+            return node.getValue();
+        }
+
+        public void put(int key, int value) {
+            if (values.containsKey(key)) {
+                LRUNode node = values.get(key);
+                node.setValue(value);
+                remove(node);
+                addHead(node);
+                return;
+            }
+            if (values.size() == capacity) {
+                removeTail();
+            }
+            LRUNode node = new LRUNode();
+            node.setValue(value);
+            node.setKey(key);
+            addHead(node);
+            values.put(key, node);
+
+        }
+
+        public void addHead(LRUNode node) {
+            LRUNode second = head.getNext();
+            head.setNext(node);
+            node.setPre(head);
+            node.setNext(second);
+            second.setPre(node);
+        }
+
+        public void remove(LRUNode node) {
+            LRUNode pre = node.getPre();
+            LRUNode next = node.getNext();
+            pre.setNext(next);
+            next.setPre(pre);
+            node.setNext(null);
+            node.setPre(null);
+        }
+
+        public void removeTail() {
+            LRUNode node = tail.getPre();
+            LRUNode pre = node.getPre();
+            pre.setNext(tail);
+            tail.setPre(pre);
+            node.setNext(null);
+            node.setPre(null);
+            values.remove(node.getKey());
+        }
+
+        public static class LRUNode {
+            private LRUNode pre;
+            private LRUNode next;
+            private Integer key;
+            private Integer value;
+
+
+            public Integer getKey() {
+                return key;
+            }
+
+            public void setKey(Integer key) {
+                this.key = key;
+            }
+
+            public LRUNode getPre() {
+                return pre;
+            }
+
+            public LRUNode getNext() {
+                return next;
+            }
+
+            public Integer getValue() {
+                return value;
+            }
+
+            public void setPre(LRUNode pre) {
+                this.pre = pre;
+            }
+
+            public void setNext(LRUNode next) {
+                this.next = next;
+            }
+
+            public void setValue(Integer value) {
+                this.value = value;
+            }
+        }
+
+    }
+
+
+    /**
+     * 22. 括号生成
+     **/
+    public List<String> generateParenthesis(int n) {
+        if (n <= 0) {
+            return new ArrayList<>();
+        }
+        List<String> parens = new ArrayList<>();
+
+        generate(new StringBuilder(), 0, 0, n, parens);
+        return parens;
+    }
+
+    public void generate(StringBuilder stringBuilder, int left, int right, int n, List<String> parens) {
+        if (left > n || right > n || left < right) {
+            return;
+        }
+        if (left == n && right == n) {
+            parens.add(stringBuilder.toString());
+            return;
+        }
+        stringBuilder.append("(");
+        generate(stringBuilder, left + 1, right, n, parens);
+        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+        stringBuilder.append(")");
+        generate(stringBuilder, left, right + 1, n, parens);
+        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+    }
+
+
+    /**
+     * 2.两数相加
+     **/
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        if (l1 == null) {
+            return l2;
+        }
+        if (l2 == null) {
+            return l1;
+        }
+        ListNode pre = new ListNode();
+        ListNode point = pre;
+        int bit = 0;
+        while (l2 != null && l1 != null) {
+            int sum = l2.val + l1.val + bit;
+            bit = sum / 10;
+            point.next = new ListNode(sum % 10);
+            l2 = l2.next;
+            l1 = l1.next;
+            point = point.next;
+        }
+        while (l1 != null) {
+            int sum = l1.val + bit;
+            bit = sum / 10;
+            point.next = new ListNode(sum % 10);
+            point = point.next;
+            l1 = l1.next;
+        }
+
+        while (l2 != null) {
+            int sum = l2.val + bit;
+            bit = sum / 10;
+            point.next = new ListNode(sum % 10);
+            point = point.next;
+            l2 = l2.next;
+        }
+        if (bit != 0) {
+            point.next = new ListNode(bit);
+        }
+        return pre.next;
+    }
+
+
+    /**
+     * LCR 025. 两数相加 II
+     */
+    public ListNode addTwoNumbers_2(ListNode l1, ListNode l2) {
+        if (l1 == null) {
+            return l2;
+        }
+        if (l2 == null) {
+            return l1;
+        }
+        ListNode pre = new ListNode();
+
+        Stack<ListNode> stack1 = new Stack<>();
+        Stack<ListNode> stack2 = new Stack<>();
+        while (l1 != null) {
+            stack1.push(l1);
+            l1 = l1.next;
+        }
+        while (l2 != null) {
+            stack2.push(l2);
+            l2 = l2.next;
+        }
+        int bit = 0;
+        while (!stack1.isEmpty() && !stack2.isEmpty()) {
+            ListNode node1 = stack1.pop();
+            ListNode node2 = stack2.pop();
+            int sum = bit + node2.val + node1.val;
+            bit = sum / 10;
+            ListNode node = new ListNode(sum % 10);
+            addHeader(pre, node);
+        }
+        while (!stack1.isEmpty()) {
+            ListNode node1 = stack1.pop();
+            int sum = bit + node1.val;
+            bit = sum / 10;
+            ListNode node = new ListNode(sum % 10);
+            addHeader(pre, node);
+        }
+        while (!stack2.isEmpty()) {
+            ListNode node2 = stack2.pop();
+            int sum = bit + node2.val;
+            bit = sum / 10;
+            ListNode node = new ListNode(sum % 10);
+            addHeader(pre, node);
+        }
+        if (bit != 0) {
+            ListNode node = new ListNode(bit);
+            addHeader(pre, node);
+        }
+        return pre.next;
+    }
+
+    public void addHeader(ListNode pre, ListNode node) {
+        ListNode next = pre.next;
+        pre.next = node;
+        node.next = next;
+    }
+
+
+    /**
+     * 56. 合并区间
+     **/
+    public int[][] merge(int[][] intervals) {
+        if (intervals == null || intervals.length <= 1) {
+            return intervals;
+        }
+        Arrays.sort(intervals, Comparator.comparing(ints -> ints[0]));
+        List<int[]> integers = new ArrayList<>();
+        int left = intervals[0][0];
+        int right = intervals[0][1];
+        for (int i = 1; i < intervals.length; i++) {
+            int[] nums = intervals[i];
+            if (right < nums[0]) {
+                integers.add(new int[]{left, right});
+                left = nums[0];
+                right = nums[1];
+            } else {
+                left = Math.min(left, nums[0]);
+                right = Math.max(right, nums[1]);
+            }
+        }
+        integers.add(new int[]{left, right});
+        return integers.toArray(int[][]::new);
+    }
 
 }
