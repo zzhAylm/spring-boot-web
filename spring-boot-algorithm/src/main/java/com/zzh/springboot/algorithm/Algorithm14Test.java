@@ -1340,4 +1340,421 @@ public class Algorithm14Test {
         return integers.toArray(int[][]::new);
     }
 
+
+    /***
+     * 3.无重复字符的最长字串
+     * */
+    public int lengthOfLongestSubstring_2(String s) {
+        if (s == null) {
+            return 0;
+        }
+        if (s.length() <= 1) {
+            return s.length();
+        }
+        char[] chars = s.toCharArray();
+        Set<Character> window = new HashSet<>();
+        int left = 0;
+        int right = 1;
+        int max = 1;
+        window.add(chars[left]);
+        while (right < s.length()) {
+            while (window.contains(chars[right])) {
+                window.remove(chars[left++]);
+            }
+            window.add(chars[right++]);
+            max = Math.max(max, window.size());
+        }
+        return max;
+    }
+
+
+    /**
+     * 21. 合并两个有序链表
+     **/
+    public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
+        if (list1 == null) {
+            return list2;
+        }
+        if (list2 == null) {
+            return list1;
+        }
+        ListNode res = new ListNode();
+        ListNode p = res;
+
+        while (list1 != null && list2 != null) {
+            if (list1.val <= list2.val) {
+                p.next = list1;
+                p = p.next;
+                list1 = list1.next;
+                p.next = null;
+            } else {
+                p.next = list2;
+                p = p.next;
+                list2 = list2.next;
+                p.next = null;
+            }
+        }
+        while (list1 != null) {
+            p.next = list1;
+            p = p.next;
+            list1 = list1.next;
+            p.next = null;
+        }
+        while (list2 != null) {
+            p.next = list2;
+            p = p.next;
+            list2 = list2.next;
+            p.next = null;
+        }
+        return res.next;
+    }
+
+
+    /**
+     * 86. 分隔链表
+     */
+    public ListNode partition(ListNode head, int x) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode pre = new ListNode(-1);
+        ListNode next = new ListNode(-1);
+        ListNode p = head;
+        ListNode p1 = pre;
+        ListNode p2 = next;
+        while (p != null) {
+            if (p.val < x) {
+                p1.next = p;
+                p1 = p1.next;
+                p = p.next;
+                p1.next = null;
+            } else {
+                p2.next = p;
+                p2 = p2.next;
+                p = p.next;
+                p2.next = null;
+            }
+        }
+        p1.next = next.next;
+        return pre.next;
+    }
+
+
+    /***
+     * 23. 合并 K 个升序链表
+     * */
+    public ListNode mergeKLists(ListNode[] lists) {
+        if (lists == null || lists.length == 0) {
+            return null;
+        }
+        if (lists.length == 1) {
+            return lists[0];
+        }
+
+        ListNode res = new ListNode(-1);
+        ListNode p = res;
+
+        PriorityQueue<ListNode> priorityQueue = new PriorityQueue<>(Comparator.comparingInt(node -> node.val));
+
+        for (ListNode list : lists) {
+            if (list != null) {
+                priorityQueue.add(list);
+            }
+        }
+        while (!priorityQueue.isEmpty()) {
+            ListNode poll = priorityQueue.poll();
+            p.next = poll;
+            p = p.next;
+            if (poll.next != null) {
+                priorityQueue.add(poll.next);
+            }
+            p.next = null;
+        }
+        return res.next;
+    }
+
+
+    /**
+     *
+     */
+    public String minWindow(String s, String t) {
+        if (s == null || t == null || s.length() < t.length()) {
+            return "";
+        }
+        Map<Character, Integer> map = new HashMap<>();
+        char[] ss = s.toCharArray();
+        char[] ts = t.toCharArray();
+        for (char c : ts) {
+            if (map.containsKey(c)) {
+                map.put(c, map.get(c) + 1);
+            } else {
+                map.put(c, 1);
+            }
+        }
+        int left = 0;
+        int right = 0;
+        String res = s;
+        boolean init = false;
+        while (right < s.length()) {
+            if (map.containsKey(ss[right])) {
+                map.put(ss[right], map.get(ss[right]) - 1);
+            }
+            right++;
+            if (map.entrySet().stream().allMatch(entry -> entry.getValue() <= 0)) {
+                while (left < right) {
+                    if (map.containsKey(ss[left])) {
+                        if (map.get(ss[left]) == 0) {
+                            break;
+                        } else {
+                            map.put(ss[left], map.get(ss[left]) + 1);
+                        }
+                    }
+                    left++;
+                }
+                init = true;
+                res = s.substring(left, right).length() < res.length() ? s.substring(left, right) : res;
+            }
+        }
+        return init ? res : "";
+    }
+
+
+    /**
+     * 567. 字符串的排列
+     */
+    public boolean checkInclusion(String s1, String s2) {
+        if (s1 == null || s2 == null || s1.length() > s2.length()) {
+            return false;
+        }
+        char[] cs1 = s1.toCharArray();
+        char[] cs2 = s2.toCharArray();
+        Map<Character, Integer> needs = new HashMap<>();
+        Map<Character, Integer> windows = new HashMap<>();
+        for (char c : cs1) {
+            needs.put(c, needs.getOrDefault(c, 0) + 1);
+        }
+        int left = 0;
+        int right = 0;
+        int valid = 0;
+        while (right < cs2.length) {
+            if (needs.containsKey(cs2[right])) {
+                windows.put(cs2[right], windows.getOrDefault(cs2[right], 0) + 1);
+                if (windows.get(cs2[right]).equals(needs.get(cs2[right]))) {
+                    valid++;
+                }
+            }
+            if (right - left + 1 == s1.length()) {
+                if (valid == needs.size()) {
+                    return true;
+                }
+                if (needs.containsKey(cs2[left])) {
+                    if (windows.get(cs2[left]).equals(needs.get(cs2[left]))) {
+                        valid--;
+                    }
+                    windows.put(cs2[left], windows.get(cs2[left]) - 1);
+                }
+                left++;
+            }
+            right++;
+        }
+        return false;
+    }
+
+    public List<Integer> findAnagrams(String s, String p) {
+        if (s == null || p == null || s.length() < p.length()) {
+            return new ArrayList<>();
+        }
+        List<Integer> res = new ArrayList<>();
+        char[] ps = p.toCharArray();
+        char[] ss = s.toCharArray();
+        Map<Character, Integer> needs = new HashMap<>();
+        Map<Character, Integer> windows = new HashMap<>();
+        for (char c : ps) {
+            needs.put(c, needs.getOrDefault(c, 0) + 1);
+        }
+
+        int left = 0;
+        int right = 0;
+        int valid = 0;
+        while (right < ss.length) {
+            if (needs.containsKey(ss[right])) {
+                windows.put(ss[right], windows.getOrDefault(ss[right], 0) + 1);
+                if (needs.get(ss[right]).equals(windows.get(ss[right]))) {
+                    valid++;
+                }
+            }
+            if (right - left + 1 == ps.length) {
+                if (valid == needs.size()) {
+                    res.add(left);
+                }
+                if (windows.containsKey(ss[left])) {
+                    if (needs.get(ss[left]).equals(windows.get(ss[left]))) {
+                        valid--;
+                    }
+                    windows.put(ss[left], windows.get(ss[left]) - 1);
+                }
+                left++;
+            }
+            right++;
+        }
+        return res;
+    }
+
+
+    public int search(int[] nums, int target) {
+        if (nums == null || nums.length == 0) {
+            return -1;
+        }
+        int left = 0;
+        int right = nums.length - 1;
+
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] == target) {
+                return mid;
+            } else if (nums[mid] > target) {
+                right = mid - 1;
+            } else if (nums[mid] < target) {
+                left = mid + 1;
+            }
+        }
+        return -1;
+    }
+
+
+    public int[] searchRange(int[] nums, int target) {
+        if (nums == null || nums.length == 0) {
+            return new int[]{-1, -1};
+        }
+        int left = 0;
+        int right = nums.length - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] == target) {
+                right = mid - 1;
+            } else if (nums[mid] > target) {
+                right = mid - 1;
+            } else if (nums[mid] < target) {
+                left = mid + 1;
+            }
+        }
+        int start = right + 1;
+        if (start >= nums.length || nums[start] != target) {
+            return new int[]{-1, -1};
+        }
+        int end = start;
+        for (int i = start; i < nums.length; i++) {
+            if (nums[i] == target) {
+                end = i;
+            } else {
+                break;
+            }
+        }
+
+        return new int[]{start, end};
+    }
+
+
+    public int coinChange(int[] coins, int amount) {
+        if (coins == null || coins.length == 0 || amount < 0) {
+            return -1;
+        }
+        if (amount == 0) {
+            return amount;
+        }
+        int[] dp = new int[amount + 1];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0;
+        for (int i = 1; i < dp.length; i++) {
+            for (int coin : coins) {
+                if (i - coin >= 0 && dp[i - coin] != Integer.MAX_VALUE) {
+                    dp[i] = Math.min(dp[i], dp[i - coin] + 1);
+                }
+            }
+        }
+        return dp[amount] == Integer.MAX_VALUE ? -1 : dp[amount];
+    }
+
+
+    public List<List<Integer>> permute(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return new ArrayList<>();
+        }
+        List<List<Integer>> res = new ArrayList<>();
+        backtrack(res, new LinkedList<>(), nums, new HashSet<>());
+        return res;
+    }
+
+    public void backtrack(List<List<Integer>> res, LinkedList<Integer> temp, int[] nums, Set<Integer> used) {
+        if (temp.size() == nums.length) {
+            res.add(new ArrayList<>(temp));
+            return;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (used.contains(i)) {
+                continue;
+            }
+            temp.add(nums[i]);
+            used.add(i);
+            backtrack(res, temp, nums, used);
+            temp.removeLast();
+            used.remove(i);
+        }
+    }
+
+
+    public int maxDepth(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        if (root.left == null && root.right == null) {
+            return 1;
+        }
+        return Math.max(maxDepth(root.left), maxDepth(root.right)) + 1;
+    }
+
+
+    public List<Integer> preorderTraversal(TreeNode root) {
+        if (root == null) {
+            return new ArrayList<>();
+        }
+        List<Integer> res = new ArrayList<>();
+        midTraversal(root, res);
+        return res;
+    }
+
+    public void midTraversal(TreeNode node, List<Integer> res) {
+        if (node == null) {
+            return;
+        }
+        res.add(node.val);
+        midTraversal(node.left, res);
+        midTraversal(node.right, res);
+    }
+
+    int maxDept = 0;
+
+    public int diameterOfBinaryTree(TreeNode root) {
+        if (root == null || (root.left == null && root.right == null)) {
+            return 0;
+        }
+        maxDept(root);
+        return maxDept;
+    }
+
+    public int maxDept(TreeNode node) {
+        if (node == null) {
+            return 0;
+        }
+        if (node.left == null && node.right == null) {
+            return 1;
+        }
+        int left = maxDept(node.left);
+        int right = maxDept(node.right);
+        maxDept = Math.max(maxDept, left + right);
+        return Math.max(left, right) + 1;
+    }
+
+
+
 }
