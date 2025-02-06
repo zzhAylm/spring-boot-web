@@ -11,7 +11,7 @@ import java.util.*;
  * @Create 2025/1/22 09:56
  */
 @Slf4j
-public class Algorithm14Test {
+public class Algorithm14 {
 
 
     /**
@@ -1756,5 +1756,350 @@ public class Algorithm14Test {
     }
 
 
+    public List<List<Integer>> combinationSum3(int k, int n) {
+        if (n == 0 || k == 0) {
+            return new ArrayList<>();
+        }
+        List<List<Integer>> res = new ArrayList<>();
+        boolean[] used = new boolean[10];
+        Arrays.fill(used, false);
+        backtrack(k, n, used, 1, new LinkedList<>(), res);
+        return res;
+    }
 
+    public void backtrack(int count, int sum, boolean[] used, int start, LinkedList<Integer> temp, List<List<Integer>> res) {
+        if (count == temp.size() && sum == 0) {
+            res.add(new ArrayList<>(temp));
+            return;
+        }
+        if (temp.size() >= count || sum <= 0 || start >= used.length) {
+            return;
+        }
+        for (int i = start; i < used.length; i++) {
+            temp.add(i);
+            used[i] = true;
+            backtrack(count, sum - i, used, i + 1, temp, res);
+            temp.removeLast();
+            used[i] = false;
+        }
+    }
+
+
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        if (target == 0 || candidates == null || candidates.length == 0) {
+            return new ArrayList<>();
+        }
+        List<List<Integer>> res = new ArrayList<>();
+        backtrack(res, candidates, 0, target, 0, new LinkedList<>());
+        return res;
+    }
+
+    public void backtrack(List<List<Integer>> res, int[] candidates, int sum, int target, int start, LinkedList<Integer> temp) {
+        if (sum == target) {
+            res.add(new ArrayList<>(temp));
+            return;
+        }
+        if (start >= candidates.length || sum > target) {
+            return;
+        }
+        for (int i = start; i < candidates.length; i++) {
+            temp.add(candidates[i]);
+            backtrack(res, candidates, sum + candidates[i], target, i, temp);
+            temp.removeLast();
+        }
+    }
+
+
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        if (candidates == null || candidates.length == 0 || target == 0) {
+            return new ArrayList<>();
+        }
+        Arrays.sort(candidates);
+        List<List<Integer>> res = new ArrayList<>();
+        backtrack(res, new LinkedList<>(), candidates, 0, target, 0);
+
+        return res;
+
+    }
+
+    public void backtrack(List<List<Integer>> res, LinkedList<Integer> temp, int[] candidates, int sum, int target, int start) {
+        if (sum == target) {
+            res.add(new ArrayList<>(temp));
+            return;
+        }
+        if (sum > target || start >= candidates.length) {
+            return;
+        }
+        for (int i = start; i < candidates.length; i++) {
+            if (i > start && candidates[i] == candidates[i - 1]) {
+                continue;
+            }
+            temp.add(candidates[i]);
+            backtrack(res, temp, candidates, sum + candidates[i], target, i + 1);
+            temp.removeLast();
+        }
+    }
+
+
+    /**
+     *
+     */
+    public List<List<Integer>> permute_1(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return new ArrayList<>();
+        }
+
+        List<List<Integer>> res = new ArrayList<>();
+        boolean[] used = new boolean[nums.length];
+        backtrack(nums, new LinkedList<>(), res, used);
+        return res;
+    }
+
+    public void backtrack(int[] nums, LinkedList<Integer> temp, List<List<Integer>> res, boolean[] used) {
+        if (temp.size() == nums.length) {
+            res.add(new ArrayList<>(temp));
+            return;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (used[i]) {
+                continue;
+            }
+            temp.add(nums[i]);
+            used[i] = true;
+            backtrack(nums, temp, res, used);
+            temp.removeLast();
+            used[i] = false;
+        }
+
+    }
+
+    public List<List<Integer>> permuteUnique(int[] nums) {
+
+        if (nums == null || nums.length == 0) {
+            return new ArrayList<>();
+        }
+
+        List<List<Integer>> res = new ArrayList<>();
+        boolean[] used = new boolean[nums.length];
+        Arrays.sort(nums);
+        backtrackPermuteUnique(nums, new LinkedList<>(), res, used);
+        return res;
+    }
+
+    public void backtrackPermuteUnique(int[] nums, LinkedList<Integer> temp, List<List<Integer>> res, boolean[] used) {
+        if (temp.size() == nums.length) {
+            res.add(new ArrayList<>(temp));
+            return;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (used[i] || (i > 0 && nums[i] == nums[i - 1] && !used[i - 1])) {
+                continue;
+            }
+            temp.add(nums[i]);
+            used[i] = true;
+            backtrackPermuteUnique(nums, temp, res, used);
+            temp.removeLast();
+            used[i] = false;
+        }
+
+    }
+
+
+    public List<List<Integer>> combine(int n, int k) {
+        if (n <= 0 || k <= 0) {
+            return new ArrayList<>();
+        }
+        List<List<Integer>> res = new ArrayList<>();
+        backtrack(n, k, 1, new LinkedList<>(), res);
+        return res;
+    }
+
+    public void backtrack(int n, int k, int start, LinkedList<Integer> temp, List<List<Integer>> res) {
+        if (temp.size() == k) {
+            res.add(new ArrayList<>(temp));
+            return;
+        }
+        for (int i = start; i <= n; i++) {
+            temp.add(i);
+            backtrack(n, k, i + 1, temp, res);
+            temp.removeLast();
+        }
+    }
+
+
+    public List<List<Integer>> subsets(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return new ArrayList<>();
+        }
+        List<List<Integer>> res = new ArrayList<>();
+        subBacktrack(res, new LinkedList<>(), nums, 0);
+        return res;
+    }
+
+    public void subBacktrack(List<List<Integer>> res, LinkedList<Integer> temp, int[] nums, int start) {
+        if (start == nums.length) {
+            res.add(new ArrayList<>(temp));
+            return;
+        }
+        temp.add(nums[start]);
+        subBacktrack(res, temp, nums, start + 1);
+        temp.removeLast();
+        subBacktrack(res, temp, nums, start + 1);
+    }
+
+
+    public List<List<Integer>> subsetsWithDup(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return new ArrayList<>();
+        }
+        List<List<Integer>> res = new ArrayList<>();
+        Arrays.sort(nums);
+        subDupBacktrack(res, new LinkedList<>(), nums, 0);
+        return res;
+    }
+
+    public void subDupBacktrack(List<List<Integer>> res, LinkedList<Integer> temp, int[] nums, int start) {
+        res.add(new ArrayList<>(temp));
+        for (int i = start; i < nums.length; i++) {
+            if (i > start && nums[i] == nums[i - 1]) {
+                continue;
+            }
+            temp.add(nums[i]);
+            subDupBacktrack(res, temp, nums, i + 1);
+            temp.removeLast();
+        }
+    }
+
+
+    public List<List<Integer>> permuteUnique_1(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return new ArrayList<>();
+        }
+        List<List<Integer>> res = new ArrayList<>();
+        Arrays.sort(nums);
+        permuteUniqueBacktrack(res, new LinkedList<>(), nums, new boolean[nums.length]);
+        return res;
+    }
+
+    public void permuteUniqueBacktrack(List<List<Integer>> res, LinkedList<Integer> temp, int[] nums, boolean[] used) {
+        if (temp.size() == nums.length) {
+            res.add(new ArrayList<>(temp));
+            return;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (used[i]) {
+                continue;
+            }
+            if (i > 0 && nums[i] == nums[i - 1] && !used[i - 1]) {
+                continue;
+            }
+            temp.add(nums[i]);
+            used[i] = true;
+            permuteUniqueBacktrack(res, temp, nums, used);
+            temp.removeLast();
+            used[i] = false;
+        }
+    }
+
+    public List<List<Integer>> combinationSum2_2(int[] candidates, int target) {
+        if (candidates == null || candidates.length == 0) {
+            return new ArrayList<>();
+        }
+        List<List<Integer>> res = new ArrayList<>();
+        Arrays.sort(candidates);
+        combinationBacktrack(res, new LinkedList<>(), candidates, target, 0, new boolean[candidates.length], 0);
+        return res;
+    }
+
+    public void combinationBacktrack(List<List<Integer>> res, LinkedList<Integer> temp, int[] nums, int target, int sum, boolean[] used, int start) {
+        if (target == sum) {
+            res.add(new ArrayList<>(temp));
+            return;
+        }
+        if (sum > target) {
+            return;
+        }
+        for (int i = start; i < nums.length; i++) {
+            if (used[i]) {
+                continue;
+            }
+            if (i > start && nums[i] == nums[i - 1]) {
+                continue;
+            }
+            temp.add(nums[i]);
+            used[i] = true;
+            combinationBacktrack(res, temp, nums, target, sum + nums[i], used, i + 1);
+            temp.removeLast();
+            used[i] = false;
+        }
+    }
+
+
+    public boolean canJump_2(int[] nums) {
+        if (nums == null || nums.length <= 1) {
+            return true;
+        }
+        boolean[] dp = new boolean[nums.length];
+        Arrays.fill(dp, false);
+        dp[0] = true;
+        int max = nums[0];
+        for (int i = 0; i < nums.length; i++) {
+            if (dp[i] || i <= max) {
+                dp[i] = true;
+                max = Math.max(max, i + nums[i]);
+            }
+        }
+        return dp[nums.length - 1];
+    }
+
+    public int jump_2(int[] nums) {
+        if (nums == null || nums.length <= 1) {
+            return 0;
+        }
+        int[] dp = new int[nums.length];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0;
+        for (int i = 0; i < nums.length; i++) {
+            for (int j = 0; j <= nums[i]; j++) {
+                if (j + i < nums.length) {
+                    dp[j + i] = Math.min(dp[j + i], dp[i] + 1);
+                }
+
+            }
+        }
+        return dp[dp.length - 1];
+    }
+
+
+    public List<String> generateParenthesis_1(int n) {
+        if (n <= 0) {
+            return new ArrayList<>();
+        }
+        List<String> res = new ArrayList<>();
+        backtrack(res, new StringBuilder(), 0, 0, n);
+        return res;
+    }
+
+    public void backtrack(List<String> res, StringBuilder temp, int left, int right, int n) {
+        if (left == n && right == n) {
+            res.add(temp.toString());
+            return;
+        }
+        if (left > n || right > n || right > left) {
+            return;
+        }
+        temp.append("(");
+        backtrack(res, temp, left + 1, right, n);
+        temp.deleteCharAt(temp.length() - 1);
+        temp.append(")");
+        backtrack(res, temp, left, right + 1, n);
+        temp.deleteCharAt(temp.length() - 1);
+    }
+
+
+//    public List<List<Integer>> combination(int n, int k) {
+//        if (n <= 0 || k <= 0 || k > n) {
+//            return new ArrayList<>();
+//        }
+//    }
 }
