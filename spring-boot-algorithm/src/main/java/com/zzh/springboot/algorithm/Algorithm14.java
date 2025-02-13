@@ -2102,4 +2102,59 @@ public class Algorithm14 {
 //            return new ArrayList<>();
 //        }
 //    }
+
+
+    /**
+     * LCR 187. 破冰游戏
+     * <p>
+     * 约瑟夫环队列
+     * <p>
+     * f(n,m)= (f(n-1,m)+m) % n
+     **/
+    public int iceBreakingGame(int n, int m) {
+        if (n == 1) {
+            return 0;
+        }
+        return (iceBreakingGame(n - 1, m) + m) % n;
+    }
+
+    // f(n) = （f(n-1)+ 移动长度）% 数组长度
+
+
+    @Test
+    public void testIceBreakingGame() {
+        iceBreakingGame(7, 4);
+    }
+
+
+    class CQueue {
+        Stack<Integer> stack1;
+        Stack<Integer> stack2;
+
+        public CQueue() {
+            stack1 = new Stack<>();
+            stack2 = new Stack<>();
+        }
+
+        public void appendTail(int value) {
+            stack1.push(value);
+        }
+
+        public int deleteHead() {
+            if (!stack2.isEmpty()) {
+                return stack2.pop();
+            }
+            while (!stack1.isEmpty()) {
+                stack2.push(stack1.pop());
+            }
+            if (stack2.isEmpty()) {
+                return -1;
+            }
+            return stack2.pop();
+        }
+    }
+
+
+    
+
 }
