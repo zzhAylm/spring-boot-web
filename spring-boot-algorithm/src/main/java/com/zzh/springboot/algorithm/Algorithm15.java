@@ -1,6 +1,10 @@
 package com.zzh.springboot.algorithm;
 
+import org.hibernate.validator.constraints.ru.INN;
+import org.junit.jupiter.api.Test;
+
 import java.util.*;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -665,6 +669,480 @@ public class Algorithm15 {
         }
 
         return dp[dp.length - 1][dp[0].length - 1];
+
+    }
+
+
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        if (head == null || n <= 0) {
+            return head;
+        }
+        ListNode pre = new ListNode(-1);
+        pre.next = head;
+        ListNode slow = pre;
+        ListNode fast = head;
+        for (int i = 0; i < n; i++) {
+            fast = fast.next;
+        }
+
+        while (fast != null) {
+            slow = slow.next;
+            fast = fast.next;
+        }
+        slow.next = slow.next.next;
+        return pre.next;
+    }
+
+
+    public ListNode deleteDuplicates(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode pre = new ListNode(-1);
+        pre.next = head;
+        ListNode p = pre;
+        ListNode first = head;
+        while (first != null && first.next != null) {
+            if (first.val == first.next.val) {
+                while (first.next != null && first.val == first.next.val) {
+                    first.next = first.next.next;
+                }
+                p.next = first.next;
+                first = p.next;
+            } else {
+                first = first.next;
+                p = p.next;
+            }
+        }
+        return pre.next;
+    }
+
+    public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+        int[] merge = merge(nums1, nums2);
+        int length = merge.length;
+        if (merge.length % 2 == 0) {
+            return (merge[length / 2] + merge[length / 2 - 1]) / 2.0;
+        } else {
+            return merge[length / 2];
+        }
+    }
+
+    public int[] merge(int[] nums1, int[] nums2) {
+        int[] merge = new int[nums1.length + nums2.length];
+        int index = 0;
+        int left = 0;
+        int right = 0;
+        while (left < nums1.length && right < nums2.length) {
+            if (nums1[left] <= nums2[right]) {
+                merge[index++] = nums1[left];
+                left++;
+            } else {
+                merge[index++] = nums2[right];
+                right++;
+            }
+        }
+        while (left < nums1.length) {
+            merge[index++] = nums1[left];
+            left++;
+        }
+        while (right < nums2.length) {
+            merge[index++] = nums2[right];
+            right++;
+        }
+        return merge;
+    }
+
+
+    public int search_1(int[] nums, int target) {
+        if (nums == null || nums.length == 0) {
+            return -1;
+        }
+        int left = 0;
+        int right = nums.length - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] > target) {
+                right = mid - 1;
+            } else if (nums[mid] < target) {
+                left = mid + 1;
+            } else {
+                return mid;
+            }
+
+        }
+        return -1;
+    }
+
+
+    public List<Integer> rightSideView(TreeNode root) {
+        if (root == null) {
+            return new ArrayList<>();
+        }
+        List<Integer> res = new ArrayList<>();
+        Queue<TreeNode> queue = new LinkedBlockingQueue<>();
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+
+            for (int i = 0; i < size; i++) {
+                TreeNode poll = queue.poll();
+                if (i == size - 1) {
+                    res.add(poll.val);
+                }
+                if (poll.left != null) {
+                    queue.add(poll.left);
+                }
+                if (poll.right != null) {
+                    queue.add(poll.right);
+                }
+            }
+        }
+        return res;
+    }
+
+
+    class MyQueue {
+
+        Stack<Integer> stack1;
+        Stack<Integer> stack2;
+
+        public MyQueue() {
+            stack1 = new Stack<>();
+            stack2 = new Stack<>();
+        }
+
+        public void push(int x) {
+            stack1.push(x);
+        }
+
+        public int pop() {
+            if (stack2.isEmpty()) {
+                while (!stack1.isEmpty()) {
+                    stack2.push(stack1.pop());
+                }
+            }
+            return stack2.pop();
+        }
+
+        public int peek() {
+            if (stack2.isEmpty()) {
+                while (!stack1.isEmpty()) {
+                    stack2.push(stack1.pop());
+                }
+            }
+            return stack2.peek();
+        }
+
+        public boolean empty() {
+            if (stack2.isEmpty()) {
+                while (!stack1.isEmpty()) {
+                    stack2.push(stack1.pop());
+                }
+            }
+            return stack2.isEmpty();
+        }
+    }
+
+
+    public ListNode sortList(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        PriorityQueue<ListNode> priorityQueue = new PriorityQueue<>(Comparator.comparingInt(o -> o.val));
+        while (head != null) {
+            ListNode node = head;
+            head = head.next;
+            node.next = null;
+            priorityQueue.add(node);
+        }
+        ListNode pre = new ListNode();
+        ListNode p = pre;
+
+        while (!priorityQueue.isEmpty()) {
+            ListNode poll = priorityQueue.poll();
+            p.next = poll;
+            p = p.next;
+        }
+        return pre.next;
+    }
+
+//    public ListNode sortList_1(ListNode head) {
+//        if (head == null || head.next == null) {
+//            return head;
+//        }
+//
+//    }
+
+    public ListNode mergeSort(ListNode start, ListNode end) {
+        if (start == null) {
+            return null;
+        }
+        if (start.next == end) {
+            start.next = null;
+            return start;
+        }
+        ListNode slow = start;
+        ListNode fast = start;
+
+        while (fast != null && fast != end) {
+            slow = slow.next;
+            fast = fast.next;
+            if (fast != end) {
+                fast = fast.next;
+            }
+        }
+        ListNode left = mergeSort(start, slow);
+        ListNode right = mergeSort(slow, end);
+        return merge(left, right);
+    }
+
+    public ListNode merge(ListNode left, ListNode right) {
+        if (left == null) {
+            return right;
+        }
+        if (right == null) {
+            return left;
+        }
+        ListNode pre = new ListNode(-1);
+        ListNode temp = pre;
+        while (left != null && right != null) {
+            if (left.val < right.val) {
+                temp.next = left;
+                left = left.next;
+            } else {
+                temp.next = right;
+                right = right.next;
+            }
+            temp = temp.next;
+        }
+        while (left != null) {
+            temp.next = left;
+            left = left.next;
+            temp = temp.next;
+        }
+        while (right != null) {
+            temp.next = right;
+            right = right.next;
+            temp = temp.next;
+        }
+        return pre.next;
+    }
+
+
+    public void nextPermutation(int[] nums) {
+        if (nums == null || nums.length <= 1) {
+            return;
+        }
+        int[] arr = new int[nums.length];
+        System.arraycopy(nums, 0, arr, 0, nums.length);
+        Arrays.sort(arr);
+        List<List<Integer>> res = new ArrayList<>();
+        boolean[] visited = new boolean[nums.length];
+        Arrays.fill(visited, false);
+        backTrack(arr, new LinkedList<>(), res, visited);
+        for (int i = 0; i < res.size(); i++) {
+            if (isSameArray(nums, res.get(i))) {
+                List<Integer> list;
+                if (i == res.size() - 1) {
+                    list = res.get(0);
+                } else {
+                    list = res.get(i + 1);
+                }
+                for (int j = 0; j < nums.length; j++) {
+                    nums[j] = list.get(j);
+                }
+                return;
+            }
+        }
+    }
+
+    public boolean isSameArray(int[] nums1, List<Integer> nums2) {
+        for (int i = 0; i < nums1.length; i++) {
+            if (nums1[i] != nums2.get(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void backTrack(int[] nums, LinkedList<Integer> temp, List<List<Integer>> res, boolean[] visited) {
+        if (temp.size() == nums.length) {
+            res.add(new ArrayList<>(temp));
+            return;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (visited[i]) {
+                continue;
+            }
+            if (i > 0 && nums[i] == nums[i - 1] && !visited[i - 1]) {
+                continue;
+            }
+
+            visited[i] = true;
+            temp.add(nums[i]);
+            backTrack(nums, temp, res, visited);
+            temp.removeLast();
+            visited[i] = false;
+        }
+    }
+
+    @Test
+    public void nextPermutationTest() {
+        int[] nums = {1, 2, 3};
+        nextPermutation(nums);
+    }
+
+
+    public void nextPermutation_1(int[] nums) {
+        if (nums == null || nums.length <= 1) {
+            return;
+        }
+        int index = nums.length - 2;
+        while (index >= 0) {
+            if (nums[index] < nums[index + 1]) {
+                for (int i = nums.length - 1; i >= 0; i--) {
+                    if (nums[index] < nums[i]) {
+                        int temp = nums[index];
+                        nums[index] = nums[i];
+                        nums[i] = temp;
+                        Arrays.sort(nums, index + 1, nums.length);
+                        return;
+                    }
+                }
+            }
+            index--;
+        }
+        Arrays.sort(nums, 0, nums.length);
+    }
+
+
+    public List<String> generateParenthesis(int n) {
+        if (n <= 0) {
+            return new ArrayList<>();
+        }
+        List<String> res = new ArrayList<>();
+        backTrack(res, new StringBuilder(), 0, 0, n);
+        return res;
+    }
+
+    public void backTrack(List<String> res, StringBuilder temp, int left, int right, int n) {
+        if (left == n && right == n) {
+            res.add(temp.toString());
+            return;
+        }
+        if (left > n || right > left) {
+            return;
+        }
+        temp.append("(");
+        backTrack(res, temp, left + 1, right, n);
+        temp.deleteCharAt(temp.length() - 1);
+        temp.append(")");
+        backTrack(res, temp, left, right + 1, n);
+        temp.deleteCharAt(temp.length() - 1);
+    }
+
+
+//    public int myAtoi(String s) {
+//
+//    }
+
+
+    public int mySqrt(int x) {
+        if (x <= 1) {
+            return x;
+        }
+        int left = 1;
+        int right = x - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (x / mid >= mid && x / (mid + 1) < mid + 1) {
+                return mid;
+            } else if (x / mid > mid) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+        return -1;
+    }
+
+
+    public int compareVersion(String version1, String version2) {
+        int n = version1.length();
+        int m = version2.length();
+        int index1 = 0;
+        int index2 = 0;
+        while (index1 < n || index2 < m) {
+            int num1 = 0;
+            int num2 = 0;
+            for (; index1 < n && version1.charAt(index1) != '.'; index1++) {
+                num1 = num1 * 10 + version1.charAt(index1) - '0';
+            }
+            index1++;
+            for (; index2 < m && version2.charAt(index2) != '.'; index2++) {
+                num2 = num2 * 10 + version2.charAt(index2) - '0';
+            }
+            index2++;
+            if (num1 != num2) {
+                return num1 > num2 ? 1 : -1;
+            }
+        }
+        return 0;
+    }
+
+
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        if (nums == null || nums.length <= k || k <= 1) {
+            return nums;
+        }
+        Deque<Integer> deque = new LinkedBlockingDeque<>(k);
+        int[] res = new int[nums.length - k + 1];
+        for (int i = 0; i < k; i++) {
+            while (!deque.isEmpty() && deque.peek() <= nums[i]) {
+                deque.pollFirst();
+            }
+            deque.addLast(nums[i]);
+        }
+        int index = 0;
+        res[index++] = deque.peek();
+        for (int i = k; i < nums.length; i++) {
+            if (deque.size() == k) {
+                deque.pollFirst();
+            }
+            while (!deque.isEmpty() && deque.peek() <= nums[i]) {
+                deque.pollFirst();
+            }
+            deque.addLast(nums[i]);
+            res[index++] = deque.peek();
+        }
+        return res;
+    }
+
+
+    public int firstMissingPositive(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 1;
+        }
+        Set<Integer> set = new HashSet<>();
+        int min = Integer.MAX_VALUE;
+        for (int num : nums) {
+            if (num <= 0) {
+                continue;
+            }
+            if (num < min) {
+                min = num;
+            }
+
+            set.add(num);
+        }
+        if (min != 1) {
+            return 1;
+        }
+
+        while (set.contains(min)) {
+            min++;
+        }
+        return min;
 
     }
 

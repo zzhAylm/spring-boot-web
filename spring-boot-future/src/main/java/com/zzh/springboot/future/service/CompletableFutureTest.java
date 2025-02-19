@@ -97,6 +97,7 @@ public class CompletableFutureTest {
             //根据result3、result4、result5组装最终result;
             return "result";
         });
+//        cf6.thenrun
 
         result.thenAccept((t->{
 
