@@ -1,6 +1,5 @@
 package com.zzh.springboot.algorithm;
 
-import org.hibernate.validator.constraints.ru.INN;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -1147,4 +1146,410 @@ public class Algorithm15 {
     }
 
 
+    public int longestValidParentheses(String s) {
+        if (s == null || s.length() <= 1) {
+            return 0;
+        }
+        int[] dp = new int[s.length()];
+        dp[0] = 0;
+        int max = 0;
+        for (int i = 1; i < s.length(); i++) {
+            if (s.charAt(i) == ')') {
+                if (s.charAt(i - 1) == '(') {
+                    dp[i] = i >= 2 ? dp[i - 2] + 2 : 2;
+                } else {
+                    if (i - dp[i - 1] - 1 >= 0 && s.charAt(i - dp[i - 1] - 1) == '(') {
+                        dp[i] = (i - dp[i - 1] - 2 >= 0 ? (dp[i - dp[i - 1] - 2]) : 0) + dp[i - 1] + 2;
+                    }
+                }
+            }
+            max = Math.max(max, dp[i]);
+        }
+        return max;
+    }
+
+
+    public int coinChange(int[] coins, int amount) {
+        if (coins == null || coins.length == 0 || amount < 0) {
+            return -1;
+        }
+        if (amount == 0) {
+            return 0;
+        }
+
+        int[] dp = new int[amount + 1];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0;
+        for (int i = 1; i < dp.length; i++) {
+            for (int coin : coins) {
+                if (i >= coin && dp[i - coin] != Integer.MAX_VALUE) {
+                    dp[i] = Math.min(dp[i], dp[i - coin] + 1);
+                }
+            }
+        }
+        return dp[amount] == Integer.MAX_VALUE ? -1 : dp[amount];
+    }
+
+
+    public ListNode trainingPlan(ListNode head, int cnt) {
+        if (head == null || cnt <= 0) {
+            return head;
+        }
+        ListNode slow = head;
+        ListNode fast = head;
+
+        for (int i = 0; i < cnt; i++) {
+            fast = fast.next;
+        }
+
+        while (fast != null) {
+            fast = fast.next;
+            slow = slow.next;
+        }
+
+        return slow;
+    }
+
+
+    public String minWindow(String s, String t) {
+        if (s == null || t == null || s.length() < t.length()) {
+            return "";
+        }
+        int left = 0;
+        int right = 0;
+        String min = s;
+        boolean init = false;
+        Map<Character, Integer> map = new HashMap<>();
+        for (int i = 0; i < t.length(); i++) {
+            map.put(t.charAt(i), map.getOrDefault(t.charAt(i), 0) + 1);
+        }
+        while (right < s.length()) {
+            char c = s.charAt(right);
+            if (map.containsKey(c)) {
+                map.put(c, map.get(c) - 1);
+                while (map.values().stream().allMatch(value -> value <= 0)) {
+                    if (right - left + 1 <= min.length()) {
+                        min = s.substring(left, right + 1);
+                        init = true;
+                    }
+                    char c1 = s.charAt(left);
+                    if (map.containsKey(c1)) {
+                        map.put(c1, map.get(c1) + 1);
+                    }
+                    left++;
+                }
+            }
+            right++;
+        }
+        return init ? min : "";
+    }
+
+    @Test
+    public void testMinWindow() {
+        String s = "cabwefgewcwaefgcf";
+        String t = "cae";
+        minWindow(s, t);
+    }
+
+
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        if (preorder == null || inorder == null || preorder.length == 0 || inorder.length == 0 || preorder.length != inorder.length) {
+            return null;
+        }
+        return buildTree(preorder, inorder, 0, preorder.length - 1, 0, inorder.length - 1);
+    }
+
+    public TreeNode buildTree(int[] preorder, int[] inorder, int preLeft, int preRight, int inLeft, int inRight) {
+        if (preLeft > preRight || inLeft > inRight) {
+            return null;
+        }
+        if (preLeft == preRight && inLeft == inRight) {
+            return new TreeNode(preorder[preLeft]);
+        }
+        int num = preorder[preLeft];
+        TreeNode treeNode = new TreeNode(num);
+        int index = inLeft;
+        int count = 0;
+        while (index < inRight) {
+            if (num == inorder[index]) {
+                break;
+            }
+            count++;
+            index++;
+        }
+        treeNode.left = buildTree(preorder, inorder, preLeft + 1, preLeft + count, inLeft, index - 1);
+        treeNode.right = buildTree(preorder, inorder, preLeft + 1 + count, preRight, index + 1, inRight);
+        return treeNode;
+    }
+
+
+    public List<List<Integer>> subsets(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return new ArrayList<>();
+        }
+        List<List<Integer>> res = new ArrayList<>();
+        subBackTrack(res, nums, 0, new LinkedList<>());
+        return res;
+    }
+
+    public void subBackTrack(List<List<Integer>> res, int[] nums, int start, LinkedList<Integer> temp) {
+        res.add(new ArrayList<>(temp));
+        for (int i = start; i < nums.length; i++) {
+            temp.add(nums[i]);
+            subBackTrack(res, nums, i + 1, temp);
+            temp.removeLast();
+        }
+    }
+
+    @Test
+    public void multiplyTest() {
+        multiply("123", "456");
+    }
+
+
+    public String multiply(String num1, String num2) {
+        if (num1 == null || num2 == null || num1.length() == 0 || num2.length() == 0 || num1.equals("0") || num2.equals("0")) {
+            return "0";
+        }
+
+        String res = "0";
+        for (int i = num2.length() - 1; i >= 0; i--) {
+            String multi = multi(num1, num2, i);
+            res = add(res, multi);
+        }
+        return res;
+    }
+
+    public String multi(String num1, String num2, int index) {
+        int num = num2.charAt(index) - '0';
+        if (num == 0) {
+            return "0";
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        int bit = 0;
+        for (int i = num1.length() - 1; i >= 0; i--) {
+            int temp = num1.charAt(i) - '0';
+            int multi = temp * num + bit;
+            bit = multi / 10;
+            stringBuilder.append(multi % 10);
+        }
+        if (bit != 0) {
+            stringBuilder.append(bit);
+        }
+        StringBuilder reverse = stringBuilder.reverse();
+        for (int i = 0; i < num2.length() - 1 - index; i++) {
+            reverse.append("0");
+        }
+        return reverse.toString();
+    }
+
+    public String add(String num1, String num2) {
+        if (num2 == null || num2.length() == 0 || num2.equals("0")) {
+            return num1;
+        }
+        if (num1 == null || num1.length() == 0 || num1.equals("0")) {
+            return num2;
+        }
+        int bit = 0;
+        StringBuilder builder = new StringBuilder();
+        int left = num1.length() - 1;
+        int right = num2.length() - 1;
+
+        while (left >= 0 && right >= 0) {
+            int s1 = num1.charAt(left) - '0';
+            int s2 = num2.charAt(right) - '0';
+            int sum = s1 + s2 + bit;
+            bit = sum / 10;
+            builder.append(sum % 10);
+            left--;
+            right--;
+        }
+        while (left >= 0) {
+            int s1 = num1.charAt(left) - '0';
+            int sum = s1 + bit;
+            bit = sum / 10;
+            builder.append(sum % 10);
+            left--;
+        }
+        while (right >= 0) {
+            int s2 = num2.charAt(right) - '0';
+            int sum = s2 + bit;
+            bit = sum / 10;
+            builder.append(sum % 10);
+            right--;
+        }
+        if (bit != 0) {
+            builder.append(bit);
+        }
+        return builder.reverse().toString();
+    }
+
+    public String reverseWords(String s) {
+        if (s == null || s.length() == 0 || s.trim().length() == 0) {
+            return s;
+        }
+
+        String[] split = s.trim().split(" ");
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = split.length - 1; i >= 0; i--) {
+            if (split[i].trim().length() == 0) {
+                continue;
+            }
+            stringBuilder.append(split[i].trim()).append(" ");
+        }
+        return stringBuilder.toString().trim();
+    }
+
+
+    class MinStack {
+
+        Stack<Integer> stack;
+
+        Deque<Integer> min;
+
+        public MinStack() {
+            stack = new Stack<>();
+            min = new LinkedList<>();
+        }
+
+        public void push(int val) {
+            stack.push(val);
+            if (min.isEmpty() || val <= min.peek()) {
+                min.push(val);
+            }
+        }
+
+        public void pop() {
+            Integer pop = stack.pop();
+            if (Objects.equals(pop, min.peek())) {
+                min.pop();
+            }
+        }
+
+        public int top() {
+            return stack.peek();
+        }
+
+        public int getMin() {
+            return min.peek();
+        }
+    }
+
+
+    public int sumNumbers(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        subTreeNode(root, new StringBuilder());
+        return sumNumber;
+    }
+
+    int sumNumber = 0;
+
+    public void subTreeNode(TreeNode node, StringBuilder stringBuilder) {
+        if (node == null) {
+            return;
+        }
+        if (node.left == null && node.right == null) {
+            stringBuilder.append(node.val);
+            sumNumber += Integer.parseInt(stringBuilder.toString());
+            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+            return;
+        }
+        stringBuilder.append(node.val);
+        subTreeNode(node.left, stringBuilder);
+        subTreeNode(node.right, stringBuilder);
+        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+    }
+
+
+    public boolean isSymmetric(TreeNode root) {
+        if (root == null || (root.left == null && root.right == null)) {
+            return true;
+        }
+        return sameTree(root.left, root.right);
+    }
+
+    public boolean sameTree(TreeNode left, TreeNode right) {
+        if (left == null && right == null) {
+            return true;
+        }
+        if (left == null || right == null || right.val != left.val) {
+            return false;
+        }
+        return sameTree(left.left, right.right) && sameTree(left.right, right.left);
+    }
+
+
+    public List<Integer> preorderTraversal(TreeNode root) {
+        if (root == null) {
+            return new ArrayList<>();
+        }
+
+        List<Integer> list = new ArrayList<>();
+        preOrder(root, list);
+
+        return list;
+
+    }
+
+    public void preOrder(TreeNode node, List<Integer> list) {
+        if (node == null) {
+            return;
+        }
+        list.add(node.val);
+        preOrder(node.left, list);
+        preOrder(node.right, list);
+    }
+
+
+    public int maxDepth(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        if (root.left == null && root.right == null) {
+            return 1;
+        }
+        return maxDepth_1(root);
+    }
+
+    public int maxDepth_1(TreeNode node) {
+        if (node == null) {
+            return 0;
+        }
+        if (node.left == null && node.right == null) {
+            return 1;
+        }
+        return Math.max(maxDepth_1(node.left), maxDepth_1(node.right)) + 1;
+    }
+
+
+    public boolean isBalanced(TreeNode root) {
+        if (root == null || (root.left == null && root.right == null)) {
+            return true;
+        }
+        int right = maxDepthTree(root.left);
+        int left = maxDepthTree(root.right);
+        return Math.abs(left - right) <= 1 && isBalanced(root.left) && isBalanced(root.right);
+    }
+
+
+    public int maxDepthTree(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        if (root.left == null && root.right == null) {
+            return 1;
+        }
+        return Math.max(maxDepthTree(root.left), maxDepthTree(root.right)) + 1;
+    }
+
+
+
+//    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+//
+//
+//
+//    }
 }
+
