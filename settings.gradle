@@ -23,4 +23,5 @@ include 'spring-boot-juc'
 include 'spring-boot-aviator'
 include 'spring-boot-http'
 include 'spring-boot-future'
+include 'spring-boot-protobuf'
 

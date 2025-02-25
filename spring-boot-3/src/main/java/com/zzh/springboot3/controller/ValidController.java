@@ -6,6 +6,7 @@ import com.zzh.springboot3.common.dto.ResponseDto;
 import com.zzh.springboot3.dto.ValidDto;
 import com.zzh.springboot3.dto.ValidNotNullDto;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
  * @Crete 2024/10/21 10:06
  */
 @Slf4j
+@Validated
 @RestController
 @RequestMapping("/valid")
 public class ValidController {
@@ -51,5 +53,11 @@ public class ValidController {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<String> exceptionHandler(RuntimeException exception) {
         return ResponseEntity.ok().body(exception.getMessage());
+    }
+
+    @GetMapping("/size")
+    public void valid( @Size(max = 20) @RequestParam String name){
+        log.info("name is :{},size is :{}", name,name.length());
+
     }
 }

@@ -211,6 +211,15 @@ spring:
         load-balancers:
           round_robin:
             type: ROUND_ROBIN
+#    mode:
+#      type: Standalone
+#      repository:
+#        type: JDBC
+#        props:
+#          provider: EmbeddedDerby
+#          jdbc_url: jdbc:derby:memory:config;create=true
+#          username:
+
 
 logging:
   level:

@@ -1545,11 +1545,151 @@ public class Algorithm15 {
     }
 
 
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        if (candidates == null || candidates.length == 0 || target <= 0) {
+            return new ArrayList<>();
+        }
+        Arrays.sort(candidates);
+        List<List<Integer>> res = new ArrayList<>();
+        combinationBackTrack(res, candidates, new LinkedList<>(), 0, target, 0);
+        return res;
+    }
 
-//    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+    public void combinationBackTrack(List<List<Integer>> res, int[] candidates, LinkedList<Integer> temp, int sum, int target, int start) {
+        if (sum > target) {
+            return;
+        }
+        if (sum == target) {
+            res.add(new ArrayList<>(temp));
+            return;
+        }
+        for (int i = start; i < candidates.length; i++) {
+            temp.add(candidates[i]);
+            combinationBackTrack(res, candidates, temp, sum + candidates[i], target, i);
+            temp.removeLast();
+        }
+    }
+
+
+    public void rotate(int[][] matrix) {
+        if (matrix == null || matrix.length <= 1) {
+            return;
+        }
+        int top = 0;
+        int bottom = matrix.length - 1;
+        int left = 0;
+        int right = matrix[0].length - 1;
+
+        Deque<Integer> deque = new LinkedList<>();
+        while (top < bottom && left < right) {
+            for (int i = left; i < right; i++) {
+                deque.addLast(matrix[top][i]);
+            }
+            for (int i = top; i < bottom; i++) {
+                deque.addLast(matrix[i][right]);
+                matrix[i][right] = deque.pop();
+            }
+            for (int i = right; i > left; i--) {
+                deque.addLast(matrix[bottom][i]);
+                matrix[bottom][i] = deque.pop();
+            }
+            for (int i = bottom; i > top; i--) {
+                deque.addLast(matrix[i][left]);
+                matrix[i][left] = deque.pop();
+            }
+            for (int i = left; i < right; i++) {
+                matrix[top][i] = deque.pop();
+            }
+            top++;
+            bottom--;
+            left++;
+            right--;
+        }
+    }
+
+
+    public boolean isValidBST(TreeNode root) {
+        if (root == null || (root.left == null && root.right == null)) {
+            return true;
+        }
+
+        return isBST(root, Long.MIN_VALUE, Long.MAX_VALUE);
+
+    }
+
+    public boolean isBST(TreeNode node, long min, long max) {
+        if (node == null) {
+            return true;
+        }
+        if (node.val >= max || node.val <= min) {
+            return false;
+        }
+        return isBST(node.left, min, node.val) && isBST(node.right, node.val, max);
+    }
+
+
+    public int diameterOfBinaryTree(TreeNode root) {
+        if (root == null || (root.left == null && root.right == null)) {
+            return 0;
+        }
+        maxDiameter(root);
+
+        return diameterOfBinaryTree;
+    }
+
+    public int maxDiameter(TreeNode node) {
+        if (node == null) {
+            return 0;
+        }
+        if (node.left == null && node.right == null) {
+            return 1;
+        }
+        int left = maxDiameter(node.left);
+        int right = maxDiameter(node.right);
+        diameterOfBinaryTree = Math.max(diameterOfBinaryTree, left + right);
+        return Math.max(left, right) + 1;
+    }
+
+    int diameterOfBinaryTree = 0;
+
+
 //
-//
+//    public int maximalSquare(char[][] matrix) {
 //
 //    }
+
+
+    public List<int[]> findAbsArray(int[] nums, int target) {
+        if (nums == null || nums.length <= 1) {
+            return new ArrayList<>();
+        }
+        List<int[]> res = new ArrayList<>();
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int num : nums) {
+            if (map.containsKey(num - target)) {
+                res.add(new int[]{num, map.get(num - target)});
+            } else if (map.containsKey(num + target)) {
+                res.add(new int[]{num, map.get(num + target)});
+            } else {
+                map.put(num - target, num);
+                map.put(num + target, num);
+            }
+        }
+        return res;
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
