@@ -1680,14 +1680,137 @@ public class Algorithm15 {
     }
 
 
+    public int maximalSquare(char[][] matrix) {
+        if (matrix == null || matrix.length == 0) {
+            return 0;
+        }
+        int[][] dp = new int[matrix.length][matrix[0].length];
+        int max = 0;
+        for (int i = 0; i < dp.length; i++) {
+            dp[i][0] = matrix[i][0] == '1' ? 1 : 0;
+            max = Math.max(max, dp[i][0]);
+        }
+
+        for (int i = 0; i < dp[0].length; i++) {
+            dp[0][i] = matrix[0][i] == '1' ? 1 : 0;
+            max = Math.max(max, dp[0][i]);
+        }
+
+        for (int i = 1; i < dp.length; i++) {
+            for (int j = 1; j < dp[i].length; j++) {
+                if (matrix[i][j] == '0') {
+                    dp[i][j] = 0;
+                    continue;
+                }
+                dp[i][j] = Math.min(Math.min(dp[i - 1][j], dp[i][j - 1]), dp[i - 1][j - 1]) + 1;
+                max = Math.max(max, dp[i][j] * dp[i][j]);
+            }
+        }
+        return max;
+    }
 
 
+    public int diameterOfBinaryTree_1(TreeNode root) {
+        if (root == null || (root.left == null && root.right == null)) {
+            return 0;
+        }
+        diameterOfBinaryTreeSearch(root);
+        return diameterOfBinaryTreeMax;
+    }
+
+    int diameterOfBinaryTreeMax = 0;
+
+    public int diameterOfBinaryTreeSearch(TreeNode node) {
+        if (node == null) {
+            return 0;
+        }
+        if (node.left == null && node.right == null) {
+            return 1;
+        }
+        int left = diameterOfBinaryTreeSearch(node.left);
+        int right = diameterOfBinaryTreeSearch(node.right);
+        diameterOfBinaryTreeMax = Math.max(diameterOfBinaryTreeMax, left + right);
+        return Math.max(left, right) + 1;
+    }
+
+    public int[] searchRange(int[] nums, int target) {
+        if (nums == null || nums.length == 0 || target < nums[0] || target > nums[nums.length - 1]) {
+            return new int[]{-1, -1};
+        }
+        int index = binarySearchRange(nums, 0, nums.length - 1, target);
+        if (index == -1) {
+            return new int[]{-1, -1};
+        }
+        int start = index;
+        int end = index;
+        for (int i = index; i < nums.length; i++) {
+            if (nums[i] != target) {
+                break;
+            }
+            end = i;
+        }
+        for (int i = index; i >= 0; i--) {
+            if (nums[i] != target) {
+                break;
+            }
+            start = i;
+        }
+        return new int[]{start, end};
+    }
+
+    public int binarySearchRange(int[] nums, int left, int right, int target) {
+        if (left > right) {
+            return -1;
+        }
+        int mid = (right - left) / 2 + left;
+        if (target > nums[mid]) {
+            left = mid + 1;
+        } else if (target < nums[mid]) {
+            right = mid - 1;
+        } else {
+            return mid;
+        }
+        return binarySearchRange(nums, left, right, target);
+    }
 
 
+    public int minPathSum(int[][] grid) {
+        if (grid == null || grid.length == 0 || grid[0].length == 0) {
+            return 0;
+        }
+        int[][] dp = new int[grid.length][grid[0].length];
+        dp[0][0] = grid[0][0];
+        for (int i = 1; i < grid.length; i++) {
+            dp[i][0] = dp[i - 1][0] + grid[i][0];
+        }
+        for (int i = 1; i < grid[0].length; i++) {
+            dp[0][i] = dp[0][i - 1] + grid[0][i];
+        }
+        for (int i = 1; i < grid.length; i++) {
+            for (int j = 1; j < grid[i].length; j++) {
+                dp[i][j] = Math.min(dp[i - 1][j], dp[i][j - 1]) + grid[i][j];
+            }
+        }
+        return dp[dp.length - 1][dp[0].length - 1];
+    }
 
 
-
-
+    public int rob(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        int max = 0;
+        int[][] dp = new int[2][nums.length];
+        dp[0][0] = 0;
+        dp[1][0] = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            dp[0][i] = Math.max(dp[1][i - 1], dp[0][i - 1]);
+            dp[1][i] = Math.max(dp[0][i - 1] + nums[i], dp[0][i - 1]);
+            max = Math.max(dp[0][i], max);
+            max = Math.max(dp[1][i], max);
+        }
+        return max;
+    }
 
 
 
