@@ -39,17 +39,19 @@ public class KafkaServiceTest {
 
     @Test
     public void sendMessageCallback() {
-        String message = "zzh_message";
-        CompletableFuture<SendResult<String, Object>> send = kafkaTemplate.send(KafkaConstant.TOPIC_TEST, message);
-        send.whenComplete((t, u) -> {
-            if (u != null) {
-                u.printStackTrace();
-                return;
-            }
-            RecordMetadata recordMetadata = t.getRecordMetadata();
-            ProducerRecord<String, Object> producerRecord = t.getProducerRecord();
-            log.info("key is :{},value is :{},topic is :{},partition is：{}", producerRecord.key(), producerRecord.value(), recordMetadata.topic(), recordMetadata.partition());
-        });
+        for (int i = 0; i < 10; i++) {
+            String message = "zzh_message";
+            CompletableFuture<SendResult<String, Object>> send = kafkaTemplate.send(KafkaConstant.TOPIC_TEST, String.valueOf(i));
+            send.whenComplete((t, u) -> {
+                if (u != null) {
+                    u.printStackTrace();
+                    return;
+                }
+                RecordMetadata recordMetadata = t.getRecordMetadata();
+                ProducerRecord<String, Object> producerRecord = t.getProducerRecord();
+                log.info("key is :{},value is :{},topic is :{},partition is：{}", producerRecord.key(), producerRecord.value(), recordMetadata.topic(), recordMetadata.partition());
+            });
+        }
 
     }
 

@@ -13,10 +13,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.springframework.context.event.GenericApplicationListener;
 import org.springframework.core.ResolvableType;
+import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
+import org.springframework.kafka.config.KafkaListenerContainerFactory;
+import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.event.KafkaEvent;
 import org.springframework.kafka.event.ListenerContainerIdleEvent;
+import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.listener.KafkaMessageListenerContainer;
+import org.springframework.util.backoff.FixedBackOff;
 
 /**
  * @Description:
@@ -78,5 +83,13 @@ public class KafkaConfiguration {
 //        return new KafkaMessageListenerContainer<>(kafkaConsumerFactory,)
 //    }
 
-
+//    @Bean
+//    public KafkaListenerContainerFactory<?> kafkaListenerContainerFactory(ConsumerFactory<String, String> consumerFactory) {
+//        ConcurrentKafkaListenerContainerFactory factory = new ConcurrentKafkaListenerContainerFactory();
+//        // 自定义重试时间间隔以及次数
+//        FixedBackOff fixedBackOff = new FixedBackOff(1000, 5);
+//        factory.setCommonErrorHandler(new DefaultErrorHandler(fixedBackOff));
+//        factory.setConsumerFactory(consumerFactory);
+//        return factory;
+//    }
 }
