@@ -1813,10 +1813,146 @@ public class Algorithm15 {
     }
 
 
+    public boolean searchMatrix(int[][] matrix, int target) {
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+            return false;
+        }
+        if (matrix[0][0] > target || matrix[matrix.length - 1][matrix[0].length - 1] < target) {
+            return false;
+        }
+        for (int[] ints : matrix) {
+            if (ints[0] > target || ints[matrix[0].length - 1] < target) {
+                continue;
+            }
+            if (binarySearchB(ints, 0, ints.length - 1, target)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean binarySearchB(int[] nums, int left, int right, int target) {
+        if (left > right) {
+            return false;
+        }
+        int mid = (right - left) / 2 + left;
+
+        if (nums[mid] > target) {
+            right = mid - 1;
+        } else if (nums[mid] < target) {
+            left = mid + 1;
+        } else {
+            return true;
+        }
+        return binarySearchB(nums, left, right, target);
+    }
 
 
+    public int findPeakElement(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return -1;
+        }
+        int left = 0;
+        int right = nums.length - 1;
+        while (left < right) {
+            int mid = (right - left) / 2 + left;
+            if (nums[mid] > nums[mid + 1]) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return left;
+    }
 
 
+    public List<List<Integer>> pathSum(TreeNode root, int targetSum) {
+        if (root == null) {
+            return new ArrayList<>();
+        }
+        List<List<Integer>> res = new ArrayList<>();
+        pathSumBackTrack(res, new LinkedList<>(), root, 0, targetSum);
+        return res;
+    }
+
+    public void pathSumBackTrack(List<List<Integer>> res, LinkedList<Integer> temp, TreeNode node, int sum, int target) {
+        if (node == null) {
+            return;
+        }
+        if (sum > target) {
+            return;
+        }
+        if (node.left == null && node.right == null && sum + node.val == target) {
+            temp.add(node.val);
+            res.add(new ArrayList<>(temp));
+            temp.removeLast();
+            return;
+        }
+        temp.add(node.val);
+        pathSumBackTrack(res, temp, node.left, sum + node.val, target);
+        pathSumBackTrack(res, temp, node.right, sum + node.val, target);
+        temp.removeLast();
+    }
+
+
+    public String longestCommonPrefix(String[] strs) {
+        if (strs == null || strs.length == 0) {
+            return "";
+        }
+        if (strs.length == 1) {
+            return strs[0];
+        }
+        StringBuilder prefix = new StringBuilder("");
+        int index = 0;
+        while (index < strs[0].length()) {
+            char c = strs[0].charAt(index);
+            for (int i = 1; i < strs.length; i++) {
+                if (index >= strs[i].length() || strs[i].charAt(index) != c) {
+                    return prefix.toString();
+                }
+            }
+            prefix.append(c);
+            index++;
+        }
+        return prefix.toString();
+    }
+
+
+    public int longestConsecutive(int[] nums) {
+        if (nums == null) {
+            return 0;
+        }
+        if (nums.length <= 1) {
+            return nums.length;
+        }
+        int max = 1;
+        Set<Integer> set = new HashSet<>();
+        for (int num : nums) {
+            set.add(num);
+        }
+        for (int num : nums) {
+            if (!set.contains(num)) {
+                continue;
+            }
+            int count = 1;
+            int temp = num + 1;
+            set.remove(num);
+            while (set.contains(temp)) {
+                set.remove(temp);
+                count++;
+                temp++;
+            }
+            temp = num - 1;
+            while (set.contains(temp)) {
+                set.remove(temp);
+                count++;
+                temp--;
+            }
+
+            max = Math.max(max, count);
+        }
+        return max;
+    }
 
 }
 

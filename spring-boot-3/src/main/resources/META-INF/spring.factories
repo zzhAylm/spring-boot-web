@@ -6,6 +6,8 @@ com.zzh.springboot3.listener.SpringBootApplicationEventListener
 
 org.springframework.boot.env.EnvironmentPostProcessor=\
 com.zzh.springboot3.listener.SpringBootEnvironmentPostProcessor
+#com.zzh.springboot3.config.Boot3EnvironmentPostProcessor
+
 
 org.springframework.context.ApplicationContextInitializer=\
 com.zzh.springboot3.listener.SpringBootApplicationContextInitializer

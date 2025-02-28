@@ -3,7 +3,7 @@ management:
     port: 36666
   endpoints:
     web:
-      base-path: /_manage
+      base-path: /actuator
       discovery:
         enabled: true
       exposure:

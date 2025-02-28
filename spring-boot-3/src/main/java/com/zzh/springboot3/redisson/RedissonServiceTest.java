@@ -13,7 +13,8 @@ import org.springframework.data.redis.core.StringRedisTemplate;
  */
 @Slf4j
 @SpringBootTest
-public class RedissonServiceTest {
+public class
+RedissonServiceTest {
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
