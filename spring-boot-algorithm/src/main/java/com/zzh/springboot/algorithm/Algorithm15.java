@@ -1955,6 +1955,97 @@ public class Algorithm15 {
     }
 
 
+    public boolean isPalindrome(ListNode head) {
+        if (head == null || head.next == null) {
+            return true;
+        }
+        ListNode slow = head;
+        ListNode fast = head;
+        Stack<Integer> stack = new Stack<>();
+        while (fast != null && fast.next != null) {
+            stack.push(slow.val);
+            fast = fast.next.next;
+            slow = slow.next;
+
+        }
+        if (fast != null) {
+            slow = slow.next;
+        }
+        while (!stack.isEmpty()) {
+            Integer pop = stack.pop();
+            if (slow == null || slow.val != pop) {
+                return false;
+            }
+            slow = slow.next;
+        }
+        return true;
+    }
+
+
+    public int maxAreaOfIsland(int[][] grid) {
+        if (grid == null || grid.length == 0 || grid[0].length == 0) {
+            return 0;
+        }
+        boolean[][] visited = new boolean[grid.length][grid[0].length];
+        int maxAreaOfIsland = 0;
+        for (int i = 0; i < visited.length; i++) {
+            for (int j = 0; j < visited[i].length; j++) {
+                if (grid[i][j] == 0 || visited[i][j]) {
+                    continue;
+                }
+                int infect = infect(grid, visited, i, j);
+                maxAreaOfIsland = Math.max(maxAreaOfIsland, infect);
+            }
+        }
+        return maxAreaOfIsland;
+    }
+
+    public int infect(int[][] grid, boolean[][] visited, int i, int j) {
+        if (i < 0 || j < 0 || i > visited.length - 1 || j > visited[0].length - 1 || visited[i][j] || grid[i][j] == 0) {
+            return 0;
+        }
+        visited[i][j] = true;
+        return infect(grid, visited, i + 1, j) + infect(grid, visited, i - 1, j) + infect(grid, visited, i, j - 1) + infect(grid, visited, i, j + 1) + 1;
+    }
+
+
+    public int maxProfit_1(int[] prices) {
+        if (prices == null || prices.length <= 1) {
+            return 0;
+        }
+        int[][] dp = new int[2][prices.length];
+
+        dp[0][0] = 0;
+        dp[1][0] = -prices[0];
+
+        for (int i = 1; i < prices.length; i++) {
+            dp[0][i] = Math.max(dp[0][i - 1], dp[1][i - 1] + prices[i]);
+            dp[1][i] = Math.max(dp[1][i - 1], dp[0][i - 1] - prices[i]);
+        }
+        return dp[0][prices.length - 1];
+    }
+
+
+    public int maxProduct(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+
+        int[] dp = new int[nums.length];
+        System.arraycopy(nums, 0, dp, 0, nums.length);
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] >= 0) {
+                dp[i] = Math.max(dp[i], dp[i - 1] * nums[i]);
+            } else {
+                int temp = nums[i];
+                for (int j = i - 1; j >= 0; j--) {
+                    temp = temp * nums[j];
+                    dp[i] = Math.max(dp[i], temp);
+                }
+            }
+        }
+        return Arrays.stream(dp).max().getAsInt();
+    }
 
 }
 
