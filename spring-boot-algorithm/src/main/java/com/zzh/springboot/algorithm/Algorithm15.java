@@ -2047,5 +2047,129 @@ public class Algorithm15 {
         return Arrays.stream(dp).max().getAsInt();
     }
 
+
+    public int widthOfBinaryTree(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        if (root.left == null && root.right == null) {
+            return 1;
+        }
+        Deque<TreeNode> queue = new ArrayDeque<>();
+        queue.add(root);
+        int max = 1;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            max = Math.max(max, size);
+            for (int i = 0; i < size; i++) {
+                TreeNode poll = queue.poll();
+                if (poll.left != null) {
+                    queue.add(poll.left);
+                } else {
+                    if (!queue.isEmpty()) {
+                        queue.add(new TreeNode(-1000));
+                    }
+                }
+                if (poll.right != null) {
+                    queue.add(poll.right);
+                } else {
+                    if (!queue.isEmpty()) {
+                        queue.add(new TreeNode(-1000));
+                    }
+                }
+            }
+            while (!queue.isEmpty() && queue.peekFirst().val == -1000) {
+                queue.pollFirst();
+            }
+            while (!queue.isEmpty() && queue.peekLast().val == -1000) {
+                queue.pollLast();
+            }
+        }
+        return max;
+    }
+
+    public int widthOfBinaryTree_1(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        if (root.left == null && root.right == null) {
+            return 1;
+        }
+        int max = 1;
+        Deque<TreeNode> queue = new ArrayDeque<>();
+        queue.add(root);
+        root.val = 1;
+        while (!queue.isEmpty()) {
+            int with = queue.peekLast().val - queue.peekFirst().val + 1;
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode poll = queue.poll();
+                if (poll.left != null) {
+                    queue.add(poll.left);
+                    poll.left.val = poll.val * 2 + 1;
+                }
+                if (poll.right != null) {
+                    queue.add(poll.right);
+                    poll.right.val = poll.val * 2 + 2;
+                }
+            }
+            max = Math.max(max, with);
+        }
+
+        return max;
+    }
+
+
+    public boolean hasPathSum(TreeNode root, int targetSum) {
+        if (root == null) {
+            return false;
+        }
+        return sumPath(root, targetSum);
+    }
+
+    public boolean sumPath(TreeNode node, int target) {
+        if (node == null) {
+            return false;
+        }
+        if (node.left == null && node.right == null) {
+            return target == node.val;
+        }
+        return sumPath(node.left, target - node.val) || sumPath(node.right, target - node.val);
+    }
+
+    @Test
+    public void widthOfBinaryTreeTest() {
+        TreeNode root = new TreeNode(1);
+        root.left = new TreeNode(3);
+        root.right = new TreeNode(2);
+        int i = widthOfBinaryTree(root);
+        System.out.println(i);
+    }
+
+    public TreeNode lowestCommonAncestor_(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null || p == null || q == null) {
+            return root;
+        }
+
+        commonAncestor(root,p,q);
+        return lowestCommonAncestor;
+    }
+
+    private TreeNode lowestCommonAncestor;
+
+    public boolean commonAncestor(TreeNode node, TreeNode p, TreeNode q) {
+        if (node == null) {
+            return false;
+        }
+        boolean right = commonAncestor(node.right, p, q);
+        boolean left = commonAncestor(node.left, p, q);
+        if ((left && right) || ((p == node || q == node) && (left || right))) {
+            lowestCommonAncestor = node;
+        }
+
+        return right || left || node == p || node == q;
+    }
+
+
 }
 
