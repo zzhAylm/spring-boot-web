@@ -1,8 +1,12 @@
 package com.zzh.springboot3.controller;
 
+import cn.hutool.core.util.RandomUtil;
 import com.zzh.springboot3.prometheus.GaugeMetric;
+import com.zzh.springboot3.prometheus.HistogramMetric;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.Metrics;
+import jakarta.annotation.Resource;
+import jakarta.ws.rs.GET;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -44,6 +48,14 @@ public class PrometheusController {
     @GetMapping("/gauge/{count}/{name}/{application}")
     public GaugeMetric gaugeTags(@PathVariable Long count, @PathVariable String name, @PathVariable String application) {
         return new GaugeMetric(count, name, "172.16.46.134",application);
+    }
+
+    @Resource
+    private HistogramMetric histogramMetric;
+
+    @GetMapping("/histogram")
+    public void histogram() {
+        histogramMetric.recordRequest(RandomUtil.randomInt(1000));
     }
 
 }

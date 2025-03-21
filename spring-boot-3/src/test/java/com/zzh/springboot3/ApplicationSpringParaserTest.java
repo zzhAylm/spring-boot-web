@@ -576,7 +576,11 @@ public class ApplicationSpringParaserTest {
     @Test
     public void testPost() {
 
-
+        String s = Base64.getEncoder().encodeToString("zzh".getBytes());
+        log.info("base 64 is :{}", s);
+        byte[] decode = Base64.getDecoder().decode(s);
+        String s1 = new String(decode);
+        log.info("base 64 is :{}", s1);
     }
 
 

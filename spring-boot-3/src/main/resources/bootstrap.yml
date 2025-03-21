@@ -3,6 +3,7 @@ server:
   shutdown: graceful #开启优雅停机
   tomcat:
     max-http-form-post-size: 50MB
+#    max-http-post-size:
 spring:
   profiles:
     active: ${profile:test}
