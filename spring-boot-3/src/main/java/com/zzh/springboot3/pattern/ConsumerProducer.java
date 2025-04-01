@@ -1,4 +1,6 @@
-package com.zzh.springboot.pattern;
+package com.zzh.springboot3.pattern;
+
+import io.swagger.models.auth.In;
 
 import java.util.LinkedList;
 import java.util.concurrent.locks.Condition;
