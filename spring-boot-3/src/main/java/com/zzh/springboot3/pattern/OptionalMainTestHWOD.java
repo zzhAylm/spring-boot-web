@@ -12,7 +12,7 @@ import java.util.Optional;
  * @Crete 2024/6/12 15:11
  */
 @Slf4j
-public class OptionalMainTest {
+public class OptionalMainTestHWOD {
     public static void main(String[] args) {
         Optional<String> zzh = Optional.of("zzh");
 
@@ -23,7 +23,7 @@ public class OptionalMainTest {
     public void optionalTest() {
         Optional<Object> empty = Optional.empty();
         log.info("optional is :{}", empty);
-        Class<? extends OptionalMainTest> optionalMainTestClass = OptionalMainTest.class;
+        Class<? extends OptionalMainTestHWOD> optionalMainTestClass = OptionalMainTestHWOD.class;
         Class<?>[] classes = optionalMainTestClass.getClasses();
        for (Class<?> c:classes){
            log.info(c.getName().split("\\$")[1]);

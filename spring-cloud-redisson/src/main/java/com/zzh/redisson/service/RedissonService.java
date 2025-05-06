@@ -6,11 +6,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.redisson.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.connection.Message;
+import org.springframework.data.redis.connection.MessageListener;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.PatternTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.SortedSet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -33,6 +41,9 @@ public class RedissonService {
 
     @Resource
     private RedissonReactiveClient redissonReactiveClient;
+
+    @Resource
+    private RedisTemplate<String, Object> redisTemplate;
 
 
     private static final String MAP_NAME = "zzh_map";
@@ -309,9 +320,79 @@ public class RedissonService {
         redissonScoreSortSet.add(5, "e");
         redissonScoreSortSet.add(1, "a");
         redissonScoreSortSet.add(2, "b");
-        redissonScoreSortSet.stream().forEach(value->{
+        redissonScoreSortSet.stream().forEach(value -> {
             log.info("value is :{}", value);
         });
 
     }
+
+
+    @Test
+    public void redisMapTest() {
+        redisTemplate.opsForHash().put("hash_key", "name", "zzh");
+        redisTemplate.opsForHash().put("hash_key", "age", "18");
+        redisTemplate.opsForHash().put("hash_key", "high", "175");
+        String name = (String) redisTemplate.opsForHash().get("hash_key", "name");
+        String six = (String) redisTemplate.opsForHash().get("hash_key", "six");
+        log.info("name is :{}", name);
+        log.info("six is :{}", six);
+    }
+
+
+    @Test
+    public void redisListTest() {
+       while (true){
+           String value =(String) redisTemplate.opsForList().rightPop("list_key", 10, TimeUnit.SECONDS);
+           log.info("list value is :{}", value);
+       }
+    }
+
+
+    @Test
+    public void redisListLeftPushTest(){
+        redisTemplate.opsForList().leftPush("list_key", "zzh");
+    }
+
+
+    @Test
+    public void redisPublishTest(){
+        String channel = new ChannelTopic("channel_key").getTopic();
+        redisTemplate.convertAndSend(channel, "zzh");
+    }
+
+    @Test
+    public void redisSubscribeTest() throws InterruptedException {
+        CountDownLatch countDownLatch = new CountDownLatch(10);
+        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+        container.setConnectionFactory(redisTemplate.getConnectionFactory());
+        container.addMessageListener(new MessageListenerAdapter(new RedisSubscriber(countDownLatch), "channel_key"), new PatternTopic("channel_key"));
+        countDownLatch.await();
+    }
+    public static class RedisSubscriber implements MessageListener {
+
+       private CountDownLatch countDownLatch;
+
+        public RedisSubscriber(CountDownLatch countDownLatch) {
+            this.countDownLatch = countDownLatch;
+        }
+
+        @Override
+        public void onMessage(Message message, byte[] pattern) {
+            String channel = new String(pattern);
+            String content = new String(message.getBody());
+            System.out.println("订阅者收到消息：" + content + "（来自频道：" + channel + "）");
+            countDownLatch.countDown();
+        }
+    }
+
+    static long[] arr =new long[2];
+    public static void main(String[] args) {
+
+        System.out.println(arr[6]);
+
+
+    }
+
+
+
 }

@@ -83,5 +83,11 @@ public class LuaRedissonServiceTest {
         Long result = script.eval(RScript.Mode.READ_ONLY, luaScript, RScript.ReturnType.INTEGER,
                 Collections.singletonList("a"), 1,3);
         System.out.println("计算结果：" + result);
+
     }
+
+//    @Test
+//    public void redisCluster(){
+//        redissonClient.
+//    }
 }

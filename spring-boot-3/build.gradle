@@ -27,7 +27,7 @@ dependencies {
 //    api("org.springframework.cloud:spring-cloud-starter-openfeign")
 
     api('org.springframework.boot:spring-boot-starter-data-elasticsearch')
-
+    implementation 'com.alibaba:transmittable-thread-local:2.14.2'
 //    implementation 'net.oschina.j2cache:j2cache-core:2.8.5-release'
 }
 bootJar {

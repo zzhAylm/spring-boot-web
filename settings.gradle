@@ -24,4 +24,5 @@ include 'spring-boot-aviator'
 include 'spring-boot-http'
 include 'spring-boot-future'
 include 'spring-boot-protobuf'
+include 'spring-boot-ai'
 
