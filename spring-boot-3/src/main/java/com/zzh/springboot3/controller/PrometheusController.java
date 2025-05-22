@@ -6,7 +6,6 @@ import com.zzh.springboot3.prometheus.HistogramMetric;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.Metrics;
 import jakarta.annotation.Resource;
-import jakarta.ws.rs.GET;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;

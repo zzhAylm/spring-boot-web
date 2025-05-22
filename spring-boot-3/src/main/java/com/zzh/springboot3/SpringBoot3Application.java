@@ -7,7 +7,6 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -18,7 +17,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @MapperScan("com.zzh.springboot3.mapper")
 @SpringBootApplication
-@EnableFeignClients
+//@EnableFeignClients
 @EnableCaching
 @EnableTransactionManagement
 public class SpringBoot3Application {

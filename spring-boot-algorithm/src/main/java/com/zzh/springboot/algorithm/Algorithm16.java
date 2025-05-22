@@ -1,5 +1,7 @@
 package com.zzh.springboot.algorithm;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.*;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -640,7 +642,31 @@ public class Algorithm16 {
         return dp[prices.length - 1][1];
     }
 
+    @Test
+    public void pro(){
+        PriorityQueue<Integer> priorityQueue = new PriorityQueue<>((o1,o2)->o2-o1);
+        priorityQueue.add(1);
+        priorityQueue.add(2);
+        priorityQueue.add(3);
+        while (!priorityQueue.isEmpty()){
+            System.out.printf(String.valueOf(priorityQueue.poll()));
+        }
+    }
 
+
+
+
+    @Test
+    public void runThread(){
+
+        new Thread(() -> {
+            try {
+                throw new   InterruptedException("zzh");
+            } catch (InterruptedException e) {
+                throw new IllegalArgumentException("timeout value is negative");
+            }
+        }).start();
+    }
 
 }
 
