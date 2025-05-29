@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequestMapping("/ai")
-public class TestController {
+public class AIController {
 
 
     @GetMapping("")

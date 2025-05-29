@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.zzh.ai.pattern;
+package com.zzh.ai.pattern.context;
 
 /**
  * 幂等验证场景枚举

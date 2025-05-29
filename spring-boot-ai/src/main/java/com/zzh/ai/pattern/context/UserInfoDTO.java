@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.zzh.ai.pattern;
+package com.zzh.ai.pattern.context;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

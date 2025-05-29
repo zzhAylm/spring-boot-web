@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package com.zzh.ai.pattern;
+package com.zzh.ai.pattern.context;
 
 import cn.hutool.core.collection.CollUtil;
-import org.assertj.core.util.Maps;
 
 import java.util.Map;
 

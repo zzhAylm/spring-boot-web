@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.opengoofy.index12306.framework.starter.idempotent.core;
+package com.zzh.ai.pattern;
 
+import com.zzh.ai.pattern.context.Idempotent;
+import com.zzh.ai.pattern.context.IdempotentParamWrapper;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.opengoofy.index12306.framework.starter.idempotent.annotation.Idempotent;
 
 /**
  * 幂等执行处理器

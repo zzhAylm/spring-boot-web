@@ -1,5 +1,11 @@
 dependencies {
     api project(":spring-boot-common")
     api("org.springframework.boot:spring-boot-starter-web")
+    api 'io.netty:netty-all:4.1.68.Final'
+    api 'io.protostuff:protostuff-core:1.7.4'
+    api("org.aspectj:aspectjweaver")
+    api('org.redisson:redisson-spring-boot-starter:3.27.2')
+
+    api 'org.springframework.boot:spring-boot-starter-security'
 }
 
