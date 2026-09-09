@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @Description:
@@ -86,8 +89,61 @@ public class LuaRedissonServiceTest {
 
     }
 
+    @Test
+    public void testDeductStock() throws InterruptedException {
+        String stockKey = "test:stock";
+        // 初始化库存100
+        redissonClient.getBucket(stockKey).set(100);
+        
+        // 创建线程池模拟并发
+        int threadCount = 10;
+        CountDownLatch latch = new CountDownLatch(threadCount);
+        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+        
+        // 加载Lua脚本
+        String luaScript = ResourceUtil.readUtf8Str("lua/deduct_stock.lua");
+        RScript script = redissonClient.getScript();
+        
+        // 模拟10个线程同时扣减库存
+        for (int i = 0; i < threadCount; i++) {
+            executorService.execute(() -> {
+                try {
+                    // 每次扣减5个库存
+                    Object result = script.eval(RScript.Mode.READ_WRITE, 
+                            luaScript, 
+                            RScript.ReturnType.INTEGER, 
+                            Collections.singletonList(stockKey), 
+                            5);
+                    
+                    log.info("扣减库存结果: {}", result);
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+        
+        // 等待所有线程执行完成
+        latch.await();
+        executorService.shutdown();
+        
+        // 查看最终库存
+        Integer finalStock = (Integer) redissonClient.getBucket(stockKey).get();
+        log.info("最终库存: {}", finalStock);
+    }
+
+    @Test
+    public void testInitStock() {
+        String stockKey = "test:stock";
+        // 初始化库存
+        redissonClient.getBucket(stockKey).set(100);
+        log.info("库存初始化完成，当前库存：{}", redissonClient.getBucket(stockKey).get());
+    }
+
 //    @Test
 //    public void redisCluster(){
 //        redissonClient.
 //    }
+
+
+
 }

@@ -29,4 +29,14 @@ public class UserService extends ServiceImpl<UserMapper, User> {
 
     }
 
+
+    @Transactional
+    public void addUser() {
+//         开启事物
+//        insert
+//        update
+//        关闭事物
+
+    }
+
 }

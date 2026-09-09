@@ -7,5 +7,6 @@ dependencies {
     api('org.redisson:redisson-spring-boot-starter:3.27.2')
 
     api 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.freemarker:freemarker:2.3.31'  // 请根据需要替换版本号
 }
 
